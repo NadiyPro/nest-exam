@@ -37,8 +37,6 @@ export class UsersController {
   // (в swagger біля цього шляху буде відображено замочок)
   // @UseGuards() повинен бути розміщенний обовязково біля @ApiBearerAuth()
   @ApiBearerAuth()
-  // вказує, що для цього маршруту потрібна Bearer-аутентифікація,
-  // додає інформацію до документації Swagger
   @ApiOperation({
     summary: 'Для отримання інформації користувачем про свій обліковий запис',
     description:
@@ -78,9 +76,6 @@ export class UsersController {
   public async removeMe(@CurrentUser() userData: IUserData) {
     return await this.usersService.removeMe(userData);
   }
-  // CurrentUser отримує дані поточного користувача з locals у request
-  // Декоратор CurrentUser дістає збережену інформацію про користувача
-  // (наприклад, його ID та інші поля) і передає ці дані у змінну userData
 
   @ApiOperation({
     summary: 'Для завантаження avatar користувачем у свій обліковий запис',
@@ -118,8 +113,7 @@ export class UsersController {
     // оброблений за допомогою Multer
   ): Promise<void> {
     await this.usersService.uploadAvatar(userData, file);
-  } // завантажуємо аватар для поточного користувача (згідно наших .enw на MinIO),
-  // з використанням інтерсептора для обробки файлу, що надійшов
+  }
 
   @ApiOperation({
     summary: 'Для видалення avatar користувачем із свого облікового запису',
@@ -131,7 +125,7 @@ export class UsersController {
   @Delete('me/avatar')
   public async deleteAvatar(@CurrentUser() userData: IUserData): Promise<void> {
     await this.usersService.deleteAvatar(userData);
-  } // видаляємо аватар
+  }
 
   @ApiOperation({
     summary:
@@ -142,10 +136,6 @@ export class UsersController {
   })
   @SkipAuth()
   @Get(':userId')
-  // динамчний шлях має ОБОВЯЗКОВО бути розташованим ніжче ніж статичні шляхи,
-  // оскільки якщо ми його розмістимо вгорі, то с-ма буде в ':userId'
-  // замість userId підставляти слово "me",
-  // бо читання документа відбувається завжди зверху вниз по порядку
   public async findOne(
     @Param('userId', ParseUUIDPipe) userId: string,
   ): Promise<UserResDto> {
