@@ -11,7 +11,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { ApiFile } from '../../common/decorators/api-file.decorator';
 import { CurrentUser } from '../auth/decorators/current_user.decorator';
@@ -34,12 +39,24 @@ export class UsersController {
   @ApiBearerAuth()
   // вказує, що для цього маршруту потрібна Bearer-аутентифікація,
   // додає інформацію до документації Swagger
+  @ApiOperation({
+    summary: 'Для отримання інформації користувачем про свій обліковий запис',
+    description:
+      'Користувач може отримати інформацію про свій обліковий запис.' +
+      'Доступно для ролей: admin, manager, seller',
+  })
   @Get('me')
   public async findMe(@CurrentUser() userData: IUserData) {
     const result = await this.usersService.findMe(userData);
     return UserMapper.toResDto(result);
   }
 
+  @ApiOperation({
+    summary: 'Для оновлення свого облікового запису користувачем',
+    description:
+      'Користувач може оновити свій обліковий запис.' +
+      'Доступно для ролей: admin, manager, seller',
+  })
   @ApiBearerAuth()
   @Patch('me')
   public async updateMe(
@@ -50,6 +67,12 @@ export class UsersController {
     return UserMapper.toResDto(result);
   }
 
+  @ApiOperation({
+    summary: 'Для видалення користувачем свого облікового запису',
+    description:
+      'Користувач може видалити свій обліковий запис.' +
+      'Доступно для ролей: admin, manager, seller',
+  })
   @ApiBearerAuth()
   @Delete('me')
   public async removeMe(@CurrentUser() userData: IUserData) {
@@ -59,6 +82,12 @@ export class UsersController {
   // Декоратор CurrentUser дістає збережену інформацію про користувача
   // (наприклад, його ID та інші поля) і передає ці дані у змінну userData
 
+  @ApiOperation({
+    summary: 'Для завантаження avatar користувачем у свій обліковий запис',
+    description:
+      'Користувач може завантажити avatar у свій обліковий запис.' +
+      'Доступно для ролей: admin, manager, seller',
+  })
   @ApiBearerAuth()
   // вказує, що для цього маршруту потрібна аутентифікація через Bearer-токен
   @ApiConsumes('multipart/form-data')
@@ -92,12 +121,25 @@ export class UsersController {
   } // завантажуємо аватар для поточного користувача (згідно наших .enw на MinIO),
   // з використанням інтерсептора для обробки файлу, що надійшов
 
+  @ApiOperation({
+    summary: 'Для видалення avatar користувачем із свого облікового запису',
+    description:
+      'Користувач може видалити avatar із свого облікового запису.' +
+      'Доступно для ролей: admin, manager, seller',
+  })
   @ApiBearerAuth()
   @Delete('me/avatar')
   public async deleteAvatar(@CurrentUser() userData: IUserData): Promise<void> {
     await this.usersService.deleteAvatar(userData);
   } // видаляємо аватар
 
+  @ApiOperation({
+    summary:
+      'Для отримання інформацію про обліковий запис користувача за його id',
+    description:
+      'Користувач може отримати інформацію про обліковий запис будь якого зареєстрованого користувача по його id.' +
+      'Доступно для ролей: admin, manager, seller, buyer',
+  })
   @SkipAuth()
   @Get(':userId')
   // динамчний шлях має ОБОВЯЗКОВО бути розташованим ніжче ніж статичні шляхи,
