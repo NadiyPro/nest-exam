@@ -1,7 +1,7 @@
 import {
   Column,
   Entity,
-  Index,
+  Index, JoinColumn, ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -14,6 +14,7 @@ import { TableNameEnum } from './enums/table-name.enum';
 import { CreateUpdateModel } from './models/date.model';
 import { RefreshTokenEntity } from './refresh-token.entity';
 import { StatisticsEntity } from './statistics.entity';
+import { DealershipEntity } from './dealership.entity';
 
 @Index(['name'])
 @Entity(TableNameEnum.USERS) // назва табл в БД
@@ -63,4 +64,10 @@ export class UserEntity extends CreateUpdateModel {
 
   @OneToMany(() => StatisticsEntity, (entity) => entity.statistics)
   user_statistics?: StatisticsEntity[];
+
+  @Column()
+  dealership_id: string;
+  @ManyToOne(() => DealershipEntity, (entity) => entity.users)
+  @JoinColumn({ name: 'dealership_id' })
+  dealership?: DealershipEntity;
 }

@@ -15,6 +15,7 @@ import { CreateUpdateModel } from './models/date.model';
 import { StatisticsEntity } from './statistics.entity';
 import { UserEntity } from './user.entity';
 import { IsValidEnum } from './enums/isValid.enum';
+import { DealershipEntity } from './dealership.entity';
 
 @Index(['advertisement_cars,user_id'])
 @Entity(TableNameEnum.ADVERTISEMENT)
@@ -72,4 +73,10 @@ export class AdvertisementEntity extends CreateUpdateModel {
 
   @OneToOne(() => StatisticsEntity, (entity) => entity.statistics_advertisement)
   advertisement_statistics: StatisticsEntity;
+
+  @Column()
+  dealership_id: string;
+  @ManyToOne(() => DealershipEntity, (entity) => entity.users)
+  @JoinColumn({ name: 'dealership_id' })
+  dealership?: DealershipEntity;
 }

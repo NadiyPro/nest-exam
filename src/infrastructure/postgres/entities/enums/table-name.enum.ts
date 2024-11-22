@@ -5,4 +5,5 @@ export enum TableNameEnum {
   STATISTICS = 'statistics',
   REFRESH_TOKENS = 'refresh_tokens',
   USERS = 'users',
+  DEALERSHIP = 'dealership',
 }
