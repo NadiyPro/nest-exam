@@ -27,7 +27,9 @@ export class ApprovedRoleGuard {
     return true; // Дозволити доступ для інших ролей
   } // доступно всім окрім ролі покупець
 
-  public async approvedAdminMg(context: ExecutionContext): Promise<boolean> {
+  public static async approvedAdminMg(
+    context: ExecutionContext,
+  ): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
@@ -45,7 +47,9 @@ export class ApprovedRoleGuard {
     return true;
   } // доступно менеджеру та адміну
 
-  public async approvedAdmin(context: ExecutionContext): Promise<boolean> {
+  public static async approvedAdmin(
+    context: ExecutionContext,
+  ): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
@@ -60,7 +64,9 @@ export class ApprovedRoleGuard {
     return true;
   } // доступно лише адміну
 
-  public async approvedManager(context: ExecutionContext): Promise<boolean> {
+  public static async approvedManager(
+    context: ExecutionContext,
+  ): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
@@ -75,7 +81,9 @@ export class ApprovedRoleGuard {
     return true;
   } // доступно лише менеджеру
 
-  public async approvedDealership(context: ExecutionContext): Promise<boolean> {
+  public static async approvedDealership(
+    context: ExecutionContext,
+  ): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 

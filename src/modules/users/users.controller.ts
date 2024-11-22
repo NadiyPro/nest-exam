@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -25,6 +26,8 @@ import { SkipAuth } from '../auth/decorators/skip_auth.decorator';
 import { IUserData } from '../auth/models/interfaces/user_data.interface';
 import { ApprovedRoleGuard } from './guards/approved_role';
 import { BaseUserReqDto } from './models/dto/req/base_user.req.dto';
+import { ListUsersQueryReqDto } from './models/dto/req/list-users-query.req.dto';
+import { ListResQueryDto } from './models/dto/res/list-users-query.res.dto';
 import { UserResDto } from './models/dto/res/user.res.dto';
 import { UserMapper } from './service/user.mapper';
 import { UsersService } from './service/users.service';
@@ -139,7 +142,7 @@ export class UsersController {
       'Для отримання інформацію про обліковий запис користувача за його id',
     description:
       'Користувач може отримати інформацію про обліковий запис будь якого зареєстрованого користувача по його id.' +
-      'Доступно для ролей: admin, manager, seller, buyer',
+      'Доступно для ролей: всім',
   })
   @SkipAuth()
   @Get(':userId')
@@ -148,5 +151,41 @@ export class UsersController {
   ): Promise<UserResDto> {
     const result = await this.usersService.findOne(userId);
     return UserMapper.toResDto(result);
+  }
+
+  @ApiOperation({
+    summary: 'Для отримання інформацію про всі облікові записи користувачів',
+    description:
+      'Користувач може отримати інформацію про всі облікові записи користувачів.' +
+      'Доступно для ролей: всім',
+  })
+  @SkipAuth()
+  @Get('all')
+  public async findAll(
+    @CurrentUser() userData: IUserData,
+    @Query() query: ListUsersQueryReqDto,
+    // @Param('userId', ParseUUIDPipe) userId: string,
+  ): Promise<ListResQueryDto> {
+    const [entities, total] = await this.usersService.findAll(userData, query);
+    // entities — список знайдених статей
+    // total — загальна кількість статей,
+    // що відповідають умовам запиту (використовується для пагінації)
+    return UserMapper.toAllResDtoList(entities, total, query);
+    // перетворюємо дані з entities, total та query у структуру ArticleListResDto
+  }
+
+  @UseGuards(ApprovedRoleGuard.approvedAdminMg)
+  @ApiOperation({
+    summary: 'Для видалення облікового запису користувача за його id',
+    description:
+      'Користувач може видалити обліковий запис іншого користувача по його id.' +
+      'Доступно для ролей: admin, manager',
+  })
+  @SkipAuth()
+  @Delete(':userId')
+  public async deleteId(
+    @Param('userId', ParseUUIDPipe) userId: string,
+  ): Promise<void> {
+    return await this.usersService.deleteId(userId);
   }
 }
