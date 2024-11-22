@@ -46,6 +46,7 @@ export class UserRepository extends Repository<UserEntity> {
       // передає значення для параметра :search з використанням шаблону `%${query.search}%`,
       // де % означає «будь-яка кількість символів до або після»
     } //  Перевіряє, чи містить об'єкт query параметр search. Якщо так, додає умову пошуку
+    qb.orderBy('"name"', 'ASC');
     return await qb.getManyAndCount();
   }
 }
