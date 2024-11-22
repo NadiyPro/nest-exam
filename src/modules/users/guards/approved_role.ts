@@ -1,5 +1,4 @@
 import {
-  CanActivate,
   ExecutionContext,
   ForbiddenException,
   Injectable,
@@ -8,38 +7,86 @@ import { Reflector } from '@nestjs/core';
 
 import { RoleTypeEnum } from '../enums/RoleType.enum';
 
-// @Injectable()
-// export class Approved_role {
-//   public static async approved_not_seller(userData: IUserData): Promise<void> {
-//     if (userData.role === RoleTypeEnum.BUYER) {
-//       throw new ForbiddenException('No role to access');
-//     }
-//   }
-// }
 @Injectable()
-export class ApprovedRoleGuard implements CanActivate {
+export class ApprovedRoleGuard {
   constructor(private reflector: Reflector) {}
 
-  public static async approved_not_seller(
+  public static async approvedNotSeller(
     context: ExecutionContext,
   ): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
+
+    if (!user) {
+      throw new ForbiddenException('User is not authenticated');
+    }
+
     if (user.role === RoleTypeEnum.BUYER) {
       throw new ForbiddenException('No role to access');
     }
     return true; // Дозволити доступ для інших ролей
-  }
+  } // доступно всім окрім ролі покупець
 
-  public async approved_admin_mg(context: ExecutionContext): Promise<boolean> {
+  public async approvedAdminMg(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
-    // Перевірка на ролі BUYER або SELLER
-    if (user.role === RoleTypeEnum.BUYER || user.role === RoleTypeEnum.SELLER) {
+    if (!user) {
+      throw new ForbiddenException('User is not authenticated');
+    }
+
+    if (
+      user.role !== RoleTypeEnum.ADMIN ||
+      user.role !== RoleTypeEnum.MANAGER
+    ) {
       throw new ForbiddenException('No role to access');
     }
 
-    return true; // Дозволити доступ для інших ролей
-  }
+    return true;
+  } // доступно менеджеру та адміну
+
+  public async approvedAdmin(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const user = request.user;
+
+    if (!user) {
+      throw new ForbiddenException('User is not authenticated');
+    }
+
+    if (user.role !== RoleTypeEnum.ADMIN) {
+      throw new ForbiddenException('No role to access');
+    }
+
+    return true;
+  } // доступно лише адміну
+
+  public async approvedManager(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const user = request.user;
+
+    if (!user) {
+      throw new ForbiddenException('User is not authenticated');
+    }
+
+    if (user.role !== RoleTypeEnum.MANAGER) {
+      throw new ForbiddenException('No role to access');
+    }
+
+    return true;
+  } // доступно лише менеджеру
+
+  public async approvedDealership(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const user = request.user;
+
+    if (!user) {
+      throw new ForbiddenException('User is not authenticated');
+    }
+
+    if (user.role !== RoleTypeEnum.DEALERSHIP) {
+      throw new ForbiddenException('No role to access');
+    }
+
+    return true;
+  } // доступно лише автосалонам
 }
