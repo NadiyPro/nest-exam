@@ -14,6 +14,7 @@ import { TableNameEnum } from './enums/table-name.enum';
 import { CreateUpdateModel } from './models/date.model';
 import { StatisticsEntity } from './statistics.entity';
 import { UserEntity } from './user.entity';
+import { IsValidEnum } from './enums/isValid.enum';
 
 @Index(['advertisement_cars,user_id'])
 @Entity(TableNameEnum.ADVERTISEMENT)
@@ -51,8 +52,8 @@ export class AdvertisementEntity extends CreateUpdateModel {
   @Column('text')
   image_cars: string;
 
-  @Column('boolean', { default: true })
-  isValid: boolean;
+  @Column('text', { default: IsValidEnum.ACTIVE })
+  isValid: IsValidEnum;
 
   @Column('text')
   text_advertisement: string;
