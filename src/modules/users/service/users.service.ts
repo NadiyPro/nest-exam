@@ -23,7 +23,7 @@ export class UsersService {
   ) {}
 
   public async findMe(userData: IUserData): Promise<UserEntity> {
-    if (RoleTypeEnum.BUYER) {
+    if (userData.role === RoleTypeEnum.BUYER) {
       throw new ForbiddenException('No role to access');
     }
     return await this.userRepository.findOneBy({ id: userData.userId });
@@ -33,7 +33,7 @@ export class UsersService {
     userData: IUserData,
     dto: UpdateUserReqDto,
   ): Promise<UserEntity> {
-    if (RoleTypeEnum.BUYER) {
+    if (userData.role === RoleTypeEnum.BUYER) {
       throw new ForbiddenException('No role to access');
     }
     const user = await this.userRepository.findOneBy({ id: userData.userId });
@@ -46,7 +46,7 @@ export class UsersService {
 
   public async removeMe(userData: IUserData): Promise<void> {
     // userData містить дані користувача, який хоче "видалити" свій обліковий запис
-    if (RoleTypeEnum.BUYER) {
+    if (userData.role === RoleTypeEnum.BUYER) {
       throw new ForbiddenException('No role to access');
     }
     await this.userRepository.update(
@@ -67,7 +67,7 @@ export class UsersService {
     userData: IUserData,
     file: Express.Multer.File,
   ): Promise<void> {
-    if (RoleTypeEnum.BUYER) {
+    if (userData.role === RoleTypeEnum.BUYER) {
       throw new ForbiddenException('No role to access');
     }
     const user = await this.userRepository.findOneBy({ id: userData.userId });
@@ -86,7 +86,7 @@ export class UsersService {
   }
 
   public async deleteAvatar(userData: IUserData): Promise<void> {
-    if (RoleTypeEnum.BUYER) {
+    if (userData.role === RoleTypeEnum.BUYER) {
       throw new ForbiddenException('No role to access');
     }
     const user = await this.userRepository.findOneBy({ id: userData.userId });

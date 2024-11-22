@@ -1,14 +1,14 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 
-import { AdvertisementModule } from '../advertisement/advertisement.module';
+// import { AdvertisementModule } from '../advertisement/advertisement.module';
 import { AuthModule } from '../auth/auth.module';
 import { FileStorageModule } from '../file-storage/file-storage.module';
-import { UsersService } from './services/users.service';
+import { UsersService } from './service/users.service';
 import { UsersController } from './users.controller';
 
 @Module({
   imports: [
-    forwardRef(() => AdvertisementModule),
+    // forwardRef(() => AdvertisementModule),
     AuthModule,
     FileStorageModule,
   ],
