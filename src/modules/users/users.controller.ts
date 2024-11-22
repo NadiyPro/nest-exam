@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -22,6 +23,7 @@ import { ApiFile } from '../../common/decorators/api-file.decorator';
 import { CurrentUser } from '../auth/decorators/current_user.decorator';
 import { SkipAuth } from '../auth/decorators/skip_auth.decorator';
 import { IUserData } from '../auth/models/interfaces/user_data.interface';
+import { ApprovedRoleGuard } from './guards/approved_role';
 import { BaseUserReqDto } from './models/dto/req/base_user.req.dto';
 import { UserResDto } from './models/dto/res/user.res.dto';
 import { UserMapper } from './service/user.mapper';
@@ -36,6 +38,7 @@ export class UsersController {
   // для того, щоб підключити перевірку через guards
   // (в swagger біля цього шляху буде відображено замочок)
   // @UseGuards() повинен бути розміщенний обовязково біля @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Для отримання інформації користувачем про свій обліковий запис',

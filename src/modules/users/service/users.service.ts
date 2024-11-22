@@ -33,9 +33,6 @@ export class UsersService {
     userData: IUserData,
     dto: UpdateUserReqDto,
   ): Promise<UserEntity> {
-    if (userData.role === RoleTypeEnum.BUYER) {
-      throw new ForbiddenException('No role to access');
-    }
     const user = await this.userRepository.findOneBy({ id: userData.userId });
     // шукаємо користувача в БД за userId
     this.userRepository.merge(user, dto);
@@ -46,9 +43,6 @@ export class UsersService {
 
   public async removeMe(userData: IUserData): Promise<void> {
     // userData містить дані користувача, який хоче "видалити" свій обліковий запис
-    if (userData.role === RoleTypeEnum.BUYER) {
-      throw new ForbiddenException('No role to access');
-    }
     await this.userRepository.update(
       { id: userData.userId },
       // шукає запис користувача за ідентифікатором userData.userId
@@ -67,9 +61,6 @@ export class UsersService {
     userData: IUserData,
     file: Express.Multer.File,
   ): Promise<void> {
-    if (userData.role === RoleTypeEnum.BUYER) {
-      throw new ForbiddenException('No role to access');
-    }
     const user = await this.userRepository.findOneBy({ id: userData.userId });
     const pathToFile = await this.fileStorageService.uploadFile(
       file,
@@ -86,9 +77,6 @@ export class UsersService {
   }
 
   public async deleteAvatar(userData: IUserData): Promise<void> {
-    if (userData.role === RoleTypeEnum.BUYER) {
-      throw new ForbiddenException('No role to access');
-    }
     const user = await this.userRepository.findOneBy({ id: userData.userId });
     // шукаємо юзера по id в БД юзерів
     if (user.avatar) {
