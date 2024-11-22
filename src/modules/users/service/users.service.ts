@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 
 import { UserEntity } from '../../../infrastructure/postgres/entities/user.entity';
 import { RefreshTokenRepository } from '../../../infrastructure/repository/services/refresh-token.repository';
@@ -6,6 +10,7 @@ import { UserRepository } from '../../../infrastructure/repository/services/user
 import { IUserData } from '../../auth/models/interfaces/user_data.interface';
 import { ContentType } from '../../file-storage/enums/file-type.enum';
 import { FileStorageService } from '../../file-storage/services/file-storage.service';
+import { RoleTypeEnum } from '../enums/RoleType.enum';
 import { UpdateUserReqDto } from '../models/dto/req/update_user.req.dto';
 
 @Injectable()
@@ -18,6 +23,9 @@ export class UsersService {
   ) {}
 
   public async findMe(userData: IUserData): Promise<UserEntity> {
+    if (RoleTypeEnum.BUYER) {
+      throw new ForbiddenException('No role to access');
+    }
     return await this.userRepository.findOneBy({ id: userData.userId });
   }
 
@@ -25,6 +33,9 @@ export class UsersService {
     userData: IUserData,
     dto: UpdateUserReqDto,
   ): Promise<UserEntity> {
+    if (RoleTypeEnum.BUYER) {
+      throw new ForbiddenException('No role to access');
+    }
     const user = await this.userRepository.findOneBy({ id: userData.userId });
     // шукаємо користувача в БД за userId
     this.userRepository.merge(user, dto);
@@ -35,6 +46,9 @@ export class UsersService {
 
   public async removeMe(userData: IUserData): Promise<void> {
     // userData містить дані користувача, який хоче "видалити" свій обліковий запис
+    if (RoleTypeEnum.BUYER) {
+      throw new ForbiddenException('No role to access');
+    }
     await this.userRepository.update(
       { id: userData.userId },
       // шукає запис користувача за ідентифікатором userData.userId
@@ -53,6 +67,9 @@ export class UsersService {
     userData: IUserData,
     file: Express.Multer.File,
   ): Promise<void> {
+    if (RoleTypeEnum.BUYER) {
+      throw new ForbiddenException('No role to access');
+    }
     const user = await this.userRepository.findOneBy({ id: userData.userId });
     const pathToFile = await this.fileStorageService.uploadFile(
       file,
@@ -69,6 +86,9 @@ export class UsersService {
   }
 
   public async deleteAvatar(userData: IUserData): Promise<void> {
+    if (RoleTypeEnum.BUYER) {
+      throw new ForbiddenException('No role to access');
+    }
     const user = await this.userRepository.findOneBy({ id: userData.userId });
     // шукаємо юзера по id в БД юзерів
     if (user.avatar) {
