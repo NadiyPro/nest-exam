@@ -22,7 +22,7 @@ export class AuthService {
   ) {}
 
   public async signUp(dto: RegistrationReqDto): Promise<AuthResDto> {
-    await this.isEmailNotExistOrThrow(dto.email);
+    await this.isEmailNotExistOrThrow(dto.email, dto.phone);
     const password = await bcrypt.hash(dto.password, 10);
     // хешуємо пароль
     const user = await this.userRepository.save(
@@ -161,9 +161,9 @@ export class AuthService {
     return tokens; // повертаємо пару токенів accessToken і refreshToken
   }
 
-  private async isEmailNotExistOrThrow(email: string) {
-    const user = await this.userRepository.findOneBy({ email });
-    if (user) {
+  private async isEmailNotExistOrThrow(email: string, phone: string) {
+    const userEmail = await this.userRepository.findOneBy({ email, phone });
+    if (userEmail) {
       throw new Error('Email already exists');
     }
   } // перевіряємо на унікальність email, тобто,

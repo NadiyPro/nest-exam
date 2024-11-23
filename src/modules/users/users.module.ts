@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 
-// import { AdvertisementModule } from '../advertisement/advertisement.module';
 import { AuthModule } from '../auth/auth.module';
 import { FileStorageModule } from '../file-storage/file-storage.module';
 import { UsersService } from './service/users.service';

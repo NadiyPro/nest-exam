@@ -7,8 +7,9 @@ export class BaseAuthReqDto extends PickType(BaseUserReqDto, [
   'email',
   'password',
   'phone',
-  'accountType',
   'name',
+  'accountType',
+  'role',
 ]) {
   @IsNotEmpty() // перевіряє, щоб значення поля не було порожнім
   @IsString()

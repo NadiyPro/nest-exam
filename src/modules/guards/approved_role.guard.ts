@@ -69,6 +69,18 @@ import { RoleTypeEnum } from '../users/enums/RoleType.enum';
 export class ApprovedRoleGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
+  // canActivate(context: ExecutionContext): boolean {
+  //   const roles = this.reflector.get<RoleTypeEnum[]>(
+  //     'roles',
+  //     context.getHandler(),
+  //   );
+  //   if (!roles) return true;
+  //
+  //   const request = context.switchToHttp().getRequest();
+  //   const user = request.user;
+  //
+  //   return roles.includes(user.role);
+  // }
   canActivate(context: ExecutionContext): boolean {
     const roles = this.reflector.get<RoleTypeEnum[]>(
       'roles',
@@ -77,7 +89,14 @@ export class ApprovedRoleGuard implements CanActivate {
     if (!roles) return true;
 
     const request = context.switchToHttp().getRequest();
+    console.log('Request user:', request.user); // Лог для перевірки
+
     const user = request.user;
+
+    if (!user) {
+      console.error('User not found in request');
+      return false;
+    }
 
     return roles.includes(user.role);
   }

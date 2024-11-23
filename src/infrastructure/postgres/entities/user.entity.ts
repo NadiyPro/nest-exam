@@ -36,7 +36,7 @@ export class UserEntity extends CreateUpdateModel {
   @Column('text', { unique: true })
   phone: string;
 
-  @Column('text', { unique: true, default: AccountTypeEnum.BASIC })
+  @Column('text', { default: AccountTypeEnum.BASIC })
   accountType: AccountTypeEnum;
 
   @Column('text', { default: RoleTypeEnum.SELLER })

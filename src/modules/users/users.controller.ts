@@ -25,14 +25,15 @@ import { CurrentUser } from '../auth/decorators/current_user.decorator';
 import { SkipAuth } from '../auth/decorators/skip_auth.decorator';
 import { IUserData } from '../auth/models/interfaces/user_data.interface';
 import { ApprovedRoleGuard } from '../guards/approved_role.guard';
+import { Role } from '../guards/decorator/role.decorator';
+import { RoleTypeEnum } from './enums/RoleType.enum';
 import { BaseUserReqDto } from './models/dto/req/base_user.req.dto';
 import { ListUsersQueryReqDto } from './models/dto/req/list-users-query.req.dto';
 import { ListResQueryDto } from './models/dto/res/list-users-query.res.dto';
 import { UserResDto } from './models/dto/res/user.res.dto';
 import { UserMapper } from './service/user.mapper';
 import { UsersService } from './service/users.service';
-import { RoleTypeEnum } from './enums/RoleType.enum';
-import { Role } from '../guards/decorator/role.decorator';
+import { Jwt_accessGuard } from '../auth/guards/jwt_access.guard';
 
 @ApiTags('Users')
 @Controller('users')

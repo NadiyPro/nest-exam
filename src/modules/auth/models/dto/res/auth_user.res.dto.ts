@@ -8,4 +8,5 @@ export class AuthUserResDto extends PickType(BaseResDto, [
   'email',
   'phone',
   'accountType',
+  'role',
 ]) {}
