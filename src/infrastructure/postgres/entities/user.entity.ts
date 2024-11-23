@@ -42,8 +42,8 @@ export class UserEntity extends CreateUpdateModel {
   @Column('text', { default: RoleTypeEnum.SELLER })
   role: RoleTypeEnum;
 
-  @Column('text')
-  dealership: string;
+  @Column('text', { nullable: true })
+  dealership?: string;
 
   @Column('text', { nullable: true })
   avatar?: string;
@@ -70,8 +70,8 @@ export class UserEntity extends CreateUpdateModel {
   @OneToMany(() => StatisticsEntity, (entity) => entity.statistics)
   user_statistics?: StatisticsEntity[] | null;
 
-  @Column()
-  dealership_id: string;
+  @Column('text', { nullable: true })
+  dealership_id?: string;
   @ManyToOne(() => DealershipEntity, (entity) => entity.users)
   @JoinColumn({ name: 'dealership_id' })
   dealership_users?: DealershipEntity | null;

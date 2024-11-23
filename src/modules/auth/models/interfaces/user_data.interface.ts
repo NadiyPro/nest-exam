@@ -7,4 +7,5 @@ export interface IUserData {
   email: string;
   accountType: AccountTypeEnum;
   role: RoleTypeEnum;
+  dealership?: string;
 }
