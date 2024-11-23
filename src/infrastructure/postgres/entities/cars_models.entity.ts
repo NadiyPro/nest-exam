@@ -12,7 +12,6 @@ import { TableNameEnum } from './enums/table-name.enum';
 import { CreateUpdateModel } from './models/date.model';
 import { UserEntity } from './user.entity';
 
-@Index(['cars_models'])
 @Entity(TableNameEnum.CARS_MODELS)
 export class CarsModelsEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('uuid')

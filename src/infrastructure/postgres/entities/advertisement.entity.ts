@@ -1,7 +1,6 @@
 import {
   Column,
   Entity,
-  Index,
   JoinColumn,
   ManyToOne,
   OneToOne,
@@ -17,34 +16,33 @@ import { CreateUpdateModel } from './models/date.model';
 import { StatisticsEntity } from './statistics.entity';
 import { UserEntity } from './user.entity';
 
-@Index(['advertisement_cars,user_id'])
 @Entity(TableNameEnum.ADVERTISEMENT)
 export class AdvertisementEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('number')
+  @Column('float')
   price: number;
 
   @Column('text', { default: CurrencyEnum.UAH })
   original_currency: CurrencyEnum;
 
-  @Column('number')
+  @Column('float')
   courseUAH: number;
 
-  @Column('number')
+  @Column('float')
   courseUSD: number;
 
-  @Column('number')
+  @Column('float')
   courseEUR: number;
 
-  @Column('number')
+  @Column('float')
   priceUAH: number;
 
-  @Column('number')
+  @Column('float')
   priceUSD: number;
 
-  @Column('number')
+  @Column('float')
   priceEUR: number;
 
   @Column('text')

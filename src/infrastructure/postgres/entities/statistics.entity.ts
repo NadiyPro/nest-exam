@@ -13,7 +13,6 @@ import { TableNameEnum } from './enums/table-name.enum';
 import { CreateUpdateModel } from './models/date.model';
 import { UserEntity } from './user.entity';
 
-@Index(['advertisement_cars'])
 @Entity(TableNameEnum.STATISTICS)
 export class StatisticsEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('uuid')
