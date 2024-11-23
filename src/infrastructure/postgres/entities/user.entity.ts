@@ -59,20 +59,20 @@ export class UserEntity extends CreateUpdateModel {
   deleted: Date | null;
 
   @OneToMany(() => RefreshTokenEntity, (entity) => entity.user)
-  refreshTokens?: RefreshTokenEntity[];
+  refreshTokens?: RefreshTokenEntity[] | null;
 
   @OneToMany(() => CarsModelsEntity, (entity) => entity.cars_brands_models)
-  user_cars_brands_models?: CarsModelsEntity[];
+  user_cars_brands_models?: CarsModelsEntity[] | null;
 
   @OneToMany(() => AdvertisementEntity, (entity) => entity.advertisement)
-  user_advertisement?: AdvertisementEntity[];
+  user_advertisement?: AdvertisementEntity[] | null;
 
   @OneToMany(() => StatisticsEntity, (entity) => entity.statistics)
-  user_statistics?: StatisticsEntity[];
+  user_statistics?: StatisticsEntity[] | null;
 
   @Column()
   dealership_id: string;
   @ManyToOne(() => DealershipEntity, (entity) => entity.users)
   @JoinColumn({ name: 'dealership_id' })
-  dealership_users?: DealershipEntity;
+  dealership_users?: DealershipEntity | null;
 }

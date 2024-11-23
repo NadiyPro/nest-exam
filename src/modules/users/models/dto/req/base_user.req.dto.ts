@@ -1,12 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import {
-  IsNumber,
-  IsOptional,
-  IsString,
-  Length,
-  Matches,
-} from 'class-validator';
+import { IsOptional, IsString, Length, Matches } from 'class-validator';
 
 import { TransformHelper } from '../../../../../common/helpers/transform.helper';
 import { AccountTypeEnum } from '../../../enums/AccountType.enum';
@@ -24,8 +18,8 @@ export class BaseUserReqDto {
   @Length(0, 3000)
   avatar?: string;
 
-  @ApiProperty({ example: '380631122333' })
-  @IsNumber()
+  @ApiProperty({ example: '+380123456789' })
+  @IsString()
   @Length(12)
   @Transform(TransformHelper.trim)
   @Matches(
