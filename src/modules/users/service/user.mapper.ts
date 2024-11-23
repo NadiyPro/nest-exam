@@ -4,7 +4,6 @@ import { IUserData } from '../../auth/models/interfaces/user_data.interface';
 import { ListUsersQueryReqDto } from '../models/dto/req/list-users-query.req.dto';
 import { ListResQueryDto } from '../models/dto/res/list-users-query.res.dto';
 import { UserResDto } from '../models/dto/res/user.res.dto';
-import { UserAllResDto } from '../models/dto/res/users_all.res.dto';
 
 export class UserMapper {
   public static toResDto(user: UserEntity): UserResDto {
@@ -37,17 +36,7 @@ export class UserMapper {
     total: number,
     query: ListUsersQueryReqDto,
   ): ListResQueryDto {
-    return { users: users.map(this.toAllResDto), total, ...query };
+    return { users: users.map(this.toResDto), total, ...query };
   }
   // кількість юзерів, поля query передані в моделі (limit, offset, search)
-
-  public static toAllResDto(users: UserEntity): UserAllResDto {
-    return {
-      id: users.id,
-      name: users.name,
-      email: users.email,
-      phone: users.phone,
-      avatar: `${users.avatar}`,
-    };
-  }
 }

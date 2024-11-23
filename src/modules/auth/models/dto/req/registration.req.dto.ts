@@ -8,7 +8,6 @@ export class RegistrationReqDto extends PickType(BaseAuthReqDto, [
   'phone',
   'accountType',
   'name',
-  'role',
   'deviceId',
 ]) {}
 // PickType() дозволяє "вибрати" тільки конкретні поля з базового класу

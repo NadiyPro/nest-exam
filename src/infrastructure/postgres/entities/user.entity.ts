@@ -39,7 +39,7 @@ export class UserEntity extends CreateUpdateModel {
   @Column('text', { unique: true, default: AccountTypeEnum.BASIC })
   accountType: AccountTypeEnum;
 
-  @Column('enum', { default: RoleTypeEnum.SELLER })
+  @Column('text', { default: RoleTypeEnum.SELLER })
   role: RoleTypeEnum;
 
   @Column('text', { nullable: true })

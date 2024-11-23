@@ -1,3 +1,4 @@
+import { AccountTypeEnum } from '../../../enums/AccountType.enum';
 import { RoleTypeEnum } from '../../../enums/RoleType.enum';
 
 export class BaseResDto {
@@ -5,7 +6,7 @@ export class BaseResDto {
   name: string;
   email: string;
   phone: string;
-  accountType: string;
+  accountType: AccountTypeEnum;
   role: RoleTypeEnum;
   dealership?: string;
   avatar?: string;
