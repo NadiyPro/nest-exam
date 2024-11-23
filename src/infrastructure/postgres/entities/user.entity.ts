@@ -1,7 +1,9 @@
 import {
   Column,
   Entity,
-  Index, JoinColumn, ManyToOne,
+  Index,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -10,11 +12,11 @@ import { AccountTypeEnum } from '../../../modules/users/enums/AccountType.enum';
 import { RoleTypeEnum } from '../../../modules/users/enums/RoleType.enum';
 import { AdvertisementEntity } from './advertisement.entity';
 import { CarsModelsEntity } from './cars_models.entity';
+import { DealershipEntity } from './dealership.entity';
 import { TableNameEnum } from './enums/table-name.enum';
 import { CreateUpdateModel } from './models/date.model';
 import { RefreshTokenEntity } from './refresh-token.entity';
 import { StatisticsEntity } from './statistics.entity';
-import { DealershipEntity } from './dealership.entity';
 
 @Index(['name'])
 @Entity(TableNameEnum.USERS) // назва табл в БД

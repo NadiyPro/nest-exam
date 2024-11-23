@@ -31,6 +31,8 @@ import { ListResQueryDto } from './models/dto/res/list-users-query.res.dto';
 import { UserResDto } from './models/dto/res/user.res.dto';
 import { UserMapper } from './service/user.mapper';
 import { UsersService } from './service/users.service';
+import { RoleTypeEnum } from './enums/RoleType.enum';
+import { Role } from '../guards/decorator/role.decorator';
 
 @ApiTags('Users')
 @Controller('users')
@@ -41,7 +43,8 @@ export class UsersController {
   // для того, щоб підключити перевірку через guards
   // (в swagger біля цього шляху буде відображено замочок)
   // @UseGuards() повинен бути розміщенний обовязково біля @ApiBearerAuth()
-  @UseGuards(ApprovedRoleGuard.approvedNotSeller)
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Для отримання інформації користувачем про свій обліковий запис',
@@ -55,7 +58,8 @@ export class UsersController {
     return UserMapper.toResDto(result);
   }
 
-  @UseGuards(ApprovedRoleGuard.approvedNotSeller)
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @ApiOperation({
     summary: 'Для оновлення свого облікового запису користувачем',
     description:
@@ -72,7 +76,8 @@ export class UsersController {
     return UserMapper.toResDto(result);
   }
 
-  @UseGuards(ApprovedRoleGuard.approvedNotSeller)
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @ApiOperation({
     summary: 'Для видалення користувачем свого облікового запису',
     description:
@@ -85,7 +90,8 @@ export class UsersController {
     return await this.usersService.removeMe(userData);
   }
 
-  @UseGuards(ApprovedRoleGuard.approvedNotSeller)
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @ApiOperation({
     summary: 'Для завантаження avatar користувачем у свій обліковий запис',
     description:
@@ -124,7 +130,8 @@ export class UsersController {
     await this.usersService.uploadAvatar(userData, file);
   }
 
-  @UseGuards(ApprovedRoleGuard.approvedNotSeller)
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @ApiOperation({
     summary: 'Для видалення avatar користувачем із свого облікового запису',
     description:
@@ -174,7 +181,8 @@ export class UsersController {
     // перетворюємо дані з entities, total та query у структуру ArticleListResDto
   }
 
-  @UseGuards(ApprovedRoleGuard.approvedAdminMg)
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
   @ApiOperation({
     summary: 'Для видалення облікового запису користувача за його id',
     description:
