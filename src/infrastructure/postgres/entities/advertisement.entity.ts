@@ -9,13 +9,13 @@ import {
 } from 'typeorm';
 
 import { CarsModelsEntity } from './cars_models.entity';
+import { DealershipEntity } from './dealership.entity';
 import { CurrencyEnum } from './enums/currency_enum';
+import { IsValidEnum } from './enums/isValid.enum';
 import { TableNameEnum } from './enums/table-name.enum';
 import { CreateUpdateModel } from './models/date.model';
 import { StatisticsEntity } from './statistics.entity';
 import { UserEntity } from './user.entity';
-import { IsValidEnum } from './enums/isValid.enum';
-import { DealershipEntity } from './dealership.entity';
 
 @Index(['advertisement_cars,user_id'])
 @Entity(TableNameEnum.ADVERTISEMENT)
