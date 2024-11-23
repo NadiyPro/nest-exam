@@ -9,6 +9,7 @@ export class UserResDto extends PickType(BaseResDto, [
   'phone',
   'accountType',
   'role',
+  'dealership',
   'avatar',
 ]) {}
 // PickType() дозволяє "вибрати" тільки конкретні поля з базового класу

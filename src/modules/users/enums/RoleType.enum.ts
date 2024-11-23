@@ -3,5 +3,4 @@ export enum RoleTypeEnum {
   SELLER = 'seller', // продавець
   MANAGER = 'manager', // менеджер
   ADMIN = 'admin', // адміністратор
-  DEALERSHIP = 'dealership',
 }

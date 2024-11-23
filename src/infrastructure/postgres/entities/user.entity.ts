@@ -42,6 +42,9 @@ export class UserEntity extends CreateUpdateModel {
   @Column('text', { default: RoleTypeEnum.SELLER })
   role: RoleTypeEnum;
 
+  @Column('text')
+  dealership: string;
+
   @Column('text', { nullable: true })
   avatar?: string;
   // @VirtualColumn({
@@ -71,5 +74,5 @@ export class UserEntity extends CreateUpdateModel {
   dealership_id: string;
   @ManyToOne(() => DealershipEntity, (entity) => entity.users)
   @JoinColumn({ name: 'dealership_id' })
-  dealership?: DealershipEntity;
+  dealership_users?: DealershipEntity;
 }

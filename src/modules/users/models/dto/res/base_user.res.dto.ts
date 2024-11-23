@@ -5,5 +5,6 @@ export class BaseResDto {
   phone: string;
   accountType: string;
   role: string;
+  dealership?: string;
   avatar?: string;
 }

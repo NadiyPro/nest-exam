@@ -13,7 +13,7 @@ export class DealershipEntity extends CreateUpdateModel {
   @Column('text')
   name: string;
 
-  @OneToMany(() => UserEntity, (entity) => entity.dealership)
+  @OneToMany(() => UserEntity, (entity) => entity.dealership_users)
   users?: UserEntity[];
 
   @OneToMany(() => AdvertisementEntity, (entity) => entity.dealership)
