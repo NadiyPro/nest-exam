@@ -52,6 +52,7 @@ export class BaseUserReqDto {
   @Length(3, 50)
   dealership?: string;
 
+  @ApiProperty({ example: 'seller' })
   @IsString()
   @Length(3, 50)
   role: RoleTypeEnum;
