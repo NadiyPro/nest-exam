@@ -25,15 +25,14 @@ export class UserRepository extends Repository<UserEntity> {
   ): Promise<[UserEntity[], number]> {
     const qb = this.createQueryBuilder('users');
     qb.take(query.limit);
-    //кількість результатів за допомогою limit
     qb.skip(query.offset);
-    // скільки пропустити
 
     if (query.search) {
       qb.andWhere('CONCAT(users.name) ILIKE :search');
       qb.setParameter('search', `%${query.search}%`);
     }
-    qb.orderBy('"name"', 'ASC');
+
+    qb.orderBy('name', 'ASC');
     return await qb.getManyAndCount();
   }
 }

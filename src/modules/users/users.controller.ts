@@ -19,7 +19,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-
+import { IsUUID } from 'class-validator';
 
 import { ApiFile } from '../../common/decorators/api-file.decorator';
 import { CurrentUser } from '../auth/decorators/current_user.decorator';
@@ -146,15 +146,10 @@ export class UsersController {
   @SkipAuth()
   @Get('all')
   public async findAll(
-    @Query() query: ListUsersQueryReqDto,
-    // @Param('userId', ParseUUIDPipe) userId: string,
+    @Query() query: ListUsersQueryReqDto, // Параметри передаються через @Query
   ): Promise<ListResQueryDto> {
     const [entities, total] = await this.usersService.findAll(query);
-    // entities — список знайдених статей
-    // total — загальна кількість статей,
-    // що відповідають умовам запиту (використовується для пагінації)
     return UserMapper.toAllResDtoList(entities, total, query);
-    // перетворюємо дані з entities, total та query у структуру
   }
 
   @ApiBearerAuth()
