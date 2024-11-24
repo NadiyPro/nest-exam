@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 
-import { IUserData } from '../../../modules/auth/models/interfaces/user_data.interface';
 import { ListUsersQueryReqDto } from '../../../modules/users/models/dto/req/list-users-query.req.dto';
 import { UserEntity } from '../../postgres/entities/user.entity';
 
@@ -22,7 +21,6 @@ export class UserRepository extends Repository<UserEntity> {
   }
 
   public async findAll(
-    userData: IUserData,
     query: ListUsersQueryReqDto,
   ): Promise<[UserEntity[], number]> {
     const qb = this.createQueryBuilder('users');

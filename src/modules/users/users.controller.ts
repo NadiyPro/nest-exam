@@ -146,16 +146,15 @@ export class UsersController {
   @SkipAuth()
   @Get('all')
   public async findAll(
-    @CurrentUser() userData: IUserData,
     @Query() query: ListUsersQueryReqDto,
     // @Param('userId', ParseUUIDPipe) userId: string,
   ): Promise<ListResQueryDto> {
-    const [entities, total] = await this.usersService.findAll(userData, query);
+    const [entities, total] = await this.usersService.findAll(query);
     // entities — список знайдених статей
     // total — загальна кількість статей,
     // що відповідають умовам запиту (використовується для пагінації)
     return UserMapper.toAllResDtoList(entities, total, query);
-    // перетворюємо дані з entities, total та query у структуру ArticleListResDto
+    // перетворюємо дані з entities, total та query у структуру
   }
 
   @ApiBearerAuth()

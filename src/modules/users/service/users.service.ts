@@ -102,10 +102,9 @@ export class UsersService {
   // Якщо користувача не знайдено, метод викидає виняток ConflictException із повідомленням
 
   public async findAll(
-    userData: IUserData,
     query: ListUsersQueryReqDto,
   ): Promise<[UserEntity[], number]> {
-    return await this.userRepository.findAll(userData, query);
+    return await this.userRepository.findAll(query);
   }
 
   public async deleteId(userId: string): Promise<void> {
