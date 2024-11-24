@@ -6,11 +6,11 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { TokenService } from '../services/token.service';
-import { UserRepository } from '../../../infrastructure/repository/services/user.repository';
 import { RefreshTokenRepository } from '../../../infrastructure/repository/services/refresh-token.repository';
-import { TokenType } from '../enums/token_type.enum';
+import { UserRepository } from '../../../infrastructure/repository/services/user.repository';
 import { UserMapper } from '../../users/service/user.mapper';
+import { TokenType } from '../enums/token_type.enum';
+import { TokenService } from '../services/token.service';
 
 @Injectable()
 export class Jwt_refreshGuard implements CanActivate {

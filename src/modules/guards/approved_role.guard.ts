@@ -83,7 +83,7 @@ export class ApprovedRoleGuard implements CanActivate {
   // }
   canActivate(context: ExecutionContext): boolean {
     const roles = this.reflector.get<RoleTypeEnum[]>(
-      'roles',
+      'role',
       context.getHandler(),
     );
     if (!roles) return true;
@@ -91,13 +91,12 @@ export class ApprovedRoleGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     console.log('Request user:', request.user); // Лог для перевірки
 
-    const user = request.user;
+    const user = request.res.locals.user;
 
     if (!user) {
       console.error('User not found in request');
       return false;
     }
-
     return roles.includes(user.role);
   }
 }

@@ -33,7 +33,7 @@ import { ListResQueryDto } from './models/dto/res/list-users-query.res.dto';
 import { UserResDto } from './models/dto/res/user.res.dto';
 import { UserMapper } from './service/user.mapper';
 import { UsersService } from './service/users.service';
-import { Jwt_accessGuard } from '../auth/guards/jwt_access.guard';
+import { UpdateUserReqDto } from './models/dto/req/update_user.req.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -71,7 +71,7 @@ export class UsersController {
   @Patch('me')
   public async updateMe(
     @CurrentUser() userData: IUserData,
-    @Body() updateUserDto: BaseUserReqDto,
+    @Body() updateUserDto: UpdateUserReqDto,
   ) {
     const result = await this.usersService.updateMe(userData, updateUserDto);
     return UserMapper.toResDto(result);

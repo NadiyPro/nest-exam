@@ -6,8 +6,8 @@ services:
     ports:
       - '${POSTGRES_PORT}:5432'
     environment:
-      POSTGRES_USER: '${POSTGRES_USER:-user}'
-      POSTGRES_PASSWORD: '${POSTGRES_PASSWORD:-password}'
+      POSTGRES_USER: '${POSTGRES_USER:-postgres}'
+      POSTGRES_PASSWORD: '${POSTGRES_PASSWORD:-postgres}'
       POSTGRES_DB: '${POSTGRES_DB:-nest-exam}'
     volumes:
       - ./nest-exam-api-db:/var/lib/postgresql/nest-exam
