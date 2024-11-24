@@ -3,7 +3,7 @@ import { Transform, Type } from 'class-transformer';
 import { IsOptional, IsString, Length, Matches } from 'class-validator';
 
 import { TransformHelper } from '../../../../../common/helpers/transform.helper';
-import { AccountTypeEnum } from '../../../enums/AccountType.enum';
+import { AccountTypeEnum } from '../../../../auth/enums/AccountType.enum';
 import { RoleTypeEnum } from '../../../enums/RoleType.enum';
 
 export class BaseUserReqDto {

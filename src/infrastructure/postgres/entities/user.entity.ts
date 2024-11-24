@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { AccountTypeEnum } from '../../../modules/users/enums/AccountType.enum';
+import { AccountTypeEnum } from '../../../modules/auth/enums/AccountType.enum';
 import { RoleTypeEnum } from '../../../modules/users/enums/RoleType.enum';
 import { AdvertisementEntity } from './advertisement.entity';
 import { CarsModelsEntity } from './cars_models.entity';

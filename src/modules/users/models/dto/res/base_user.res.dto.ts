@@ -1,4 +1,4 @@
-import { AccountTypeEnum } from '../../../enums/AccountType.enum';
+import { AccountTypeEnum } from '../../../../auth/enums/AccountType.enum';
 import { RoleTypeEnum } from '../../../enums/RoleType.enum';
 
 export class BaseResDto {
