@@ -72,6 +72,7 @@ export class UsersService {
       await this.fileStorageService.deleteFile(user.avatar);
     } // якщо у юзера вже є якась картинка (аватор), то ми його видаляємо
     // тобто видаляємо попередню картинку, а замість неї завантажуємо якусь нову
+    console.log(user.avatar);
     await this.userRepository.save({ ...user, avatar: pathToFile });
     // зберігаємо оновлену інформацію по юзеру вже з аватаром у БД табл юзерів
     // тобто, при збережені старий аватар перетирається на новий
