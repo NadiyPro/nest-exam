@@ -19,6 +19,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { IsUUID } from 'class-validator';
 
 import { ApiFile } from '../../common/decorators/api-file.decorator';
 import { CurrentUser } from '../auth/decorators/current_user.decorator';
@@ -39,13 +40,9 @@ import { UsersService } from './service/users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // @UseGuards(JwtAccessGuard)
-  // для того, щоб підключити перевірку через guards
-  // (в swagger біля цього шляху буде відображено замочок)
-  // @UseGuards() повинен бути розміщенний обовязково біля @ApiBearerAuth()
+  @ApiBearerAuth()
   @UseGuards(ApprovedRoleGuard)
   @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
-  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Для отримання інформації користувачем про свій обліковий запис',
     description:
@@ -58,6 +55,7 @@ export class UsersController {
     return UserMapper.toResDto(result);
   }
 
+  @ApiBearerAuth()
   @UseGuards(ApprovedRoleGuard)
   @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @ApiOperation({
@@ -66,7 +64,6 @@ export class UsersController {
       'Користувач може оновити свій обліковий запис.' +
       'Доступно для ролей: admin, manager, seller',
   })
-  @ApiBearerAuth()
   @Patch('me')
   public async updateMe(
     @CurrentUser() userData: IUserData,
@@ -76,6 +73,7 @@ export class UsersController {
     return UserMapper.toResDto(result);
   }
 
+  @ApiBearerAuth()
   @UseGuards(ApprovedRoleGuard)
   @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @ApiOperation({
@@ -84,12 +82,12 @@ export class UsersController {
       'Користувач може видалити свій обліковий запис.' +
       'Доступно для ролей: admin, manager, seller',
   })
-  @ApiBearerAuth()
   @Delete('me')
   public async removeMe(@CurrentUser() userData: IUserData) {
     return await this.usersService.removeMe(userData);
   }
 
+  @ApiBearerAuth()
   @UseGuards(ApprovedRoleGuard)
   @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @ApiOperation({
@@ -98,38 +96,18 @@ export class UsersController {
       'Користувач може завантажити avatar у свій обліковий запис.' +
       'Доступно для ролей: admin, manager, seller',
   })
-  @ApiBearerAuth()
-  // вказує, що для цього маршруту потрібна аутентифікація через Bearer-токен
   @ApiConsumes('multipart/form-data')
-  // зазначає, що цей маршрут очікує дані у форматі multipart/form-data,
-  // який використовується для передачі файлів
   @UseInterceptors(FileInterceptor('avatar'))
-  // підключає інтерсептор FileInterceptor для обробки файлу,
-  // який надходить із полем avatar із swagger
-  // FileInterceptor (з бібліотеки @nestjs/platform-express) зчитує файл з запиту
-  // (які у файлу fieldname (у нас — avatar), mimetype, buffer, size та ін)
-  // і додає його всі дані (властивості) file у функцію, і вже з uploadAvatar
-  // ми передаємо в usersService, де перевіряємо в fileStorageService та
-  // зберігаємо оновлені дані по юзеру в БД з аватаром
   @ApiFile('avatar', false, true)
-  // @ApiFile - це наш кастомний декоратор ,
-  // який налаштовує відображення форми у Swagger
-  // де можна завантажити файли в поле (з назвою 'avatar')
-  // avatar - ключ (назва поля в яке ми будем завантажувати файл)
-  // false - передаємо інфо на обробку, що це не масив
-  // true - вказуємо що ключ є обовязковим
   @Post('me/avatar')
   public async uploadAvatar(
     @CurrentUser() userData: IUserData,
-    // витягаємо інфо про поточного користувача від якого робиться запит
     @UploadedFile() file: Express.Multer.File,
-    // вказує, що файл передається як параметр file у метод.
-    // Тип Express.Multer.File вказує, що це файл,
-    // оброблений за допомогою Multer
   ): Promise<void> {
     await this.usersService.uploadAvatar(userData, file);
   }
 
+  @ApiBearerAuth()
   @UseGuards(ApprovedRoleGuard)
   @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @ApiOperation({
@@ -138,7 +116,6 @@ export class UsersController {
       'Користувач може видалити avatar із свого облікового запису.' +
       'Доступно для ролей: admin, manager, seller',
   })
-  @ApiBearerAuth()
   @Delete('me/avatar')
   public async deleteAvatar(@CurrentUser() userData: IUserData): Promise<void> {
     await this.usersService.deleteAvatar(userData);
