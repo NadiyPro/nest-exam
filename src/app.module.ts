@@ -9,6 +9,7 @@ import { RedisModule } from './infrastructure/redis/redis.module';
 import { RepositoryModule } from './infrastructure/repository/repository.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { CarsModule } from './modules/cars/cars.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { UsersModule } from './modules/users/users.module';
 
     AuthModule,
     UsersModule,
+    CarsModule,
   ],
   // providers: [
   //   {
