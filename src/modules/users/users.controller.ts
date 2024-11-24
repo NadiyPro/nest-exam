@@ -122,6 +122,21 @@ export class UsersController {
   }
 
   @ApiOperation({
+    summary: 'Для отримання інформацію про всі облікові записи користувачів',
+    description:
+      'Користувач може отримати інформацію про всі облікові записи користувачів.' +
+      'Доступно для ролей: всім',
+  })
+  @SkipAuth()
+  @Get('all')
+  public async findAll(
+    @Query() query: ListUsersQueryReqDto, // Параметри передаються через @Query
+  ): Promise<ListResQueryDto> {
+    const [entities, total] = await this.usersService.findAll(query);
+    return UserMapper.toAllResDtoList(entities, total, query);
+  }
+
+  @ApiOperation({
     summary:
       'Для отримання інформацію про обліковий запис користувача за його id',
     description:
@@ -135,21 +150,6 @@ export class UsersController {
   ): Promise<UserResDto> {
     const result = await this.usersService.findOne(userId);
     return UserMapper.toResDto(result);
-  }
-
-  @ApiOperation({
-    summary: 'Для отримання інформацію про всі облікові записи користувачів',
-    description:
-      'Користувач може отримати інформацію про всі облікові записи користувачів.' +
-      'Доступно для ролей: всім',
-  })
-  @SkipAuth()
-  @Get('all')
-  public async findAll(
-    @Query() query: ListUsersQueryReqDto, // Параметри передаються через @Query
-  ): Promise<ListResQueryDto> {
-    const [entities, total] = await this.usersService.findAll(query);
-    return UserMapper.toAllResDtoList(entities, total, query);
   }
 
   @ApiBearerAuth()
