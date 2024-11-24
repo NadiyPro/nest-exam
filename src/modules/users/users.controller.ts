@@ -181,15 +181,15 @@ export class UsersController {
     // перетворюємо дані з entities, total та query у структуру ArticleListResDto
   }
 
+  @ApiBearerAuth()
   @UseGuards(ApprovedRoleGuard)
-  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
+  @Role([RoleTypeEnum.MANAGER, RoleTypeEnum.ADMIN])
   @ApiOperation({
     summary: 'Для видалення облікового запису користувача за його id',
     description:
       'Користувач може видалити обліковий запис іншого користувача по його id.' +
       'Доступно для ролей: admin, manager',
   })
-  @SkipAuth()
   @Delete(':userId')
   public async deleteId(
     @Param('userId', ParseUUIDPipe) userId: string,
