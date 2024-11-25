@@ -9,7 +9,6 @@ import { Role } from '../guards/decorator/role.decorator';
 import { RoleTypeEnum } from '../users/enums/RoleType.enum';
 import { CreateCarsReqDto } from './models/dto/req/create_cars.req.dto';
 import { CreateCarsResDto } from './models/dto/res/cars.res.dto';
-import { CarsMapper } from './service/cars.mapper';
 import { CarsService } from './service/cars.service';
 
 @ApiTags('Users')
