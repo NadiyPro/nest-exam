@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { CurrentUser } from '../auth/decorators/current_user.decorator';
@@ -8,7 +8,10 @@ import { ApprovedRoleGuard } from '../guards/approved_role.guard';
 import { Role } from '../guards/decorator/role.decorator';
 import { RoleTypeEnum } from '../users/enums/RoleType.enum';
 import { CreateCarsReqDto } from './models/dto/req/create_cars.req.dto';
-import { CreateCarsResDto } from './models/dto/res/cars.res.dto';
+import { ListCarsQueryReqDto } from './models/dto/req/list-cars-query.req.dto';
+import { CarsResDto } from './models/dto/res/cars.res.dto';
+import { ListBrandResQueryDto } from './models/dto/res/list-cars-query.res.dto';
+import { CarsMapper } from './service/cars.mapper';
 import { CarsService } from './service/cars.service';
 
 @ApiTags('Users')
@@ -30,7 +33,7 @@ export class CarsController {
   public async createCars(
     @CurrentUser() userData: IUserData,
     @Body() dto: CreateCarsReqDto,
-  ): Promise<CreateCarsResDto> {
+  ): Promise<CarsResDto> {
     const result = await this.carsService.createCars(userData, dto);
     return result;
   }
@@ -56,21 +59,21 @@ export class CarsController {
   //  await this.carsService.createCars(userData, dto);
   // }
 
-  // @ApiOperation({
-  //   summary: 'Для отримання списку всіх брендів авто',
-  //   description:
-  //     'Користувач може отримати список всіх брендів авто' +
-  //     'Доступно для ролей: всі',
-  // })
-  // @SkipAuth()
-  // @Get('cars_brands')
-  // public async findAllBrands(
-  //   @Query() query: ListUsersQueryReqDto, // Параметри передаються через @Query
-  // ): Promise<ListResQueryDto> {
-  //   const [entities, total] = await this.usersService.findAllBrands(query);
-  //   return UserMapper.toAllResDtoList(entities, total, query);
-  // }
-  //
+  @ApiOperation({
+    summary: 'Для отримання списку всіх брендів авто',
+    description:
+      'Користувач може отримати список всіх брендів авто' +
+      'Доступно для ролей: всі',
+  })
+  @SkipAuth()
+  @Get('cars_brands')
+  public async findAllBrands(
+    @Query() query: ListCarsQueryReqDto, // Параметри передаються через @Query
+  ): Promise<ListBrandResQueryDto> {
+    const [entities, total] = await this.carsService.findAllBrands(query);
+    return CarsMapper.toAllResDtoBrands(entities, total, query);
+  }
+
   // @ApiOperation({
   //   summary: 'Для отримання списку всіх моделей авто',
   //   description:
@@ -169,7 +172,7 @@ export class CarsController {
   //   return await this.usersService.deleteId(userId);
   // }
 }
-
+/////////////////////////////////////////////////////////////////////////////////////
 // закинути логіку додавння фото авто в оголошення
 // @ApiBearerAuth()
 // @UseGuards(ApprovedRoleGuard)

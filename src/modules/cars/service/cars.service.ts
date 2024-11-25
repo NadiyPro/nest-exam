@@ -1,14 +1,14 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 
-import { CarsModelsEntity } from '../../../infrastructure/postgres/entities/cars_models.entity';
 import { CarsBrandsRepository } from '../../../infrastructure/repository/services/cars_brands.repository';
 import { CarsModelsRepository } from '../../../infrastructure/repository/services/cars_models.repository';
-import { UserRepository } from '../../../infrastructure/repository/services/user.repository';
-// import { RefreshTokenRepository } from '../../../infrastructure/repository/services/refresh-token.repository';
 import { IUserData } from '../../auth/models/interfaces/user_data.interface';
 import { CreateCarsReqDto } from '../models/dto/req/create_cars.req.dto';
+import { ListCarsQueryReqDto } from '../models/dto/req/list-cars-query.req.dto';
+import { CarsResDto } from '../models/dto/res/cars.res.dto';
+import { ListBrandResQueryDto } from '../models/dto/res/list-cars-query.res.dto';
 import { CarsMapper } from './cars.mapper';
-import { CreateCarsResDto } from '../models/dto/res/cars.res.dto';
+import { CarsBrandsEntity } from '../../../infrastructure/postgres/entities/cars_brands.entity';
 
 @Injectable()
 export class CarsService {
@@ -21,7 +21,7 @@ export class CarsService {
   public async createCars(
     userData: IUserData,
     dto: CreateCarsReqDto,
-  ): Promise<CreateCarsResDto> {
+  ): Promise<CarsResDto> {
     // const brand = await this.createTags(dto.tags);
     const cars_brands = await this.carsBrandsRepository.findOneBy({
       brands_name: dto.brands_name,
@@ -46,6 +46,12 @@ export class CarsService {
       }),
     );
     return CarsMapper.toResCreateDto(new_model, new_brand);
+  }
+
+  public async findAllBrands(
+    query: ListCarsQueryReqDto,
+  ): Promise<[CarsBrandsEntity[], number]> {
+    return await this.carsBrandsRepository.findAllBrands(query);
   }
 }
 // public async findMe(userData: IUserData): Promise<UserEntity> {
@@ -96,11 +102,6 @@ export class CarsService {
 // } // перевіряє, чи існує користувач із зазначеним userId у базі даних.
 // // Якщо користувача не знайдено, метод викидає виняток ConflictException із повідомленням
 //
-// public async findAll(
-//   query: ListUsersQueryReqDto,
-// ): Promise<[UserEntity[], number]> {
-//   return await this.userRepository.findAll(query);
-// }
 //
 // public async deleteId(userId: string): Promise<void> {
 //   await this.userRepository.update({ id: userId }, { deleted: new Date() });
