@@ -1,10 +1,13 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 
+import { CarsModelsEntity } from '../../../infrastructure/postgres/entities/cars_models.entity';
 import { CarsBrandsRepository } from '../../../infrastructure/repository/services/cars_brands.repository';
 import { CarsModelsRepository } from '../../../infrastructure/repository/services/cars_models.repository';
+import { UserRepository } from '../../../infrastructure/repository/services/user.repository';
 // import { RefreshTokenRepository } from '../../../infrastructure/repository/services/refresh-token.repository';
 import { IUserData } from '../../auth/models/interfaces/user_data.interface';
 import { CreateCarsReqDto } from '../models/dto/req/create_cars.req.dto';
+import { CarsMapper } from './cars.mapper';
 import { CreateCarsResDto } from '../models/dto/res/cars.res.dto';
 
 @Injectable()
@@ -34,20 +37,15 @@ export class CarsService {
         user_id: userData.userId,
       }),
     );
-    const newModel = await this.carsModelsRepository.save(
+
+    const new_model = await this.carsModelsRepository.save(
       this.carsModelsRepository.create({
         models_name: dto.models_name,
         brands_id: new_brand.id,
         user_id: userData.userId,
       }),
     );
-
-    return {
-      id: newModel.id,
-      brands_name: new_brand.brands_name,
-      models_name: newModel.models_name,
-      user_Id: newModel.user_id,
-    };
+    return CarsMapper.toResCreateDto(new_model, new_brand);
   }
 }
 // public async findMe(userData: IUserData): Promise<UserEntity> {

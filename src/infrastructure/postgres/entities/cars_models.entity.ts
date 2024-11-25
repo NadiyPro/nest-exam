@@ -14,6 +14,7 @@ import { UserEntity } from './user.entity';
 @Entity(TableNameEnum.CARS_MODELS)
 export class CarsModelsEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
@@ -21,7 +22,8 @@ export class CarsModelsEntity extends CreateUpdateModel {
 
   @Column()
   brands_id: string;
-  @ManyToOne(() => CarsBrandsEntity, (entity) => entity.brand)
+
+  @ManyToOne(() => CarsBrandsEntity, (entity) => entity.models)
   @JoinColumn({ name: 'brands_id' })
   cars_brands_models: CarsBrandsEntity;
 

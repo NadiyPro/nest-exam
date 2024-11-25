@@ -9,8 +9,8 @@ import { Role } from '../guards/decorator/role.decorator';
 import { RoleTypeEnum } from '../users/enums/RoleType.enum';
 import { CreateCarsReqDto } from './models/dto/req/create_cars.req.dto';
 import { CreateCarsResDto } from './models/dto/res/cars.res.dto';
-import { CarsService } from './service/cars.service';
 import { CarsMapper } from './service/cars.mapper';
+import { CarsService } from './service/cars.service';
 
 @ApiTags('Users')
 @Controller('cars')
@@ -32,8 +32,8 @@ export class CarsController {
     @CurrentUser() userData: IUserData,
     @Body() dto: CreateCarsReqDto,
   ): Promise<CreateCarsResDto> {
-    await this.carsService.createCars(userData, dto);
-    return await CarsMapper.toResDto(userData, dto);
+    const result = await this.carsService.createCars(userData, dto);
+    return result;
   }
 
   // @ApiBearerAuth()

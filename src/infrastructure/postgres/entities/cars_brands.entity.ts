@@ -21,10 +21,11 @@ export class CarsBrandsEntity extends CreateUpdateModel {
   brands_name: string;
 
   @OneToMany(() => CarsModelsEntity, (entity) => entity.cars_brands_models)
-  brand: CarsModelsEntity[];
+  models: CarsModelsEntity[];
 
   @Column()
   user_id: string;
+
   @ManyToOne(() => UserEntity, (entity) => entity.user_cars_brands_models)
   @JoinColumn({ name: 'user_id' })
   cars_brands_user: UserEntity;
