@@ -94,13 +94,14 @@ export class CarsController {
   @ApiOperation({
     summary: 'Для отримання списку всіх автомобілей (бренд та модель)',
     description:
-      'Користувач може отримати список всіх автомобілей (бренд та модель)' +
+      'Користувач може отримати список всіх автомобілей (бренд та модель) ' +
+      'та здійснити пошук по: назві бренду, моделі та id користувача.' +
       'Доступно для ролей: всі',
   })
   @SkipAuth()
-  @Get() // добавить в репозитории поиск по id юзера, посик по названию бренда / модели
+  @Get()
   public async findAllCars(
-    @Query() query: ListCarsQueryReqDto, // Параметри передаються через @Query
+    @Query() query: ListCarsQueryReqDto,
   ): Promise<ListCarsQueryResDto> {
     const [entities, total] = await this.carsService.findAllCars(query);
     return CarsMapper.toAllResDtoCars(entities, total, query);
