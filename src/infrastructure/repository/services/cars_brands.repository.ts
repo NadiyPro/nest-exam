@@ -66,7 +66,7 @@ export class CarsBrandsRepository extends Repository<CarsBrandsEntity> {
 
     if (query.search) {
       qb.andWhere(
-        '(cars_brands.brands_name ILIKE :search OR models.models_name ILIKE :search)',
+        '(cars_brands.brands_name ILIKE :search, models.models_name ILIKE :search, user.id ILIKE :search)',
         { search: `%${query.search}%` },
       );
     }
