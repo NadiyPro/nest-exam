@@ -4,7 +4,7 @@ import { DataSource, Repository } from 'typeorm';
 import { CarsBrandsEntity } from '../../postgres/entities/cars_brands.entity';
 
 @Injectable()
-export class CarsRepository extends Repository<CarsBrandsEntity> {
+export class CarsBrandsRepository extends Repository<CarsBrandsEntity> {
   constructor(private readonly dataSource: DataSource) {
     super(CarsBrandsEntity, dataSource.manager);
   }

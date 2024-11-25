@@ -10,13 +10,13 @@ import { IUserData } from '../../auth/models/interfaces/user_data.interface';
 import { RoleTypeEnum } from '../enums/RoleType.enum';
 import { ListUsersQueryReqDto } from '../models/dto/req/list-users-query.req.dto';
 import { UpdateUserReqDto } from '../models/dto/req/update_user.req.dto';
-import { CarsRepository } from '../../../infrastructure/repository/services/cars.repository';
+import { CarsBrandsRepository } from '../../../infrastructure/repository/services/cars_brands.repository';
 
 @Injectable()
 export class CarsService {
   constructor(
     // private readonly configService: ConfigService<Config>,
-    private readonly carsRepository: CarsRepository,
+    private readonly carsRepository: CarsBrandsRepository,
     private readonly refreshTokenRepository: RefreshTokenRepository,
   ) {}
 
@@ -24,7 +24,7 @@ export class CarsService {
     if (userData.role === RoleTypeEnum.BUYER) {
       throw new ForbiddenException('No role to access');
     }
-    return await this.userRepository.findOneBy({ id: userData.userId });
+    return await this.carsRepository.findOneBy({ id: userData.userId });
   }
 
   public async updateMe(
@@ -75,10 +75,7 @@ export class CarsService {
   }
 
   public async deleteId(userId: string): Promise<void> {
-    await this.userRepository.update(
-      { id: userId },
-      { deleted: new Date() },
-    );
+    await this.userRepository.update({ id: userId }, { deleted: new Date() });
     await this.refreshTokenRepository.delete({ user_id: userId });
   }
 }
