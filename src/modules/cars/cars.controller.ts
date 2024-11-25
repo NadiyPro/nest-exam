@@ -10,9 +10,10 @@ import { RoleTypeEnum } from '../users/enums/RoleType.enum';
 import { CreateCarsReqDto } from './models/dto/req/create_cars.req.dto';
 import { ListCarsQueryReqDto } from './models/dto/req/list-cars-query.req.dto';
 import { CarsResDto } from './models/dto/res/cars.res.dto';
-import { ListBrandResQueryDto } from './models/dto/res/list-cars-query.res.dto';
+import { ListBrandResQueryDto } from './models/dto/res/list-brand-query.res.dto';
 import { CarsMapper } from './service/cars.mapper';
 import { CarsService } from './service/cars.service';
+import { ListModelsResQueryDto } from './models/dto/res/list-models-query.res.dto';
 
 @ApiTags('Users')
 @Controller('cars')
@@ -74,21 +75,21 @@ export class CarsController {
     return CarsMapper.toAllResDtoBrands(entities, total, query);
   }
 
-  // @ApiOperation({
-  //   summary: 'Для отримання списку всіх моделей авто',
-  //   description:
-  //     'Користувач може отримати список всіх моделей авто' +
-  //     'Доступно для ролей: всі',
-  // })
-  // @SkipAuth()
-  // @Get('cars_models')
-  // public async findAllModel(
-  //   @Query() query: ListUsersQueryReqDto, // Параметри передаються через @Query
-  // ): Promise<ListResQueryDto> {
-  //   const [entities, total] = await this.usersService.findAllModel(query);
-  //   return CarsMapper.toAllResDtoList(entities, total, query);
-  // }
-  //
+  @ApiOperation({
+    summary: 'Для отримання списку всіх моделей авто',
+    description:
+      'Користувач може отримати список всіх моделей авто' +
+      'Доступно для ролей: всі',
+  })
+  @SkipAuth()
+  @Get('cars_models')
+  public async findAllModel(
+    @Query() query: ListCarsQueryReqDto, // Параметри передаються через @Query
+  ): Promise<ListModelsResQueryDto> {
+    const [entities, total] = await this.carsService.findAllModel(query);
+    return CarsMapper.toAllResDtoModels(entities, total, query);
+  }
+
   // @ApiOperation({
   //   summary: 'Для отримання списку всіх автомобілей (бренд та модель)',
   //   description:

@@ -6,9 +6,10 @@ import { IUserData } from '../../auth/models/interfaces/user_data.interface';
 import { CreateCarsReqDto } from '../models/dto/req/create_cars.req.dto';
 import { ListCarsQueryReqDto } from '../models/dto/req/list-cars-query.req.dto';
 import { CarsResDto } from '../models/dto/res/cars.res.dto';
-import { ListBrandResQueryDto } from '../models/dto/res/list-cars-query.res.dto';
+import { ListBrandResQueryDto } from '../models/dto/res/list-brand-query.res.dto';
 import { CarsMapper } from './cars.mapper';
 import { CarsBrandsEntity } from '../../../infrastructure/postgres/entities/cars_brands.entity';
+import { CarsModelsEntity } from '../../../infrastructure/postgres/entities/cars_models.entity';
 
 @Injectable()
 export class CarsService {
@@ -52,6 +53,12 @@ export class CarsService {
     query: ListCarsQueryReqDto,
   ): Promise<[CarsBrandsEntity[], number]> {
     return await this.carsBrandsRepository.findAllBrands(query);
+  }
+
+  public async findAllModel(
+    query: ListCarsQueryReqDto,
+  ): Promise<[CarsModelsEntity[], number]> {
+    return await this.carsModelsRepository.findAllModels(query);
   }
 }
 // public async findMe(userData: IUserData): Promise<UserEntity> {
