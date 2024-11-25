@@ -1,15 +1,14 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 
+import { CarsBrandsEntity } from '../../../infrastructure/postgres/entities/cars_brands.entity';
+import { CarsModelsEntity } from '../../../infrastructure/postgres/entities/cars_models.entity';
 import { CarsBrandsRepository } from '../../../infrastructure/repository/services/cars_brands.repository';
 import { CarsModelsRepository } from '../../../infrastructure/repository/services/cars_models.repository';
 import { IUserData } from '../../auth/models/interfaces/user_data.interface';
 import { CreateCarsReqDto } from '../models/dto/req/create_cars.req.dto';
 import { ListCarsQueryReqDto } from '../models/dto/req/list-cars-query.req.dto';
 import { CarsResDto } from '../models/dto/res/cars.res.dto';
-import { ListBrandResQueryDto } from '../models/dto/res/list-brand-query.res.dto';
 import { CarsMapper } from './cars.mapper';
-import { CarsBrandsEntity } from '../../../infrastructure/postgres/entities/cars_brands.entity';
-import { CarsModelsEntity } from '../../../infrastructure/postgres/entities/cars_models.entity';
 
 @Injectable()
 export class CarsService {
@@ -23,15 +22,12 @@ export class CarsService {
     userData: IUserData,
     dto: CreateCarsReqDto,
   ): Promise<CarsResDto> {
-    // const brand = await this.createTags(dto.tags);
     const cars_brands = await this.carsBrandsRepository.findOneBy({
       brands_name: dto.brands_name,
     });
     if (cars_brands) {
       throw new ConflictException('The brand already exists');
-    } // перевіряємо чи лайкав юзер вже цей пост
-    // якщо юзер вже лайкав, цей пост, то видамо помилку
-    // (бо юзер може поставити лише один лайк на пост)
+    }
     const new_brand = await this.carsBrandsRepository.save(
       this.carsBrandsRepository.create({
         brands_name: dto.brands_name,
@@ -60,6 +56,21 @@ export class CarsService {
   ): Promise<[CarsModelsEntity[], number]> {
     return await this.carsModelsRepository.findAllModels(query);
   }
+
+  public async findAllCars(
+    query: ListCarsQueryReqDto,
+  ): Promise<[CarsBrandsEntity[], number]> {
+    const [entities, total] =
+      await this.carsBrandsRepository.findAllCars(query);
+
+    // Повертаємо масив CarsBrandsEntity та кількість
+    return [entities, total];
+  }
+  // public async findAllCars(
+  //   query: ListCarsQueryReqDto,
+  // ): Promise<[CarsResDto[], number]> {
+  //   return await this.carsBrandsRepository.findAllCars(query);
+  // }
 }
 // public async findMe(userData: IUserData): Promise<UserEntity> {
 //   if (userData.role === RoleTypeEnum.BUYER) {

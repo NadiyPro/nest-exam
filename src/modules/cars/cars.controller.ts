@@ -11,9 +11,10 @@ import { CreateCarsReqDto } from './models/dto/req/create_cars.req.dto';
 import { ListCarsQueryReqDto } from './models/dto/req/list-cars-query.req.dto';
 import { CarsResDto } from './models/dto/res/cars.res.dto';
 import { ListBrandResQueryDto } from './models/dto/res/list-brand-query.res.dto';
+import { ListCarsQueryResDto } from './models/dto/res/list-cars-query.res.dto';
+import { ListModelsResQueryDto } from './models/dto/res/list-models-query.res.dto';
 import { CarsMapper } from './service/cars.mapper';
 import { CarsService } from './service/cars.service';
-import { ListModelsResQueryDto } from './models/dto/res/list-models-query.res.dto';
 
 @ApiTags('Users')
 @Controller('cars')
@@ -30,7 +31,7 @@ export class CarsController {
       'Доступно для ролей: admin, manager. ',
   })
   @SkipAuth()
-  @Post('cars')
+  @Post()
   public async createCars(
     @CurrentUser() userData: IUserData,
     @Body() dto: CreateCarsReqDto,
@@ -90,21 +91,21 @@ export class CarsController {
     return CarsMapper.toAllResDtoModels(entities, total, query);
   }
 
-  // @ApiOperation({
-  //   summary: 'Для отримання списку всіх автомобілей (бренд та модель)',
-  //   description:
-  //     'Користувач може отримати список всіх автомобілей (бренд та модель)' +
-  //     'Доступно для ролей: всі',
-  // })
-  // @SkipAuth()
-  // @Get('all') // добавить в репозитории поиск по id юзера, посик по названию бренда / модели
-  // public async findAllCars(
-  //   @Query() query: ListUsersQueryReqDto, // Параметри передаються через @Query
-  // ): Promise<ListResQueryDto> {
-  //   const [entities, total] = await this.usersService.findAllCars(query);
-  //   return CarsMapper.toAllResDtoList(entities, total, query);
-  // }
-  //
+  @ApiOperation({
+    summary: 'Для отримання списку всіх автомобілей (бренд та модель)',
+    description:
+      'Користувач може отримати список всіх автомобілей (бренд та модель)' +
+      'Доступно для ролей: всі',
+  })
+  @SkipAuth()
+  @Get() // добавить в репозитории поиск по id юзера, посик по названию бренда / модели
+  public async findAllCars(
+    @Query() query: ListCarsQueryReqDto, // Параметри передаються через @Query
+  ): Promise<ListCarsQueryResDto> {
+    const [entities, total] = await this.carsService.findAllCars(query);
+    return CarsMapper.toAllResDtoCars(entities, total, query);
+  }
+
   // @ApiBearerAuth()
   // @UseGuards(ApprovedRoleGuard)
   // @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])

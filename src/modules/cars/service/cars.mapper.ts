@@ -3,6 +3,7 @@ import { CarsModelsEntity } from '../../../infrastructure/postgres/entities/cars
 import { ListCarsQueryReqDto } from '../models/dto/req/list-cars-query.req.dto';
 import { CarsResDto } from '../models/dto/res/cars.res.dto';
 import { ListBrandResQueryDto } from '../models/dto/res/list-brand-query.res.dto';
+import { ListCarsQueryResDto } from '../models/dto/res/list-cars-query.res.dto';
 import { ListModelsResQueryDto } from '../models/dto/res/list-models-query.res.dto';
 
 export class CarsMapper {
@@ -43,9 +44,9 @@ export class CarsMapper {
     return {
       id: car.id,
       models_name: car.models_name,
-      brands_id: car.user_id,
+      brands_id: car.brands_id, // Виправлено
       user_id: car.user_id,
-    } as CarsModelsEntity; // Приведення до типу для коректності
+    } as CarsModelsEntity;
   }
 
   public static toAllResDtoModels(
@@ -59,6 +60,52 @@ export class CarsMapper {
       ...query,
     };
   }
+
+  public static toAllResDtoCars(
+    entities: CarsBrandsEntity[],
+    total: number,
+    query: ListCarsQueryReqDto,
+  ): ListCarsQueryResDto {
+    const cars = entities
+      .map((brand) => {
+        return brand.models.map((model) => ({
+          id: model.id,
+          brands_id: brand.id,
+          brands_name: brand.brands_name,
+          models_name: model.models_name,
+          user_id: brand.user_id,
+        }));
+      })
+      .flat();
+
+    return {
+      ...query,
+      cars,
+      total,
+    };
+  }
+  // public static toAllResDto(entities: CarsBrandsEntity[]): CarsResDto[] {
+  //   return entities.map((entity) => ({
+  //     id: entity.id,
+  //     brands_id: entity.id,
+  //     brands_name: entity.brands_name,
+  //     models_name: entity.models.map((model) => model.models_name).join(', '),
+  //     user_id: entity.user_id,
+  //   }));
+  // }
+  //
+  // public static toAllResDtoCars(
+  //   entities: CarsBrandsEntity[],
+  //   total: number,
+  //   query: ListCarsQueryReqDto,
+  // ): ListCarsQueryResDto {
+  //   const cars = this.toAllResDto(entities);
+  //   return {
+  //     ...query,
+  //     cars,
+  //     total,
+  //   };
+  // }
 }
 
 //
