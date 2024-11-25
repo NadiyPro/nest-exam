@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { CurrentUser } from '../auth/decorators/current_user.decorator';
@@ -36,8 +46,7 @@ export class CarsController {
     @CurrentUser() userData: IUserData,
     @Body() dto: CreateCarsReqDto,
   ): Promise<CarsResDto> {
-    const result = await this.carsService.createCars(userData, dto);
-    return result;
+    return await this.carsService.createCars(userData, dto);
   }
 
   // @ApiBearerAuth()
@@ -107,40 +116,24 @@ export class CarsController {
     return CarsMapper.toAllResDtoCars(entities, total, query);
   }
 
-  // @ApiBearerAuth()
-  // @UseGuards(ApprovedRoleGuard)
-  // @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
-  // @ApiOperation({
-  //   summary: 'Для оновлення запису про автомобіль (бренд/модель)',
-  //   description:
-  //     'Користувач може оновити запис про автомобіль (бренд/модель). ' +
-  //     'Наприклад якщо була допущена помилка в записі та інше.' +
-  //     'Доступно для ролей: admin, manager',
-  // })
-  // @Patch('me')
-  // public async updateCars(
-  //   @CurrentUser() userData: IUserData,
-  //   @Body() updateUserDto: UpdateUserReqDto,
-  // ) {
-  //   const result = await this.usersService.updateCars(userData, updateUserDto);
-  //   return UserMapper.toResDto(result);
-  // }
-  //
-  // @ApiOperation({
-  //   summary:
-  //     'Для отримання списку всіх моделей що належать до конкретно обраного бренду (по id бренда)',
-  //   description:
-  //     'Користувач може отримати список всіх моделей що належать до конкретно обраного бренду (по id бренда).' +
-  //     'Доступно для ролей: всім',
-  // })
-  // @SkipAuth()
-  // @Get(':carsBrandsId')
-  // public async findOne(
-  //   @Param('carsBrandsId', ParseUUIDPipe) userId: string,
-  // ): Promise<UserResDto> {
-  //   const result = await this.usersService.findOne(userId);
-  //   return UserMapper.toResDto(result); // повертати буде масив моделей які належать одному бренду по айді
-  // }
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
+  @ApiOperation({
+    summary: 'Для оновлення запису про автомобіль (бренд/модель)',
+    description:
+      'Користувач може оновити запис про автомобіль (бренд/модель). ' +
+      'Наприклад якщо була допущена помилка в записі та інше.' +
+      'Доступно для ролей: admin, manager',
+  })
+  @Patch(':carsBrandsId')
+  public async updateCars(
+    @Param('carsBrandsId', ParseUUIDPipe) carsBrandsId: string,
+    @Body() dto: CreateCarsReqDto,
+  ): Promise<CarsResDto> {
+    return await this.carsService.updateCars(carsBrandsId, dto);
+  }
+
   //
   // @ApiBearerAuth()
   // @UseGuards(ApprovedRoleGuard)
@@ -175,37 +168,3 @@ export class CarsController {
   //   return await this.usersService.deleteId(userId);
   // }
 }
-/////////////////////////////////////////////////////////////////////////////////////
-// закинути логіку додавння фото авто в оголошення
-// @ApiBearerAuth()
-// @UseGuards(ApprovedRoleGuard)
-// @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
-// @ApiOperation({
-//   summary: 'Для завантаження фото авто для розміщення його в оголошені',
-//   description:
-//     'Користувач може завантажити фото авто для розміщення його в оголошені.' +
-//     'Доступно для ролей: admin, manager, seller',
-// })
-// @ApiConsumes('multipart/form-data')
-// @UseInterceptors(FileInterceptor('image_cars'))
-// @ApiFile('image_cars', false, true)
-// @Post('me/image_cars') // IMAGE_CARS
-// public async uploadImageCars(
-//   @CurrentUser() userData: IUserData,
-// @UploadedFile() file: Express.Multer.File,
-// ): Promise<void> {
-//   await this.usersService.uploadImageCars(userData, file);
-// }
-//
-// @ApiBearerAuth()
-// @UseGuards(ApprovedRoleGuard)
-// @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
-// @ApiOperation({
-//   summary: 'Для видалення avatar користувачем із свого облікового запису',
-//   description:
-//     'Користувач може видалити avatar із свого облікового запису.' +
-//     'Доступно для ролей: admin, manager, seller',
-// })
-// @Delete('me/avatar')
-// public async deleteAvatar(@CurrentUser() userData: IUserData): Promise<void> {
-//   await this.usersService.deleteAvatar(userData);

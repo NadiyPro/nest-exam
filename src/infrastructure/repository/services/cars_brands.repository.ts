@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 
 import { ListCarsQueryReqDto } from '../../../modules/cars/models/dto/req/list-cars-query.req.dto';
-import { CarsResDto } from '../../../modules/cars/models/dto/res/cars.res.dto';
 import { CarsBrandsEntity } from '../../postgres/entities/cars_brands.entity';
 
 @Injectable()
@@ -26,34 +25,6 @@ export class CarsBrandsRepository extends Repository<CarsBrandsEntity> {
     qb.orderBy('brands_name', 'ASC');
     return await qb.getManyAndCount();
   }
-
-  // public async findAllCars(
-  //   query: ListCarsQueryReqDto,
-  // ): Promise<[CarsResDto[], number]> {
-  //   const [entities, total] = await this.createQueryBuilder('cars_brands')
-  //     .leftJoinAndSelect('cars_brands.models', 'models')
-  //     .leftJoinAndSelect('cars_brands.cars_brands_user', 'user')
-  //     .take(query.limit)
-  //     .skip(query.offset)
-  //     .andWhere(
-  //       query.search
-  //         ? '(cars_brands.brands_name ILIKE :search OR models.models_name ILIKE :search)'
-  //         : '1=1',
-  //       { search: `%${query.search}%` },
-  //     )
-  //     .orderBy('cars_brands.brands_name', 'ASC')
-  //     .getManyAndCount();
-  //
-  //   const carsResDto = entities.map((entity) => ({
-  //     id: entity.id,
-  //     brands_id: entity.id,
-  //     brands_name: entity.brands_name,
-  //     models_name: entity.models.map((model) => model.models_name).join(', '),
-  //     user_id: entity.user_id,
-  //   }));
-  //
-  //   return [carsResDto, total];
-  // }
 
   public async findAllCars(
     query: ListCarsQueryReqDto,

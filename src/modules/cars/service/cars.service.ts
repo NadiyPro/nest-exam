@@ -62,15 +62,33 @@ export class CarsService {
   ): Promise<[CarsBrandsEntity[], number]> {
     const [entities, total] =
       await this.carsBrandsRepository.findAllCars(query);
-
-    // Повертаємо масив CarsBrandsEntity та кількість
     return [entities, total];
   }
-  // public async findAllCars(
-  //   query: ListCarsQueryReqDto,
-  // ): Promise<[CarsResDto[], number]> {
-  //   return await this.carsBrandsRepository.findAllCars(query);
-  // }
+
+  public async updateCars(
+    carsBrandsId: string,
+    dto: CreateCarsReqDto,
+  ): Promise<CarsResDto> {
+    const cars_brands = await this.carsBrandsRepository.findOneBy({
+      id: carsBrandsId,
+    });
+    if (!cars_brands) {
+      throw new ConflictException('The specified brand does not exist');
+    }
+    cars_brands.brands_name = dto.brands_name;
+    await this.carsBrandsRepository.save(cars_brands);
+
+    const cars_model = await this.carsModelsRepository.findOneBy({
+      brands_id: carsBrandsId,
+    });
+    if (!cars_model) {
+      throw new ConflictException('The specified model does not exist');
+    }
+    cars_model.models_name = dto.models_name;
+    await this.carsModelsRepository.save(cars_model);
+
+    return CarsMapper.toResCreateDto(cars_model, cars_brands);
+  }
 }
 // public async findMe(userData: IUserData): Promise<UserEntity> {
 //   if (userData.role === RoleTypeEnum.BUYER) {
