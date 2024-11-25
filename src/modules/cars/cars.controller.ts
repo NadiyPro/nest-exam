@@ -134,7 +134,6 @@ export class CarsController {
     return await this.carsService.updateCars(carsBrandsId, dto);
   }
 
-  //
   // @ApiBearerAuth()
   // @UseGuards(ApprovedRoleGuard)
   // @Role([RoleTypeEnum.MANAGER, RoleTypeEnum.ADMIN])
