@@ -1,5 +1,5 @@
-import { AccountTypeEnum } from '../../enums/AccountType.enum';
 import { RoleTypeEnum } from '../../../users/enums/RoleType.enum';
+import { AccountTypeEnum } from '../../enums/AccountType.enum';
 
 export interface IUserData {
   userId: string;

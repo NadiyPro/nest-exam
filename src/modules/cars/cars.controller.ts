@@ -1,35 +1,16 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  ParseUUIDPipe,
-  Patch,
-  Post,
-  Query,
-  UploadedFile,
-  UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import {
-  ApiBearerAuth,
-  ApiConsumes,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { ApiFile } from '../../common/decorators/api-file.decorator';
 import { CurrentUser } from '../auth/decorators/current_user.decorator';
 import { SkipAuth } from '../auth/decorators/skip_auth.decorator';
 import { IUserData } from '../auth/models/interfaces/user_data.interface';
 import { ApprovedRoleGuard } from '../guards/approved_role.guard';
 import { Role } from '../guards/decorator/role.decorator';
 import { RoleTypeEnum } from '../users/enums/RoleType.enum';
+import { CreateCarsReqDto } from './models/dto/req/create_cars.req.dto';
+import { CreateCarsResDto } from './models/dto/res/cars.res.dto';
 import { CarsService } from './service/cars.service';
 import { CarsMapper } from './service/cars.mapper';
-
 
 @ApiTags('Users')
 @Controller('cars')
@@ -47,12 +28,12 @@ export class CarsController {
   })
   @SkipAuth()
   @Post('cars')
-  public async create(
+  public async createCars(
     @CurrentUser() userData: IUserData,
-    @Body() dto: CreateArticleDto,
-  ): Promise<ArticleResDto> {
-    const result = await this.carsService.create(userData, dto);
-    return CarsMapper.toResDto(result);
+    @Body() dto: CreateCarsReqDto,
+  ): Promise<CreateCarsResDto> {
+    await this.carsService.createCars(userData, dto);
+    return await CarsMapper.toResDto(userData, dto);
   }
 
   // @ApiBearerAuth()
@@ -73,7 +54,7 @@ export class CarsController {
   //   @Body() dto: CreateArticleDto,
   // ): Promise<ArticleResDto> {
   //   const result = await this.articlesService.create(userData, dto);
-  //   return ArticlesMapper.toResDto(result);
+  //  await this.carsService.createCars(userData, dto);
   // }
 
   // @ApiOperation({

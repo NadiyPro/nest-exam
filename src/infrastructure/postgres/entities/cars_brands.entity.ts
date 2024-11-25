@@ -1,8 +1,16 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { CarsModelsEntity } from './cars_models.entity';
 import { TableNameEnum } from './enums/table-name.enum';
 import { CreateUpdateModel } from './models/date.model';
+import { UserEntity } from './user.entity';
 
 @Entity(TableNameEnum.CARS_BRANDS)
 export class CarsBrandsEntity extends CreateUpdateModel {
@@ -10,8 +18,14 @@ export class CarsBrandsEntity extends CreateUpdateModel {
   id: string;
 
   @Column()
-  cars_brands: string;
+  brands_name: string;
 
-  @OneToMany(() => CarsModelsEntity, (entity) => entity.cars_models)
-  brand_name: CarsModelsEntity[];
+  @OneToMany(() => CarsModelsEntity, (entity) => entity.cars_brands_models)
+  brand: CarsModelsEntity[];
+
+  @Column()
+  user_id: string;
+  @ManyToOne(() => UserEntity, (entity) => entity.user_cars_brands_models)
+  @JoinColumn({ name: 'user_id' })
+  cars_brands_user: UserEntity;
 }

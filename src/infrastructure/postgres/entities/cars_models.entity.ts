@@ -17,12 +17,12 @@ export class CarsModelsEntity extends CreateUpdateModel {
   id: string;
 
   @Column()
-  cars_models: string;
+  models_name: string;
 
   @Column()
-  cars_brands_id: string;
-  @ManyToOne(() => CarsBrandsEntity, (entity) => entity.brand_name)
-  @JoinColumn({ name: 'cars_brands_id' })
+  brands_id: string;
+  @ManyToOne(() => CarsBrandsEntity, (entity) => entity.brand)
+  @JoinColumn({ name: 'brands_id' })
   cars_brands_models: CarsBrandsEntity;
 
   @Column()

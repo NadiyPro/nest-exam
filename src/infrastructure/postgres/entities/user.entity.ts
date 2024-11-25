@@ -17,6 +17,7 @@ import { TableNameEnum } from './enums/table-name.enum';
 import { CreateUpdateModel } from './models/date.model';
 import { RefreshTokenEntity } from './refresh-token.entity';
 import { StatisticsEntity } from './statistics.entity';
+import { CarsBrandsEntity } from './cars_brands.entity';
 
 @Index(['name'])
 @Entity(TableNameEnum.USERS) // назва табл в БД
@@ -60,6 +61,9 @@ export class UserEntity extends CreateUpdateModel {
 
   @OneToMany(() => RefreshTokenEntity, (entity) => entity.user)
   refreshTokens?: RefreshTokenEntity[] | null;
+
+  @OneToMany(() => CarsBrandsEntity, (entity) => entity.cars_brands_user)
+  user_cars_brands?: CarsBrandsEntity[] | null;
 
   @OneToMany(() => CarsModelsEntity, (entity) => entity.cars_brands_models)
   user_cars_brands_models?: CarsModelsEntity[] | null;
