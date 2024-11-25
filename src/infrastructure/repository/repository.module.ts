@@ -1,11 +1,13 @@
 import { Global, Module } from '@nestjs/common';
 
+import { CarsRepository } from './services/cars.repository';
 import { RefreshTokenRepository } from './services/refresh-token.repository';
 // import { RefreshTokenRepository } from './services/refresh-token.repository';
 import { UserRepository } from './services/user.repository';
 
 const repositories = [
   // ArticleRepository,
+  CarsRepository,
   RefreshTokenRepository,
   UserRepository,
 ];
