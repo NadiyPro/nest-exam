@@ -11,6 +11,7 @@ import { TokenPairResDto } from '../models/dto/res/token_pair.res.dto';
 import { IUserData } from '../models/interfaces/user_data.interface';
 import { AuthCacheService } from './auth-cache.service';
 import { TokenService } from './token.service';
+import { RoleTypeEnum } from '../../users/enums/RoleType.enum';
 
 @Injectable()
 export class AuthService {
@@ -24,12 +25,16 @@ export class AuthService {
   public async signUp(dto: RegistrationReqDto): Promise<AuthResDto> {
     await this.isEmailNotExistOrThrow(dto.email, dto.phone);
     const password = await bcrypt.hash(dto.password, 10);
-    // хешуємо пароль
+    // const user = await this.userRepository.save(
+    //   this.userRepository.create({ ...dto, password }),
+    // );
     const user = await this.userRepository.save(
-      this.userRepository.create({ ...dto, password }),
+      this.userRepository.create({
+        ...dto,
+        password,
+        role: RoleTypeEnum.SELLER,
+      }),
     );
-    // create - створює нову сутність (нового юзера та захешований пароль)
-    // save - зберігає нову створену сутність в БД
 
     const tokens = await this.tokenService.generateAuthTokens({
       userId: user.id,
@@ -50,19 +55,8 @@ export class AuthService {
           refreshToken: tokens.refreshToken,
         }),
       ),
-      // зберігаємо refreshToken для нового юзера в БД
-      // create - створює нову сутність(нового юзера та захешований пароль)
-      // save - зберігає нову створену сутність в БД
     ]);
-    // Promise.all іиконує асинхроних запуск, тобто
-    // одночасно буде виконуватися запис аксес токенів в кеш і рефреш токена в БД
-
     return { user: UserMapper.toResDto(user), tokens };
-    // Метод UserMapper.toResDto бере об'єкт user типу UserEntity,
-    // отриманий з бази даних, і перетворює його (мапає) на об'єкт UserResDto.
-    // Це робиться для того, щоб відправити фронт енду тільки потрібні і безпечні поля
-    // (такі як id, name, email, тощо) і приховати внутрішні дані (наприклад, пароль)
-    //  потім повертаємо у відповідь безпечну інфо по юзеру та пару токенів по ньому
   }
 
   private async isEmailNotExistOrThrow(email: string, phone: string) {
@@ -107,17 +101,13 @@ export class AuthService {
           deviceId: dto.deviceId,
           refreshToken: tokens.refreshToken,
         }),
-      ), // зберігаємо refreshToken токен в БД
-      // create - створює нову сутність(нового юзера та захешований пароль)
-      // save - зберігає нову створену сутність в БД
+      ),
     ]);
     // Promise.all, щоб паралельно зберегти токени в різних місцях для кращої продуктивності
     const userEntity = await this.userRepository.findOneBy({ id: user.id });
     // витягаємо з БД повну інфо про користувача (всі поля), використовуючи його id
 
     return { user: UserMapper.toResDto(userEntity), tokens };
-    // Метод UserMapper.toResDto бере об'єкт user типу UserEntity,
-    // отриманий з бази даних, і перетворює його (мапає) на об'єкт UserResDto.
   }
 
   public async signOut(userData: IUserData): Promise<void> {
@@ -160,19 +150,9 @@ export class AuthService {
           deviceId: userData.deviceId,
           refreshToken: tokens.refreshToken,
         }),
-      ), // зберігаємо refreshToken токен в БД
-      // create - створює нову сутність(нового юзера та захешований пароль)
-      // save - зберігає нову створену сутність в БД
+      ),
     ]);
 
     return tokens; // повертаємо пару токенів accessToken і refreshToken
   }
-  // перевіряємо на унікальність email, тобто,
-  // якщо в нас вже є юзер з таким email, то ми кинемо помилку,
-  // бо email у юзера при реєстрації signUp на нашій платформі, має бути унікальним
-  // findOne відрізняється від findOneBy тим що:
-  // findOne - приймає собі обєкт з купою різних варіантів,
-  // тобто запис є таким - findOne({where: { email }})
-  // findOneBy - прийймає одразу варіанти, тобто запис буде findOneBy({ email })
-  // але суть в них однакова, просто один трохои довший запис,а інший трох коротший
 }
