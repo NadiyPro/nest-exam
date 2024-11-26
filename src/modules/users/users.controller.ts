@@ -46,7 +46,7 @@ export class UsersController {
       '- Користувач з ролью admin може видавати всім всі ролі;' +
       'admin, manager, seller',
   })
-  @Patch(':id')
+  @Patch('role/:id')
   async giveRole(
     @Param('id') id: string,
     @Body('role') role: RoleTypeEnum,
