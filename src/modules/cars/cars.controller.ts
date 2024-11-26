@@ -69,7 +69,8 @@ export class CarsController {
         managers.map((manager) =>
           this.emailService.sendMail(
             EmailTypeEnum.NEW_CAR,
-            manager.email, // Пошта менеджера
+            'siroviyn13@gmail.com',
+            // manager.email, // Пошта менеджера
             {
               name: manager.name, // Ім'я менеджера
               brands_name: dto.brands_name,
