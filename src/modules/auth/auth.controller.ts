@@ -30,7 +30,7 @@ export class AuthController {
   public async registration(
     @Body() dto: RegistrationReqDto,
   ): Promise<AuthResDto> {
-    return await this.authService.signUp(dto);
+    return await this.authService.registration(dto);
   }
   // singUp - тут логінація вконується (перший вхід з хешуванням паролю)
 
@@ -42,7 +42,7 @@ export class AuthController {
   })
   @Post('login')
   public async login(@Body() dto: LoginReqDto): Promise<AuthResDto> {
-    return await this.authService.signIn(dto);
+    return await this.authService.login(dto);
   }
   // signIn - тут проходить аутентифікація,
   // перевірка чи існує в нас такий юзер з таким то паролем,

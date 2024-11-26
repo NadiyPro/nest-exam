@@ -22,7 +22,7 @@ export class AuthService {
     private readonly refreshTokenRepository: RefreshTokenRepository,
   ) {}
 
-  public async signUp(dto: RegistrationReqDto): Promise<AuthResDto> {
+  public async registration(dto: RegistrationReqDto): Promise<AuthResDto> {
     await this.isEmailNotExistOrThrow(dto.email, dto.phone);
     const password = await bcrypt.hash(dto.password, 10);
     // const user = await this.userRepository.save(
@@ -66,7 +66,7 @@ export class AuthService {
     }
   }
 
-  public async signIn(dto: LoginReqDto): Promise<any> {
+  public async login(dto: LoginReqDto): Promise<any> {
     const user = await this.userRepository.findOne({
       where: { email: dto.email }, // знаходимо користувача за електронною поштою
       select: ['id', 'password'],
