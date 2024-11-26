@@ -21,10 +21,14 @@ export class UserRepository extends Repository<UserEntity> {
     // (дозволяє використовувати всі методи create/findAll/findOne/update/remove/delete і т.п)
   }
 
-  public async findAllManager(): Promise<[UserEntity[]]> {
-    const qb = this.createQueryBuilder('users');
-    qb.where('users.role = :role', { role: RoleTypeEnum.MANAGER });
-    return;
+  public async findAllManager(): Promise<UserEntity[]> {
+    const manager = await this.createQueryBuilder('user')
+      .where('user.role = :role', { role: 'manager' })
+      .getMany(); // getMany повертає масив об'єктів, а не масив масивів
+    return manager;
+    // const qb = this.createQueryBuilder('users');
+    // qb.where('users.role = :role', { role: RoleTypeEnum.MANAGER });
+    // return;
   }
 
   public async giveRole(

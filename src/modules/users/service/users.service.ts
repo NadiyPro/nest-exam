@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
 
 import { UserEntity } from '../../../infrastructure/postgres/entities/user.entity';
 import { RefreshTokenRepository } from '../../../infrastructure/repository/services/refresh-token.repository';
@@ -102,10 +98,14 @@ export class UsersService {
     if (user.avatar) {
       await this.fileStorageService.deleteFile(user.avatar);
       await this.userRepository.save({ ...user, avatar: null });
-    } // якщо у юзера є аватар, то ми його видаляємо
-    // і зберігаємо юзера з імеджом "null"
+    }
   }
-
+  // public async findAllManager(): Promise<UserEntity[]> {
+  //   const users = await this.userRepository.find({
+  //     where: { role: RoleTypeEnum.MANAGER },
+  //   });
+  //   return users; // Повертаємо масив користувачів
+  // }
   public async findAllManager(): Promise<UserEntity[]> {
     return await this.userRepository.findAllManager();
   }
