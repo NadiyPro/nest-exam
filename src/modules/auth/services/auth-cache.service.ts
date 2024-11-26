@@ -3,8 +3,6 @@ import { ConfigService } from '@nestjs/config/dist/config.service';
 
 import { Config, JwtConfig } from '../../../configs/config.type';
 import { RedisService } from '../../../infrastructure/redis/services/redis.service';
-import { RefreshTokenRepository } from '../../../infrastructure/repository/services/refresh-token.repository';
-import { UserRepository } from '../../../infrastructure/repository/services/user.repository';
 
 @Injectable()
 export class AuthCacheService {
@@ -16,8 +14,6 @@ export class AuthCacheService {
   constructor(
     private readonly redisService: RedisService,
     private readonly configService: ConfigService<Config>,
-    private readonly userRepository: UserRepository,
-    private readonly refreshTokenRepository: RefreshTokenRepository,
   ) {
     this.jwtConfig = this.configService.get('jwt');
   } // Зберігає налаштування 'jwt', отримані з configService
