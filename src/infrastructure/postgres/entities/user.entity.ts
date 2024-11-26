@@ -11,13 +11,13 @@ import {
 import { AccountTypeEnum } from '../../../modules/auth/enums/AccountType.enum';
 import { RoleTypeEnum } from '../../../modules/users/enums/RoleType.enum';
 import { AdvertisementEntity } from './advertisement.entity';
+import { CarsBrandsEntity } from './cars_brands.entity';
 import { CarsModelsEntity } from './cars_models.entity';
 import { DealershipEntity } from './dealership.entity';
 import { TableNameEnum } from './enums/table-name.enum';
 import { CreateUpdateModel } from './models/date.model';
 import { RefreshTokenEntity } from './refresh-token.entity';
 import { StatisticsEntity } from './statistics.entity';
-import { CarsBrandsEntity } from './cars_brands.entity';
 
 @Index(['name'])
 @Entity(TableNameEnum.USERS) // назва табл в БД
@@ -40,7 +40,10 @@ export class UserEntity extends CreateUpdateModel {
   @Column('text', { default: AccountTypeEnum.BASIC })
   accountType: AccountTypeEnum;
 
-  @Column('text', { default: RoleTypeEnum.SELLER })
+  // @Column('text', { default: RoleTypeEnum.SELLER })
+  // role: RoleTypeEnum;
+
+  @Column({ type: 'enum', default: RoleTypeEnum.BUYER, enum: RoleTypeEnum })
   role: RoleTypeEnum;
 
   @Column('text', { nullable: true })
