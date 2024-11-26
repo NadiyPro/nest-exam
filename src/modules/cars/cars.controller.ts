@@ -1,6 +1,7 @@
 import {
   Body,
-  Controller, Delete,
+  Controller,
+  Delete,
   Get,
   Param,
   ParseUUIDPipe,
@@ -31,15 +32,15 @@ import { CarsService } from './service/cars.service';
 export class CarsController {
   constructor(private readonly carsService: CarsService) {}
 
-  @ApiBearerAuth()
-  @UseGuards(ApprovedRoleGuard)
-  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
   @ApiOperation({
     summary: 'Для створення запису про автомобіль (бренд та модель)',
     description:
       'Користувач може створити новий запис про автомобіль (бренд та модель)' +
       'Доступно для ролей: admin, manager. ',
   })
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
   @SkipAuth()
   @Post()
   public async createCars(
@@ -116,9 +117,6 @@ export class CarsController {
     return CarsMapper.toAllResDtoCars(entities, total, query);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(ApprovedRoleGuard)
-  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
   @ApiOperation({
     summary: 'Для оновлення запису про автомобіль (бренд/модель)',
     description:
@@ -126,6 +124,9 @@ export class CarsController {
       'Наприклад якщо була допущена помилка в записі та інше.' +
       'Доступно для ролей: admin, manager',
   })
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
   @Patch(':carsBrandsId')
   public async updateCars(
     @Param('carsBrandsId', ParseUUIDPipe) carsBrandsId: string,
@@ -134,9 +135,6 @@ export class CarsController {
     return await this.carsService.updateCars(carsBrandsId, dto);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(ApprovedRoleGuard)
-  @Role([RoleTypeEnum.MANAGER, RoleTypeEnum.ADMIN])
   @ApiOperation({
     summary: 'Для видалення бренду автомобіля за його id',
     description:
@@ -144,6 +142,9 @@ export class CarsController {
       'Зверніть увагу! При видалені бренда автомобіля буде каскадно видалено всі моделі закріплені за ним.' +
       'Доступно для ролей: admin, manager',
   })
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.MANAGER, RoleTypeEnum.ADMIN])
   @Delete(':carsBrandsId') // тут додати каскадне видалення всіх моделей в емтіті
   public async deleteCarsBrandsId(
     @Param('carsBrandsId', ParseUUIDPipe) carsBrandsId: string,
@@ -151,15 +152,15 @@ export class CarsController {
     return await this.carsService.deleteCarsBrandsId(carsBrandsId);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(ApprovedRoleGuard)
-  @Role([RoleTypeEnum.MANAGER, RoleTypeEnum.ADMIN])
   @ApiOperation({
     summary: 'Для видалення моделі автомобіля за його id',
     description:
       'Користувач може видалити модель автомобіля по його id.' +
       'Доступно для ролей: admin, manager',
   })
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.MANAGER, RoleTypeEnum.ADMIN])
   @Delete(':carsModelsId')
   public async deleteIdModelsId(
     @Param('carsModelsId', ParseUUIDPipe) carsModelsId: string,
