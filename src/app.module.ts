@@ -8,8 +8,9 @@ import { PostgresModule } from './infrastructure/postgres/postgres.module';
 import { RedisModule } from './infrastructure/redis/redis.module';
 import { RepositoryModule } from './infrastructure/repository/repository.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { UsersModule } from './modules/users/users.module';
 import { CarsModule } from './modules/cars/cars.module';
+import { EmailModule } from './modules/email/email.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { CarsModule } from './modules/cars/cars.module';
     AuthModule,
     UsersModule,
     CarsModule,
+    EmailModule,
   ],
   // providers: [
   //   {
