@@ -1,9 +1,17 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { ApprovedRoleGuard } from '../guards/approved_role.guard';
 import { Role } from '../guards/decorator/role.decorator';
 import { RoleTypeEnum } from '../users/enums/RoleType.enum';
+import { UsersService } from '../users/service/users.service';
 import { CurrentUser } from './decorators/current_user.decorator';
 import { SkipAuth } from './decorators/skip_auth.decorator';
 import { Jwt_refreshGuard } from './guards/jwt_refresh.guard';
@@ -17,7 +25,10 @@ import { AuthService } from './services/auth.service';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @SkipAuth()
   @ApiOperation({
@@ -62,7 +73,6 @@ export class AuthController {
   // які належать конкретному юзеру userData
   // userData містить в собі userId, deviceId, email
 
-  @SkipAuth()
   @ApiOperation({
     summary: 'Для отримання нової пари токенів',
     description: 'Для отримання нової пари токенів.',
@@ -75,9 +85,21 @@ export class AuthController {
   ): Promise<TokenPairResDto> {
     return await this.authService.refresh(userData);
   }
-  // хочемо отримати нову пару токенів accessToken і refreshToken
-  // перевіряємо чи в нас є юзер з таким паролем, якщо є генеруємо нові токени
-  // видаляємо стару пару токенів
-  // зберігаємо accessToken в кеш (Redis)
-  // зберігаємо refreshToken в БД
+
+  @ApiOperation({
+    summary:
+      'Для видалення облікового запису користувача за його user_id ("бан")',
+    description:
+      'Користувач може видалити обліковий запис іншого користувача за його user_id, ' +
+      'таким чином поставити користувача в "бан". Доступно для ролей: admin, manager',
+  })
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
+  @Post('sign-out/:user_id,')
+  public async signOutUserId(
+    @Param('user_id', ParseUUIDPipe) user_id: string,
+  ): Promise<void> {
+    return await this.usersService.findOne(user_id);
+  }
 }
