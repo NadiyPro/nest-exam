@@ -1,33 +1,40 @@
-import { ConfigService } from '@nestjs/config/dist/config.service';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Transporter } from 'nodemailer';
 import * as nodemailer from 'nodemailer';
+import * as hbs from 'nodemailer-express-handlebars';
 import * as path from 'path';
 
+import { EmailConfig } from '../../../configs/config.type';
 import { emailConstants } from '../constants/email.constants';
 import { EmailTypeEnum } from '../enums/email.enum';
 import { EmailTypeToPayload } from '../types/type_to_payload.type';
-import { Config, EmailConfig, JwtConfig } from '../../../configs/config.type';
 
-export class EmailService {
+@Injectable()
+export class EmailService implements OnModuleInit {
   private transporter: Transporter;
   private userPass: EmailConfig;
 
-  constructor(private readonly configService: ConfigService<Config>) {
-    this.userPass = this.configService.get('email'); // Перевіряємо, чи змінна існує
+  constructor(private readonly configService: ConfigService) {}
+
+  // Метод для асинхронної ініціалізації
+  async onModuleInit() {
+    this.userPass = this.configService.get<EmailConfig>('email');
+
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
       from: 'No reply',
       auth: {
-        user: this.userPass.email, // Перевіряємо, чи змінна існує
+        user: this.userPass.email,
         pass: this.userPass.password,
       },
     });
 
-    this.initHandlebars();
+    await this.initHandlebars();
   }
 
   private async initHandlebars() {
-    const hbs = await import('nodemailer-express-handlebars');
+    // const hbs = await import('nodemailer-express-handlebars');
     const hbsOptions = {
       viewEngine: {
         extname: '.hbs',
@@ -60,8 +67,9 @@ export class EmailService {
       extName: '.hbs',
     };
 
-    this.transporter.use('compile', hbs.default(hbsOptions));
+    this.transporter.use('compile', hbs(hbsOptions));
   }
+
   public async sendMail<T extends EmailTypeEnum>(
     type: T,
     to: string,
