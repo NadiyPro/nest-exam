@@ -3,6 +3,7 @@ import * as bcrypt from 'bcrypt';
 
 import { RefreshTokenRepository } from '../../../infrastructure/repository/services/refresh-token.repository';
 import { UserRepository } from '../../../infrastructure/repository/services/user.repository';
+import { RoleTypeEnum } from '../../users/enums/RoleType.enum';
 import { UserMapper } from '../../users/service/user.mapper';
 import { LoginReqDto } from '../models/dto/req/login.req.dto';
 import { RegistrationReqDto } from '../models/dto/req/registration.req.dto';
@@ -11,7 +12,6 @@ import { TokenPairResDto } from '../models/dto/res/token_pair.res.dto';
 import { IUserData } from '../models/interfaces/user_data.interface';
 import { AuthCacheService } from './auth-cache.service';
 import { TokenService } from './token.service';
-import { RoleTypeEnum } from '../../users/enums/RoleType.enum';
 
 @Injectable()
 export class AuthService {
