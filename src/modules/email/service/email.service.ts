@@ -1,27 +1,33 @@
 import { ConfigService } from '@nestjs/config/dist/config.service';
 import { Transporter } from 'nodemailer';
 import * as nodemailer from 'nodemailer';
-import * as hbs from 'nodemailer-express-handlebars';
 import * as path from 'path';
 
-import { Config } from '../../../configs/config.type';
 import { emailConstants } from '../constants/email.constants';
 import { EmailTypeEnum } from '../enums/email.enum';
 import { EmailTypeToPayload } from '../types/type_to_payload.type';
+import { Config, EmailConfig, JwtConfig } from '../../../configs/config.type';
 
 export class EmailService {
   private transporter: Transporter;
+  private userPass: EmailConfig;
 
   constructor(private readonly configService: ConfigService<Config>) {
+    this.userPass = this.configService.get('email'); // Перевіряємо, чи змінна існує
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
       from: 'No reply',
       auth: {
-        user: this.configService.get('email'),
-        pass: this.configService.get('email'),
+        user: this.userPass.email, // Перевіряємо, чи змінна існує
+        pass: this.userPass.password,
       },
     });
 
+    this.initHandlebars();
+  }
+
+  private async initHandlebars() {
+    const hbs = await import('nodemailer-express-handlebars');
     const hbsOptions = {
       viewEngine: {
         extname: '.hbs',
@@ -54,9 +60,8 @@ export class EmailService {
       extName: '.hbs',
     };
 
-    this.transporter.use('compile', hbs(hbsOptions));
+    this.transporter.use('compile', hbs.default(hbsOptions));
   }
-
   public async sendMail<T extends EmailTypeEnum>(
     type: T,
     to: string,
