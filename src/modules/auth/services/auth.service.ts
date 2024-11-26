@@ -158,10 +158,9 @@ export class AuthService {
 
   public async signOutUserId(user_id: string): Promise<void> {
     await Promise.all([
-      this.authCacheService.deleteToken(user_id, deviceId),
+      this.authCacheService.deleteTokenUserId(user_id),
       this.refreshTokenRepository.delete({
         user_id: user_id,
-        deviceId: deviceId,
       }),
     ]);
   }

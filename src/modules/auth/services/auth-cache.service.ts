@@ -56,10 +56,18 @@ export class AuthCacheService {
     await this.redisService.deleteByKey(key);
     // видалити всі токени, збережені для цього ключа
   }
-  // deleteToken видаляє всі токени для певного userId і deviceId.
+  public async deleteTokenUserId(userId: string): Promise<void> {
+    const key = this.getKeyUserId(userId);
+    await this.redisService.deleteByKey(key);
+    // видалити всі токени, збережені для цього ключа
+  }
 
   private getKey(userId: string, deviceId: string): string {
     return `ACCESS_TOKEN:${userId}:${deviceId}`;
   } // створює унікальний ключ для зберігання токенів у Redis
   // щоб у кожного юзера (userId) на конкретному пристрої (deviceId) був свій унікальний ключ
+
+  private getKeyUserId(userId: string): string {
+    return `ACCESS_TOKEN:${userId}`;
+  }
 }
