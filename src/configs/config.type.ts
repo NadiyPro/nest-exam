@@ -5,6 +5,7 @@ export type Config = {
   aws: AwsConfig;
   // sentry: SentryConfig;
   jwt: JwtConfig;
+  email: EmailConfig;
 };
 
 export type AppConfig = {
@@ -41,4 +42,9 @@ export type JwtConfig = {
   accessExpiresIn: number;
   refreshSecret: string;
   refreshExpiresIn: number;
+};
+
+export type EmailConfig = {
+  email: string;
+  password: string;
 };

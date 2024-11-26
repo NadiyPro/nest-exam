@@ -64,4 +64,8 @@ export default (): Config => ({
     refreshSecret: process.env.JWT_REFRESH_SECRET,
     refreshExpiresIn: parseInt(process.env.JWT_REFRESH_EXPIRES_IN, 10) || 86400,
   },
+  email: {
+    email: process.env.SMTP_EMAIL,
+    password: process.env.SMTP_PASSWORD,
+  },
 });
