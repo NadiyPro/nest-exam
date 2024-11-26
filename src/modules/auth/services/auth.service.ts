@@ -65,6 +65,13 @@ export class AuthService {
     //  потім повертаємо у відповідь безпечну інфо по юзеру та пару токенів по ньому
   }
 
+  private async isEmailNotExistOrThrow(email: string, phone: string) {
+    const userEmail = await this.userRepository.findOneBy({ email, phone });
+    if (userEmail) {
+      throw new Error('Email already exists');
+    }
+  }
+
   public async signIn(dto: LoginReqDto): Promise<any> {
     const user = await this.userRepository.findOne({
       where: { email: dto.email }, // знаходимо користувача за електронною поштою
@@ -160,13 +167,7 @@ export class AuthService {
 
     return tokens; // повертаємо пару токенів accessToken і refreshToken
   }
-
-  private async isEmailNotExistOrThrow(email: string, phone: string) {
-    const userEmail = await this.userRepository.findOneBy({ email, phone });
-    if (userEmail) {
-      throw new Error('Email already exists');
-    }
-  } // перевіряємо на унікальність email, тобто,
+  // перевіряємо на унікальність email, тобто,
   // якщо в нас вже є юзер з таким email, то ми кинемо помилку,
   // бо email у юзера при реєстрації signUp на нашій платформі, має бути унікальним
   // findOne відрізняється від findOneBy тим що:
