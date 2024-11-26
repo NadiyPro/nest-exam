@@ -70,12 +70,12 @@ export class AuthController {
   // які належать конкретному юзеру userData
   // userData містить в собі userId, deviceId, email
 
+  @ApiBearerAuth()
+  @UseGuards(Jwt_refreshGuard)
   @ApiOperation({
     summary: 'Для отримання нової пари токенів',
     description: 'Для отримання нової пари токенів.',
   })
-  @ApiBearerAuth()
-  @UseGuards(Jwt_refreshGuard)
   @Post('refresh')
   public async refresh(
     @CurrentUser() userData: IUserData,
@@ -83,6 +83,9 @@ export class AuthController {
     return await this.authService.refresh(userData);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
   @ApiOperation({
     summary:
       'Для видалення облікового запису користувача за його user_id ("бан")',
@@ -90,9 +93,6 @@ export class AuthController {
       'Користувач може видалити обліковий запис іншого користувача за його user_id, ' +
       'таким чином поставити користувача в "бан". Доступно для ролей: admin, manager',
   })
-  @ApiBearerAuth()
-  @UseGuards(ApprovedRoleGuard)
-  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
   @Post('sign-out/:user_id,')
   public async signOutUserId(
     @Param('user_id', ParseUUIDPipe) user_id: string,

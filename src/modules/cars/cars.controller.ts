@@ -31,7 +31,7 @@ import { ListModelsResQueryDto } from './models/dto/res/list-models-query.res.dt
 import { CarsMapper } from './service/cars.mapper';
 import { CarsService } from './service/cars.service';
 
-@ApiTags('Users')
+@ApiTags('Cars')
 @Controller('cars')
 export class CarsController {
   constructor(
@@ -40,6 +40,9 @@ export class CarsController {
     private readonly usersService: UsersService,
   ) {}
 
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @ApiOperation({
     summary: 'Для створення запису про автомобіль (бренд та модель)',
     description:
@@ -48,9 +51,6 @@ export class CarsController {
       'про те що не вистачає зазначеної марки автомобіля (бренд та модель).' +
       'Після чого, менеджер буде проінформований на пошту і при необхідності додасть його до списку',
   })
-  @ApiBearerAuth()
-  @UseGuards(ApprovedRoleGuard)
-  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @SkipAuth()
   @Post()
   public async createCars(
@@ -134,6 +134,9 @@ export class CarsController {
     return CarsMapper.toAllResDtoCars(entities, total, query);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
   @ApiOperation({
     summary: 'Для оновлення запису про автомобіль (бренд/модель)',
     description:
@@ -141,9 +144,6 @@ export class CarsController {
       'Наприклад якщо була допущена помилка в записі та інше.' +
       'Доступно для ролей: admin, manager',
   })
-  @ApiBearerAuth()
-  @UseGuards(ApprovedRoleGuard)
-  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
   @Patch(':carsBrandsId')
   public async updateCars(
     @Param('carsBrandsId', ParseUUIDPipe) carsBrandsId: string,
@@ -152,6 +152,9 @@ export class CarsController {
     return await this.carsService.updateCars(carsBrandsId, dto);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.MANAGER, RoleTypeEnum.ADMIN])
   @ApiOperation({
     summary: 'Для видалення бренду автомобіля за його id',
     description:
@@ -159,9 +162,6 @@ export class CarsController {
       'Зверніть увагу! При видалені бренда автомобіля буде каскадно видалено всі моделі закріплені за ним.' +
       'Доступно для ролей: admin, manager',
   })
-  @ApiBearerAuth()
-  @UseGuards(ApprovedRoleGuard)
-  @Role([RoleTypeEnum.MANAGER, RoleTypeEnum.ADMIN])
   @Delete(':carsBrandsId') // тут додати каскадне видалення всіх моделей в емтіті
   public async deleteCarsBrandsId(
     @Param('carsBrandsId', ParseUUIDPipe) carsBrandsId: string,
@@ -169,15 +169,15 @@ export class CarsController {
     return await this.carsService.deleteCarsBrandsId(carsBrandsId);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.MANAGER, RoleTypeEnum.ADMIN])
   @ApiOperation({
     summary: 'Для видалення моделі автомобіля за його id',
     description:
       'Користувач може видалити модель автомобіля по його id.' +
       'Доступно для ролей: admin, manager',
   })
-  @ApiBearerAuth()
-  @UseGuards(ApprovedRoleGuard)
-  @Role([RoleTypeEnum.MANAGER, RoleTypeEnum.ADMIN])
   @Delete(':carsModelsId')
   public async deleteIdModelsId(
     @Param('carsModelsId', ParseUUIDPipe) carsModelsId: string,
