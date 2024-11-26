@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -71,16 +72,24 @@ export class CarsController {
   @SkipAuth()
   @Post('cars')
   public async create(@Body() dto: CreateCarsReqDto): Promise<string> {
-    const [name, email] = await this.usersService.findAllManager();
-    await this.emailService.sendMail(
-      EmailTypeEnum.NEW_CAR,
-      email.email, // пошта менеджера
-      {
-        name: name.name, // імя менеджера
-        brands_name: dto.brands_name,
-        models_name: dto.models_name,
-      },
+    const managers = await this.usersService.findAllManager();
+    if (!managers) {
+      throw new NotFoundException('No managers found to notify.');
+    }
+    await Promise.all(
+      managers.map((manager) =>
+        this.emailService.sendMail(
+          EmailTypeEnum.NEW_CAR,
+          manager.email, // Пошта менеджера
+          {
+            name: manager.name, // Ім'я менеджера
+            brands_name: dto.brands_name,
+            models_name: dto.models_name,
+          },
+        ),
+      ),
     );
+
     return (
       'The request to add a car has been sent to the manager. ' +
       'The manager will check the information and, if necessary, add a car. ' +
