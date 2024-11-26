@@ -71,10 +71,7 @@ export class CarsController {
   })
   @SkipAuth()
   @Post('cars')
-  public async create(
-    @CurrentUser() userData: IUserData,
-    @Body() dto: CreateCarsReqDto,
-  ): Promise<string> {
+  public async create(@Body() dto: CreateCarsReqDto): Promise<string> {
     const [name, email] = await this.usersService.findAllManager();
     await this.emailService.sendMail(
       EmailTypeEnum.NEW_CAR,
@@ -85,7 +82,11 @@ export class CarsController {
         models_name: dto.models_name,
       },
     );
-    return 'The request to add a car has been sent to the manager. The manager will check the information and, if necessary, add a car. Thank you for the signal.';
+    return (
+      'The request to add a car has been sent to the manager. ' +
+      'The manager will check the information and, if necessary, add a car. ' +
+      'Thank you for the signal.'
+    );
   }
 
   @ApiOperation({
