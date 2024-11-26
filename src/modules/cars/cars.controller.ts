@@ -43,58 +43,48 @@ export class CarsController {
   @ApiOperation({
     summary: 'Для створення запису про автомобіль (бренд та модель)',
     description:
-      'Користувач може створити новий запис про автомобіль (бренд та модель)' +
-      'Доступно для ролей: admin, manager. ',
+      'Користувач з ролью admin та manager, може створити новий запис про автомобіль (бренд та модель)' +
+      'Користувач з ролью seller, може повідомити менеджера, ' +
+      'про те що не вистачає зазначеної марки автомобіля (бренд та модель).' +
+      'Після чого, менеджер буде проінформований на пошту і при необхідності додасть його до списку',
   })
   @ApiBearerAuth()
   @UseGuards(ApprovedRoleGuard)
-  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @SkipAuth()
   @Post()
   public async createCars(
     @CurrentUser() userData: IUserData,
     @Body() dto: CreateCarsReqDto,
-  ): Promise<CarsResDto> {
-    return await this.carsService.createCars(userData, dto);
-  }
-
-  @ApiBearerAuth()
-  @UseGuards(ApprovedRoleGuard)
-  @Role([RoleTypeEnum.SELLER])
-  @ApiOperation({
-    summary:
-      'Повідомити менеджера, про те що не вистачає зазначеної марки автомобіля (бренд та модель)',
-    description:
-      'Користувач повідомити менеджера, про те що не вистачає зазначеної марки автомобіля (бренд та модель).' +
-      'Після чого, менеджер буде проінформований на пошту і при необхідності додасть його до списку' +
-      'Доступно для ролей: admin, manager, seller. ',
-  })
-  @SkipAuth()
-  @Post('cars')
-  public async create(@Body() dto: CreateCarsReqDto): Promise<string> {
-    const managers = await this.usersService.findAllManager();
-    if (!managers) {
-      throw new NotFoundException('No managers found to notify.');
+  ): Promise<CarsResDto | string> {
+    if ([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER].includes(userData.role)) {
+      return await this.carsService.createCars(userData, dto);
     }
-    await Promise.all(
-      managers.map((manager) =>
-        this.emailService.sendMail(
-          EmailTypeEnum.NEW_CAR,
-          manager.email, // Пошта менеджера
-          {
-            name: manager.name, // Ім'я менеджера
-            brands_name: dto.brands_name,
-            models_name: dto.models_name,
-          },
+    if (userData.role === RoleTypeEnum.SELLER) {
+      const managers = await this.usersService.findAllManager();
+      if (!managers) {
+        throw new NotFoundException('No managers found to notify.');
+      }
+      await Promise.all(
+        managers.map((manager) =>
+          this.emailService.sendMail(
+            EmailTypeEnum.NEW_CAR,
+            manager.email, // Пошта менеджера
+            {
+              name: manager.name, // Ім'я менеджера
+              brands_name: dto.brands_name,
+              models_name: dto.models_name,
+            },
+          ),
         ),
-      ),
-    );
+      );
 
-    return (
-      'The request to add a car has been sent to the manager. ' +
-      'The manager will check the information and, if necessary, add a car. ' +
-      'Thank you for the signal.'
-    );
+      return (
+        'The request to add a car has been sent to the manager. ' +
+        'The manager will check the information and, if necessary, add a car. ' +
+        'Thank you for the signal.'
+      );
+    }
   }
 
   @ApiOperation({
