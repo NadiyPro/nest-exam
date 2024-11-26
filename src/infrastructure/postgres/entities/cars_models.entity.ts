@@ -17,7 +17,7 @@ export class CarsModelsEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column('text', { unique: true })
   models_name: string;
 
   @Column()

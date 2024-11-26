@@ -17,7 +17,7 @@ export class CarsBrandsEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column('text', { unique: true })
   brands_name: string;
 
   @OneToMany(() => CarsModelsEntity, (entity) => entity.cars_brands_models)
