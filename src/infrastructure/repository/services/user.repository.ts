@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 
+import { RoleTypeEnum } from '../../../modules/users/enums/RoleType.enum';
 import { ListUsersQueryReqDto } from '../../../modules/users/models/dto/req/list-users-query.req.dto';
 import { UserEntity } from '../../postgres/entities/user.entity';
 
@@ -18,6 +19,16 @@ export class UserRepository extends Repository<UserEntity> {
     // dataSource.manager — це менеджер БД ("помічник") від TypeORM, який знає,
     // як спілкуватися з базою даних, і ми використовуємо його для роботи з UserEntity
     // (дозволяє використовувати всі методи create/findAll/findOne/update/remove/delete і т.п)
+  }
+
+  public async giveRole(
+    userId: string,
+    role: RoleTypeEnum,
+  ): Promise<UserEntity> {
+    const user = await this.findOne({ where: { id: userId } });
+    if (!user) throw new Error('User not found');
+    user.role = role;
+    return await this.save(user);
   }
 
   public async findAll(

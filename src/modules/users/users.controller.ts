@@ -19,7 +19,6 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { IsUUID } from 'class-validator';
 
 import { ApiFile } from '../../common/decorators/api-file.decorator';
 import { CurrentUser } from '../auth/decorators/current_user.decorator';
@@ -39,6 +38,22 @@ import { UsersService } from './service/users.service';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @ApiOperation({
+    summary: 'Для видачі ролей',
+    description:
+      'Доступно для ролей: ' +
+      '- Користувач з ролью admin може видавати всім всі ролі;' +
+      'admin, manager, seller',
+  })
+  @Patch(':id')
+  async giveRole(
+    @Param('id') id: string,
+    @Body('role') role: RoleTypeEnum,
+    @Body('currentRole') currentRole: RoleTypeEnum,
+  ): Promise<void> {
+    await this.usersService.giveRole(id, role, currentRole);
+  }
 
   @ApiOperation({
     summary: 'Для отримання інформації користувачем про свій обліковий запис',

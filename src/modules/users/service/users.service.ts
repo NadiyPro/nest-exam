@@ -23,6 +23,24 @@ export class UsersService {
     private readonly refreshTokenRepository: RefreshTokenRepository,
   ) {}
 
+  public async giveRole(
+    userId: string,
+    role: RoleTypeEnum,
+    currentRole: RoleTypeEnum,
+  ): Promise<void> {
+    if (
+      currentRole === RoleTypeEnum.ADMIN ||
+      (currentRole === RoleTypeEnum.MANAGER &&
+        [RoleTypeEnum.SELLER, RoleTypeEnum.BUYER].includes(role))
+      // якщо користувач менеджером, то перевіряємо через includes,
+      // чи запитана ним роль на видачу є SELLER або BUYER
+    ) {
+      await this.userRepository.giveRole(userId, role);
+    } else {
+      throw new Error('Permission denied');
+    }
+  }
+
   public async findMe(userData: IUserData): Promise<UserEntity> {
     if (userData.role === RoleTypeEnum.BUYER) {
       throw new ForbiddenException('No role to access');
