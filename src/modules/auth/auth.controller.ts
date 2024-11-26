@@ -25,10 +25,7 @@ import { AuthService } from './services/auth.service';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @SkipAuth()
   @ApiOperation({
@@ -100,6 +97,6 @@ export class AuthController {
   public async signOutUserId(
     @Param('user_id', ParseUUIDPipe) user_id: string,
   ): Promise<void> {
-    return await this.usersService.findOne(user_id);
+    return await this.authService.signOutUserId(user_id);
   }
 }
