@@ -12,7 +12,6 @@ import { TokenPairResDto } from '../models/dto/res/token_pair.res.dto';
 import { IUserData } from '../models/interfaces/user_data.interface';
 import { AuthCacheService } from './auth-cache.service';
 import { TokenService } from './token.service';
-import { UsersService } from '../../users/service/users.service';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +20,6 @@ export class AuthService {
     private readonly tokenService: TokenService,
     private readonly userRepository: UserRepository,
     private readonly refreshTokenRepository: RefreshTokenRepository,
-    private readonly usersService: UsersService,
   ) {}
 
   public async registration(dto: RegistrationReqDto): Promise<AuthResDto> {
