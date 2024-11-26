@@ -23,6 +23,9 @@ export class CarsModelsEntity extends CreateUpdateModel {
   @Column()
   brands_id: string;
 
+  @Column('timestamp', { nullable: true })
+  deleted: Date | null;
+
   @ManyToOne(() => CarsBrandsEntity, (entity) => entity.models)
   @JoinColumn({ name: 'brands_id' })
   cars_brands_models: CarsBrandsEntity;

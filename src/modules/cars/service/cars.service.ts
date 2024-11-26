@@ -15,7 +15,6 @@ export class CarsService {
   constructor(
     private readonly carsBrandsRepository: CarsBrandsRepository,
     private readonly carsModelsRepository: CarsModelsRepository,
-    // private readonly refreshTokenRepository: RefreshTokenRepository,
   ) {}
 
   public async createCars(
@@ -89,57 +88,18 @@ export class CarsService {
 
     return CarsMapper.toResCreateDto(cars_model, cars_brands);
   }
+
+  public async deleteCarsBrandsId(carsBrandsId: string): Promise<void> {
+    await this.carsBrandsRepository.update(
+      { id: carsBrandsId },
+      { deleted: new Date() },
+    );
+  }
+
+  public async deleteIdModelsId(carsModelsId: string): Promise<void> {
+    await this.carsModelsRepository.update(
+      { id: carsModelsId },
+      { deleted: new Date() },
+    );
+  }
 }
-// public async findMe(userData: IUserData): Promise<UserEntity> {
-//   if (userData.role === RoleTypeEnum.BUYER) {
-//     throw new ForbiddenException('No role to access');
-//   }
-//   return await this.carsRepository.findOneBy({ id: userData.userId });
-// }
-//
-// public async updateMe(
-//   userData: IUserData,
-//   dto: UpdateUserReqDto,
-// ): Promise<UserEntity> {
-//   const user = await this.userRepository.findOneBy({ id: userData.userId });
-//   // шукаємо користувача в БД за userId
-//   this.userRepository.merge(user, dto);
-//   // метод merge об’єднує нові дані з dto з поточними даними user.
-//   return await this.userRepository.save(user);
-//   // Після об’єднання даних оновлений user зберігається в БД за допомогою save
-// }
-//
-// public async removeMe(userData: IUserData): Promise<void> {
-//   // userData містить дані користувача, який хоче "видалити" свій обліковий запис
-//   await this.userRepository.update(
-//     { id: userData.userId },
-//     // шукає запис користувача за ідентифікатором userData.userId
-//     { deleted: new Date() },
-//     // встановлює поточну дату та час у поле deleted. Це мітка про "видалення",
-//     // яка позначає, коли обліковий запис був "видалений".
-//     // Це не фізичне видалення, а скоріше позначка,
-//     // що користувач неактивний або "видалений".
-//     // Вся інформація про користувача залишається в базі, і її можна легко відновити.
-//   );
-//   await this.refreshTokenRepository.delete({ user_id: userData.userId });
-//   // видаляє всі токени оновлення (refresh tokens), пов'язані з користувачем
-// }
-//
-// public async findOne(userId: string): Promise<UserEntity> {
-//   await this.isUserExistOrThrow(userId);
-//   return await this.userRepository.findOneBy({ id: userId });
-// }
-//
-// private async isUserExistOrThrow(userId: string): Promise<void> {
-//   const user = await this.userRepository.findOneBy({ id: userId });
-//   if (!user) {
-//     throw new ConflictException('User not found');
-//   }
-// } // перевіряє, чи існує користувач із зазначеним userId у базі даних.
-// // Якщо користувача не знайдено, метод викидає виняток ConflictException із повідомленням
-//
-//
-// public async deleteId(userId: string): Promise<void> {
-//   await this.userRepository.update({ id: userId }, { deleted: new Date() });
-//   await this.refreshTokenRepository.delete({ user_id: userId });
-// }

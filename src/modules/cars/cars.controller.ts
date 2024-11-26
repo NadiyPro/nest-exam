@@ -1,6 +1,6 @@
 import {
   Body,
-  Controller,
+  Controller, Delete,
   Get,
   Param,
   ParseUUIDPipe,
@@ -134,36 +134,36 @@ export class CarsController {
     return await this.carsService.updateCars(carsBrandsId, dto);
   }
 
-  // @ApiBearerAuth()
-  // @UseGuards(ApprovedRoleGuard)
-  // @Role([RoleTypeEnum.MANAGER, RoleTypeEnum.ADMIN])
-  // @ApiOperation({
-  //   summary: 'Для видалення бренду автомобіля за його id',
-  //   description:
-  //     'Користувач може видалити бренд автомобіля по його id. ' +
-  //     'Зверніть увагу! При видалені бренда автомобіля буде каскадно видалено всі моделі закріплені за ним.' +
-  //     'Доступно для ролей: admin, manager',
-  // })
-  // @Delete(':carsBrandsId') // тут додати каскадне видалення всіх моделей в емтіті
-  // public async deleteCarsBrandsId(
-  //   @Param('userId', ParseUUIDPipe) userId: string,
-  // ): Promise<void> {
-  //   return await this.usersService.deleteCarsBrandsId(userId);
-  // }
-  //
-  // @ApiBearerAuth()
-  // @UseGuards(ApprovedRoleGuard)
-  // @Role([RoleTypeEnum.MANAGER, RoleTypeEnum.ADMIN])
-  // @ApiOperation({
-  //   summary: 'Для видалення моделі автомобіля за його id',
-  //   description:
-  //     'Користувач може видалити модель автомобіля по його id.' +
-  //     'Доступно для ролей: admin, manager',
-  // })
-  // @Delete(':carsModelsId')
-  // public async deleteId(
-  //   @Param('carsModelsId', ParseUUIDPipe) userId: string,
-  // ): Promise<void> {
-  //   return await this.usersService.deleteId(userId);
-  // }
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.MANAGER, RoleTypeEnum.ADMIN])
+  @ApiOperation({
+    summary: 'Для видалення бренду автомобіля за його id',
+    description:
+      'Користувач може видалити бренд автомобіля по його id. ' +
+      'Зверніть увагу! При видалені бренда автомобіля буде каскадно видалено всі моделі закріплені за ним.' +
+      'Доступно для ролей: admin, manager',
+  })
+  @Delete(':carsBrandsId') // тут додати каскадне видалення всіх моделей в емтіті
+  public async deleteCarsBrandsId(
+    @Param('carsBrandsId', ParseUUIDPipe) carsBrandsId: string,
+  ): Promise<void> {
+    return await this.carsService.deleteCarsBrandsId(carsBrandsId);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.MANAGER, RoleTypeEnum.ADMIN])
+  @ApiOperation({
+    summary: 'Для видалення моделі автомобіля за його id',
+    description:
+      'Користувач може видалити модель автомобіля по його id.' +
+      'Доступно для ролей: admin, manager',
+  })
+  @Delete(':carsModelsId')
+  public async deleteIdModelsId(
+    @Param('carsModelsId', ParseUUIDPipe) carsModelsId: string,
+  ): Promise<void> {
+    return await this.carsService.deleteIdModelsId(carsModelsId);
+  }
 }
