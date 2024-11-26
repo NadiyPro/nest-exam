@@ -12,12 +12,16 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+import { UserEntity } from '../../infrastructure/postgres/entities/user.entity';
 import { CurrentUser } from '../auth/decorators/current_user.decorator';
 import { SkipAuth } from '../auth/decorators/skip_auth.decorator';
 import { IUserData } from '../auth/models/interfaces/user_data.interface';
+import { EmailTypeEnum } from '../email/enums/email.enum';
+import { EmailService } from '../email/service/email.service';
 import { ApprovedRoleGuard } from '../guards/approved_role.guard';
 import { Role } from '../guards/decorator/role.decorator';
 import { RoleTypeEnum } from '../users/enums/RoleType.enum';
+import { UsersService } from '../users/service/users.service';
 import { CreateCarsReqDto } from './models/dto/req/create_cars.req.dto';
 import { ListCarsQueryReqDto } from './models/dto/req/list-cars-query.req.dto';
 import { CarsResDto } from './models/dto/res/cars.res.dto';
@@ -30,7 +34,11 @@ import { CarsService } from './service/cars.service';
 @ApiTags('Users')
 @Controller('cars')
 export class CarsController {
-  constructor(private readonly carsService: CarsService) {}
+  constructor(
+    private readonly carsService: CarsService,
+    private readonly emailService: EmailService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @ApiOperation({
     summary: 'Для створення запису про автомобіль (бренд та модель)',
@@ -50,26 +58,35 @@ export class CarsController {
     return await this.carsService.createCars(userData, dto);
   }
 
-  // @ApiBearerAuth()
-  // @UseGuards(ApprovedRoleGuard)
-  // @Role([RoleTypeEnum.SELLER])
-  // @ApiOperation({
-  //   summary:
-  //     'Повідомити менеджера, про те що не вистачає зазначеної марки автомобіля (бренд та модель)',
-  //   description:
-  //     'Користувач повідомити менеджера, про те що не вистачає зазначеної марки автомобіля (бренд та модель).' +
-  //     'Після чого, менеджер буде проінформований на пошту і при необхідності додасть його до списку' +
-  //     'Доступно для ролей: admin, manager, seller. ',
-  // })
-  // @SkipAuth()
-  // @Post('cars')
-  // public async create(
-  //   @CurrentUser() userData: IUserData,
-  //   @Body() dto: CreateArticleDto,
-  // ): Promise<ArticleResDto> {
-  //   const result = await this.articlesService.create(userData, dto);
-  //  await this.carsService.createCars(userData, dto);
-  // }
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.SELLER])
+  @ApiOperation({
+    summary:
+      'Повідомити менеджера, про те що не вистачає зазначеної марки автомобіля (бренд та модель)',
+    description:
+      'Користувач повідомити менеджера, про те що не вистачає зазначеної марки автомобіля (бренд та модель).' +
+      'Після чого, менеджер буде проінформований на пошту і при необхідності додасть його до списку' +
+      'Доступно для ролей: admin, manager, seller. ',
+  })
+  @SkipAuth()
+  @Post('cars')
+  public async create(
+    @CurrentUser() userData: IUserData,
+    @Body() dto: CreateCarsReqDto,
+  ): Promise<string> {
+    const [name, email] = await this.usersService.findAllManager();
+    await this.emailService.sendMail(
+      EmailTypeEnum.NEW_CAR,
+      email.email, // пошта менеджера
+      {
+        name: name.name, // імя менеджера
+        brands_name: dto.brands_name,
+        models_name: dto.models_name,
+      },
+    );
+    return 'The request to add a car has been sent to the manager. The manager will check the information and, if necessary, add a car. Thank you for the signal.';
+  }
 
   @ApiOperation({
     summary: 'Для отримання списку всіх брендів авто',

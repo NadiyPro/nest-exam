@@ -106,6 +106,10 @@ export class UsersService {
     // і зберігаємо юзера з імеджом "null"
   }
 
+  public async findAllManager(): Promise<UserEntity[]> {
+    return await this.userRepository.findAllManager();
+  }
+
   public async findOne(userId: string): Promise<UserEntity> {
     await this.isUserExistOrThrow(userId);
     return await this.userRepository.findOneBy({ id: userId });

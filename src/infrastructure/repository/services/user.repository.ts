@@ -21,6 +21,12 @@ export class UserRepository extends Repository<UserEntity> {
     // (дозволяє використовувати всі методи create/findAll/findOne/update/remove/delete і т.п)
   }
 
+  public async findAllManager(): Promise<[UserEntity[]]> {
+    const qb = this.createQueryBuilder('users');
+    qb.where('users.role = :role', { role: RoleTypeEnum.MANAGER });
+    return;
+  }
+
   public async giveRole(
     userId: string,
     role: RoleTypeEnum,
