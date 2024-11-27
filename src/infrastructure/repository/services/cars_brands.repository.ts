@@ -45,24 +45,6 @@ export class CarsBrandsRepository extends Repository<CarsBrandsEntity> {
     qb.orderBy('cars_brands.brands_name', 'ASC');
     return await qb.getManyAndCount();
   }
-
-  // public async findAllCars(
-  //   query: ListCarsQueryReqDto,
-  // ): Promise<[CarsResDto[], number]> {
-  //   const qb = this.createQueryBuilder('cars_brands');
-  //   qb.leftJoinAndSelect('cars_brands.models', 'models');
-  //   qb.leftJoinAndSelect('cars_brands.cars_brands_user', 'user');
-  //   qb.take(query.limit);
-  //   qb.skip(query.offset);
-  //   if (query.search) {
-  //     qb.andWhere(
-  //       '(cars_brands.brands_name ILIKE :search, models.models_name ILIKE :search)',
-  //     );
-  //     qb.setParameter('search', `%${query.search}%`);
-  //   }
-  //   qb.orderBy('cars_brands.brands_name', 'ASC');
-  //   return await qb.getManyAndCount();
-  // }
 }
 // public async findAll(
 //   userData: IUserData,

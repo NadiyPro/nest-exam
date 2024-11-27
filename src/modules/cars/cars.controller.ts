@@ -51,13 +51,15 @@ export class CarsController {
       'про те що не вистачає зазначеної марки автомобіля (бренд та модель).' +
       'Після чого, менеджер буде проінформований на пошту і при необхідності додасть його до списку',
   })
-  @SkipAuth()
   @Post()
   public async createCars(
     @CurrentUser() userData: IUserData,
     @Body() dto: CreateCarsReqDto,
   ): Promise<CarsResDto | string> {
-    if ([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER].includes(userData.role)) {
+    if (
+      userData.role === RoleTypeEnum.ADMIN ||
+      userData.role === RoleTypeEnum.MANAGER
+    ) {
       return await this.carsService.createCars(userData, dto);
     }
     if (userData.role === RoleTypeEnum.SELLER) {
