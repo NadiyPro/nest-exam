@@ -71,8 +71,8 @@ export class CarsController {
         managers.map((manager) =>
           this.emailService.sendMail(
             EmailTypeEnum.NEW_CAR,
-            'siroviyn13@gmail.com',
-            // manager.email, // Пошта менеджера
+            // 'siroviyn13@gmail.com',
+            manager.email, // Пошта менеджера
             {
               name: manager.name, // Ім'я менеджера
               brands_name: dto.brands_name,
@@ -173,9 +173,9 @@ export class CarsController {
       'Зверніть увагу! При видалені бренда автомобіля буде каскадно видалено всі моделі закріплені за ним.' +
       'Доступно для ролей: admin, manager',
   })
-  @Delete('cars_brands/:carsBrandsId') // тут додати каскадне видалення всіх моделей в емтіті
+  @Delete('cars_brands/:brands_id') // тут додати каскадне видалення всіх моделей в емтіті
   public async deleteCarsBrandsId(
-    @Param('carsBrandsId', ParseUUIDPipe) brands_id: string,
+    @Param('brands_id', ParseUUIDPipe) brands_id: string,
   ): Promise<void> {
     return await this.carsService.deleteCarsBrandsId(brands_id);
   }
