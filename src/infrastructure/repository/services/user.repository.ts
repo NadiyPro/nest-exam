@@ -24,11 +24,8 @@ export class UserRepository extends Repository<UserEntity> {
   public async findAllManager(): Promise<UserEntity[]> {
     const manager = await this.createQueryBuilder('user')
       .where('user.role = :role', { role: 'manager' })
-      .getMany(); // getMany повертає масив об'єктів, а не масив масивів
+      .getMany();
     return manager;
-    // const qb = this.createQueryBuilder('users');
-    // qb.where('users.role = :role', { role: RoleTypeEnum.MANAGER });
-    // return;
   }
 
   public async giveRole(

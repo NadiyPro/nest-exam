@@ -18,7 +18,7 @@ export class CarsBrandsRepository extends Repository<CarsBrandsEntity> {
     qb.skip(query.offset);
 
     if (query.search) {
-      qb.andWhere('CONCAT(cars_brands.brands_name) ILIKE :search');
+      qb.andWhere('cars_brands.brands_name ILIKE :search');
       qb.setParameter('search', `%${query.search}%`);
     }
 
@@ -37,7 +37,7 @@ export class CarsBrandsRepository extends Repository<CarsBrandsEntity> {
 
     if (query.search) {
       qb.andWhere(
-        '(cars_brands.brands_name ILIKE :search, models.models_name ILIKE :search, user.id ILIKE :search)',
+        '(cars_brands.brands_name ILIKE :search OR models.models_name ILIKE :search)',
         { search: `%${query.search}%` },
       );
     }
