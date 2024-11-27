@@ -51,6 +51,7 @@ export class TokenService {
       throw new UnauthorizedException('Invalid token');
     }
   }
+
   // перевіряємо токен, чи був він створений з використанням
   // конкретного секретного ключа і чи не закінчився термін його дії
 
@@ -68,6 +69,15 @@ export class TokenService {
     }
     return secret;
   }
+
+  // private getSecretForTokenType(type: TokenType): string {
+  //   if (type === TokenType.ACCESS) {
+  //     return process.env.ACCESS_TOKEN_SECRET;
+  //   } else if (type === TokenType.REFRESH) {
+  //     return process.env.REFRESH_TOKEN_SECRET;
+  //   }
+  //   throw new Error('Invalid token type');
+  // }
   // отримуємо secret і після цього перевіряємо наш токен у verifyToken
   // трохи вище функція
 }

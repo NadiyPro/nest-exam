@@ -27,6 +27,7 @@ import { IUserData } from '../auth/models/interfaces/user_data.interface';
 import { ApprovedRoleGuard } from '../guards/approved_role.guard';
 import { Role } from '../guards/decorator/role.decorator';
 import { RoleTypeEnum } from './enums/RoleType.enum';
+import { GiveRoleDto } from './models/dto/req/give_role.dto';
 import { ListUsersQueryReqDto } from './models/dto/req/list-users-query.req.dto';
 import { UpdateUserReqDto } from './models/dto/req/update_user.req.dto';
 import { ListResQueryDto } from './models/dto/res/list-users-query.res.dto';
@@ -49,13 +50,18 @@ export class UsersController {
   @ApiBearerAuth()
   @UseGuards(ApprovedRoleGuard)
   @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
-  @Patch('role/:id')
+  @Patch('role/:user_id')
   async giveRole(
-    @Param('id') id: string,
-    @Body('role') role: RoleTypeEnum,
-    @Body('currentRole') currentRole: RoleTypeEnum,
-  ): Promise<void> {
-    await this.usersService.giveRole(id, role, currentRole);
+    @Param('user_id') user_id: string,
+    @Body() giveRoleDto: GiveRoleDto,
+    @CurrentUser() userData: IUserData,
+  ): Promise<UserResDto> {
+    const result = await this.usersService.giveRole(
+      user_id,
+      giveRoleDto.new_role,
+      userData.role,
+    );
+    return UserMapper.toResDto(result);
   }
 
   @ApiOperation({

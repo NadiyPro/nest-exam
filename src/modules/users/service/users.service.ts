@@ -24,18 +24,19 @@ export class UsersService {
   ) {}
 
   public async giveRole(
-    userId: string,
+    user_id: string,
+    new_role: RoleTypeEnum,
     role: RoleTypeEnum,
-    currentRole: RoleTypeEnum,
-  ): Promise<void> {
+  ): Promise<UserEntity> {
     if (
-      currentRole === RoleTypeEnum.ADMIN ||
-      (currentRole === RoleTypeEnum.MANAGER &&
-        [RoleTypeEnum.SELLER, RoleTypeEnum.BUYER].includes(role))
+      role === RoleTypeEnum.ADMIN ||
+      (role === RoleTypeEnum.MANAGER &&
+        [RoleTypeEnum.SELLER, RoleTypeEnum.BUYER].includes(new_role))
       // якщо користувач менеджером, то перевіряємо через includes,
       // чи запитана ним роль на видачу є SELLER або BUYER
     ) {
-      await this.userRepository.giveRole(userId, role);
+      const user = await this.userRepository.giveRole(user_id, new_role);
+      return await this.userRepository.save(user);
     } else {
       throw new Error('Permission denied');
     }

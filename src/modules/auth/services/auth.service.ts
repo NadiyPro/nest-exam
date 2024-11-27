@@ -154,7 +154,6 @@ export class AuthService {
         }),
       ),
     ]);
-
     return tokens; // повертаємо пару токенів accessToken і refreshToken
   }
 
