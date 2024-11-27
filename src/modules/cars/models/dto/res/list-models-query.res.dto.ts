@@ -1,7 +1,7 @@
-import { CarsModelsEntity } from '../../../../../infrastructure/postgres/entities/cars_models.entity';
 import { ListCarsQueryReqDto } from '../req/list-cars-query.req.dto';
+import { CarsResDto } from './cars.res.dto';
 
 export class ListModelsResQueryDto extends ListCarsQueryReqDto {
-  cars: CarsModelsEntity[];
+  cars: CarsResDto[];
   total: number;
 }

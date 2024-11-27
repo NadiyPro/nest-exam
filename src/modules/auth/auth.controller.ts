@@ -20,7 +20,6 @@ import { AuthResDto } from './models/dto/res/auth.res.dto';
 import { TokenPairResDto } from './models/dto/res/token_pair.res.dto';
 import { IUserData } from './models/interfaces/user_data.interface';
 import { AuthService } from './services/auth.service';
-import { UserResDto } from '../users/models/dto/res/user.res.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -52,10 +51,6 @@ export class AuthController {
   public async login(@Body() dto: LoginReqDto): Promise<AuthResDto> {
     return await this.authService.login(dto);
   }
-  // signIn - тут проходить аутентифікація,
-  // перевірка чи існує в нас такий юзер з таким то паролем,
-  // якщо існує то генеруємо нову пару токенів
-  // (повторний вхід, перевірка паролю, ат видача нової пари токенів)
 
   @ApiOperation({
     summary: 'Для видалення свого облікового запису користувачем',
@@ -66,9 +61,6 @@ export class AuthController {
   public async signOut(@CurrentUser() userData: IUserData): Promise<void> {
     return await this.authService.signOut(userData);
   }
-  // хочемо переходячи по даному шляху, видалят токени
-  // які належать конкретному юзеру userData
-  // userData містить в собі userId, deviceId, email
 
   @ApiOperation({
     summary: 'Для отримання нової пари токенів',
