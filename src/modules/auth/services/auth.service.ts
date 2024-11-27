@@ -119,8 +119,8 @@ export class AuthService {
         user_id: userData.userId,
         deviceId: userData.deviceId,
       }),
+      this.usersService.deleteId(userData.userId),
     ]);
-    // видаляємо по юзеру всі accessToken та refreshToken токени
   }
 
   public async refresh(userData: IUserData): Promise<TokenPairResDto> {
