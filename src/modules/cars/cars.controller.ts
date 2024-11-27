@@ -95,7 +95,7 @@ export class CarsController {
       'Доступно для ролей: всі',
   })
   @SkipAuth()
-  @Get('cars_brands')
+  @Get('all/cars_brands')
   public async findAllBrands(
     @Query() query: ListCarsQueryReqDto, // Параметри передаються через @Query
   ): Promise<ListBrandResQueryDto> {
@@ -110,7 +110,7 @@ export class CarsController {
       'Доступно для ролей: всі',
   })
   @SkipAuth()
-  @Get('cars_models')
+  @Get('all/cars_models')
   public async findAllModel(
     @Query() query: ListCarsQueryReqDto, // Параметри передаються через @Query
   ): Promise<ListModelsResQueryDto> {
@@ -126,7 +126,7 @@ export class CarsController {
       'Доступно для ролей: всі',
   })
   @SkipAuth()
-  @Get()
+  @Get('all')
   public async findAllCars(
     @Query() query: ListCarsQueryReqDto,
   ): Promise<ListCarsQueryResDto> {
@@ -162,7 +162,7 @@ export class CarsController {
       'Зверніть увагу! При видалені бренда автомобіля буде каскадно видалено всі моделі закріплені за ним.' +
       'Доступно для ролей: admin, manager',
   })
-  @Delete(':carsBrandsId') // тут додати каскадне видалення всіх моделей в емтіті
+  @Delete('cars_brands/:carsBrandsId') // тут додати каскадне видалення всіх моделей в емтіті
   public async deleteCarsBrandsId(
     @Param('carsBrandsId', ParseUUIDPipe) carsBrandsId: string,
   ): Promise<void> {
@@ -178,7 +178,7 @@ export class CarsController {
       'Користувач може видалити модель автомобіля по його id.' +
       'Доступно для ролей: admin, manager',
   })
-  @Delete(':carsModelsId')
+  @Delete('cars_models/:carsModelsId')
   public async deleteIdModelsId(
     @Param('carsModelsId', ParseUUIDPipe) carsModelsId: string,
   ): Promise<void> {
