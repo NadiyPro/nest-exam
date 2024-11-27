@@ -6,8 +6,4 @@ export class GiveRoleDto {
   @IsNotEmpty()
   @IsEnum(RoleTypeEnum)
   new_role: RoleTypeEnum;
-
-  // @IsNotEmpty()
-  // @IsEnum(RoleTypeEnum)
-  // current_role: RoleTypeEnum;
 }

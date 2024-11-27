@@ -1,7 +1,5 @@
 import { PartialType, PickType } from '@nestjs/mapped-types';
 
-// import { AccountTypeEnum } from '../../../enums/AccountType.enum';
-// import { RoleTypeEnum } from '../../../enums/RoleType.enum';
 import { BaseUserReqDto } from './base_user.req.dto';
 
 export class UpdateUserReqDto extends PartialType(
