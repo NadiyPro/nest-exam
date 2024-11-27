@@ -65,11 +65,11 @@ export class CarsService {
   }
 
   public async updateCars(
-    carsBrandsId: string,
+    brands_id: string,
     dto: CreateCarsReqDto,
   ): Promise<CarsResDto> {
     const cars_brands = await this.carsBrandsRepository.findOneBy({
-      id: carsBrandsId,
+      id: brands_id,
     });
     if (!cars_brands) {
       throw new ConflictException('The specified brand does not exist');
@@ -78,7 +78,7 @@ export class CarsService {
     await this.carsBrandsRepository.save(cars_brands);
 
     const cars_model = await this.carsModelsRepository.findOneBy({
-      brands_id: carsBrandsId,
+      brands_id: brands_id,
     });
     if (!cars_model) {
       throw new ConflictException('The specified model does not exist');
@@ -89,16 +89,16 @@ export class CarsService {
     return CarsMapper.toResCreateDto(cars_model, cars_brands);
   }
 
-  public async deleteCarsBrandsId(carsBrandsId: string): Promise<void> {
+  public async deleteCarsBrandsId(brands_id: string): Promise<void> {
     await this.carsBrandsRepository.update(
-      { id: carsBrandsId },
+      { id: brands_id },
       { deleted: new Date() },
     );
   }
 
-  public async deleteIdModelsId(carsModelsId: string): Promise<void> {
+  public async deleteIdModelsId(models_id: string): Promise<void> {
     await this.carsModelsRepository.update(
-      { id: carsModelsId },
+      { id: models_id },
       { deleted: new Date() },
     );
   }

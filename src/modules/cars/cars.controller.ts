@@ -140,18 +140,25 @@ export class CarsController {
   @UseGuards(ApprovedRoleGuard)
   @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
   @ApiOperation({
-    summary: 'Для оновлення запису про автомобіль (бренд/модель)',
+    summary:
+      'Для оновлення конкретного запису про автомобіль (бренд та модель) ' +
+      'по id бренду до якого підвязана конкретна модель',
     description:
-      'Користувач може оновити запис про автомобіль (бренд/модель). ' +
+      'Користувач може оновити запис про автомобіль (бренд та модель) ' +
+      'Вказавши саме brands_id до якого підвязана конкретна модель. ' +
+      'Даний brands_id можна взяти як варіант з cars/all/cars_models.' +
+      'Увага! Для оновлення треба: ' +
+      '1.здійснити пошук потрібного нам автомобіля по brands_id; ' +
+      '2.вказати обовязково два аргументи brands_name та models_name' +
       'Наприклад якщо була допущена помилка в записі та інше.' +
       'Доступно для ролей: admin, manager',
   })
   @Patch(':carsBrandsId')
   public async updateCars(
-    @Param('carsBrandsId', ParseUUIDPipe) carsBrandsId: string,
+    @Param('brands_id', ParseUUIDPipe) brands_id: string,
     @Body() dto: CreateCarsReqDto,
   ): Promise<CarsResDto> {
-    return await this.carsService.updateCars(carsBrandsId, dto);
+    return await this.carsService.updateCars(brands_id, dto);
   }
 
   @ApiBearerAuth()
@@ -166,9 +173,9 @@ export class CarsController {
   })
   @Delete('cars_brands/:carsBrandsId') // тут додати каскадне видалення всіх моделей в емтіті
   public async deleteCarsBrandsId(
-    @Param('carsBrandsId', ParseUUIDPipe) carsBrandsId: string,
+    @Param('carsBrandsId', ParseUUIDPipe) brands_id: string,
   ): Promise<void> {
-    return await this.carsService.deleteCarsBrandsId(carsBrandsId);
+    return await this.carsService.deleteCarsBrandsId(brands_id);
   }
 
   @ApiBearerAuth()
@@ -182,8 +189,8 @@ export class CarsController {
   })
   @Delete('cars_models/:carsModelsId')
   public async deleteIdModelsId(
-    @Param('carsModelsId', ParseUUIDPipe) carsModelsId: string,
+    @Param('models_id', ParseUUIDPipe) models_id: string,
   ): Promise<void> {
-    return await this.carsService.deleteIdModelsId(carsModelsId);
+    return await this.carsService.deleteIdModelsId(models_id);
   }
 }
