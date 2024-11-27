@@ -27,13 +27,13 @@ import { AuthService } from './services/auth.service';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @SkipAuth()
   @ApiOperation({
     summary: 'Для реєстрації облікового запису користувача',
     description:
       'Користувач реєструє свй обліковий запис на платформі.' +
       '*При реєстрації роль buyer автоматично змінюється на роль seller.',
   })
+  @SkipAuth()
   @Post('registration')
   public async registration(
     @Body() dto: RegistrationReqDto,
@@ -42,12 +42,12 @@ export class AuthController {
   }
   // singUp - тут логінація вконується (перший вхід з хешуванням паролю)
 
-  @SkipAuth()
   @ApiOperation({
     summary: 'Для логінації на платформі',
     description:
       'Користувач виконує логінацію для входу на платформу (користувач вже зареєстрований).',
   })
+  @SkipAuth()
   @Post('login')
   public async login(@Body() dto: LoginReqDto): Promise<AuthResDto> {
     return await this.authService.login(dto);
@@ -57,11 +57,11 @@ export class AuthController {
   // якщо існує то генеруємо нову пару токенів
   // (повторний вхід, перевірка паролю, ат видача нової пари токенів)
 
-  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Для видалення свого облікового запису користувачем',
     description: 'Користувач може видалити свій обліковий запис.',
   })
+  @ApiBearerAuth()
   @Post('sign-out')
   public async signOut(@CurrentUser() userData: IUserData): Promise<void> {
     return await this.authService.signOut(userData);
@@ -70,12 +70,12 @@ export class AuthController {
   // які належать конкретному юзеру userData
   // userData містить в собі userId, deviceId, email
 
-  @ApiBearerAuth()
-  @UseGuards(Jwt_refreshGuard)
   @ApiOperation({
     summary: 'Для отримання нової пари токенів',
     description: 'Для отримання нової пари токенів.',
   })
+  @ApiBearerAuth()
+  @UseGuards(Jwt_refreshGuard)
   @Post('refresh')
   public async refresh(
     @CurrentUser() userData: IUserData,
@@ -83,9 +83,6 @@ export class AuthController {
     return await this.authService.refresh(userData);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(ApprovedRoleGuard)
-  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
   @ApiOperation({
     summary:
       'Для видалення облікового запису користувача за його user_id ("бан")',
@@ -93,6 +90,9 @@ export class AuthController {
       'Користувач може видалити обліковий запис іншого користувача за його user_id, ' +
       'таким чином поставити користувача в "бан". Доступно для ролей: admin, manager',
   })
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
   @Post('sign-out/:user_id,')
   public async signOutUserId(
     @Param('user_id', ParseUUIDPipe) user_id: string,

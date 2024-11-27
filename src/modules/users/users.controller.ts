@@ -39,9 +39,6 @@ import { UsersService } from './service/users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiBearerAuth()
-  @UseGuards(ApprovedRoleGuard)
-  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
   @ApiOperation({
     summary: 'Для видачі ролей',
     description:
@@ -49,6 +46,9 @@ export class UsersController {
       '- Користувач з ролью admin може видавати всім всі ролі;' +
       'admin, manager, seller',
   })
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
   @Patch('role/:id')
   async giveRole(
     @Param('id') id: string,
@@ -58,30 +58,30 @@ export class UsersController {
     await this.usersService.giveRole(id, role, currentRole);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(ApprovedRoleGuard)
-  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @ApiOperation({
     summary: 'Для отримання інформації користувачем про свій обліковий запис',
     description:
       'Користувач може отримати інформацію про свій обліковий запис.' +
       'Доступно для ролей: admin, manager, seller',
   })
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @Get('me')
   public async findMe(@CurrentUser() userData: IUserData) {
     const result = await this.usersService.findMe(userData);
     return UserMapper.toResDto(result);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(ApprovedRoleGuard)
-  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @ApiOperation({
     summary: 'Для оновлення свого облікового запису користувачем',
     description:
       'Користувач може оновити свій обліковий запис.' +
       'Доступно для ролей: admin, manager, seller',
   })
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @Patch('me')
   public async updateMe(
     @CurrentUser() userData: IUserData,
@@ -105,15 +105,15 @@ export class UsersController {
     return await this.usersService.removeMe(userData);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(ApprovedRoleGuard)
-  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @ApiOperation({
     summary: 'Для завантаження avatar користувачем у свій обліковий запис',
     description:
       'Користувач може завантажити avatar у свій обліковий запис.' +
       'Доступно для ролей: admin, manager, seller',
   })
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('avatar'))
   @ApiFile('avatar', false, true)
@@ -125,15 +125,15 @@ export class UsersController {
     await this.usersService.uploadAvatar(userData, file);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(ApprovedRoleGuard)
-  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @ApiOperation({
     summary: 'Для видалення avatar користувачем із свого облікового запису',
     description:
       'Користувач може видалити avatar із свого облікового запису.' +
       'Доступно для ролей: admin, manager, seller',
   })
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @Delete('me/avatar')
   public async deleteAvatar(@CurrentUser() userData: IUserData): Promise<void> {
     await this.usersService.deleteAvatar(userData);
@@ -170,15 +170,15 @@ export class UsersController {
     return UserMapper.toResDto(result);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(ApprovedRoleGuard)
-  @Role([RoleTypeEnum.MANAGER, RoleTypeEnum.ADMIN])
   @ApiOperation({
     summary: 'Для видалення облікового запису користувача за його id',
     description:
       'Користувач може видалити обліковий запис іншого користувача по його id.' +
       'Доступно для ролей: admin, manager',
   })
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.MANAGER, RoleTypeEnum.ADMIN])
   @Delete(':userId')
   public async deleteId(
     @Param('userId', ParseUUIDPipe) userId: string,
