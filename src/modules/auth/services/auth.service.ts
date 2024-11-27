@@ -3,7 +3,6 @@ import * as bcrypt from 'bcrypt';
 
 import { RefreshTokenRepository } from '../../../infrastructure/repository/services/refresh-token.repository';
 import { UserRepository } from '../../../infrastructure/repository/services/user.repository';
-import { RoleTypeEnum } from '../../users/enums/RoleType.enum';
 import { UserMapper } from '../../users/service/user.mapper';
 import { UsersService } from '../../users/service/users.service';
 import { LoginReqDto } from '../models/dto/req/login.req.dto';
@@ -68,7 +67,7 @@ export class AuthService {
     }
   }
 
-  public async login(dto: LoginReqDto): Promise<any> {
+  public async login(dto: LoginReqDto): Promise<AuthResDto> {
     const user = await this.userRepository.findOne({
       where: { email: dto.email }, // знаходимо користувача за електронною поштою
       select: ['id', 'password'],

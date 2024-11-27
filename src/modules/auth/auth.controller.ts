@@ -11,7 +11,6 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApprovedRoleGuard } from '../guards/approved_role.guard';
 import { Role } from '../guards/decorator/role.decorator';
 import { RoleTypeEnum } from '../users/enums/RoleType.enum';
-import { UsersService } from '../users/service/users.service';
 import { CurrentUser } from './decorators/current_user.decorator';
 import { SkipAuth } from './decorators/skip_auth.decorator';
 import { Jwt_refreshGuard } from './guards/jwt_refresh.guard';
@@ -21,6 +20,7 @@ import { AuthResDto } from './models/dto/res/auth.res.dto';
 import { TokenPairResDto } from './models/dto/res/token_pair.res.dto';
 import { IUserData } from './models/interfaces/user_data.interface';
 import { AuthService } from './services/auth.service';
+import { UserResDto } from '../users/models/dto/res/user.res.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
