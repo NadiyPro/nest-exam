@@ -5,6 +5,7 @@ import { RefreshTokenRepository } from '../../../infrastructure/repository/servi
 import { UserRepository } from '../../../infrastructure/repository/services/user.repository';
 import { RoleTypeEnum } from '../../users/enums/RoleType.enum';
 import { UserMapper } from '../../users/service/user.mapper';
+import { UsersService } from '../../users/service/users.service';
 import { LoginReqDto } from '../models/dto/req/login.req.dto';
 import { RegistrationReqDto } from '../models/dto/req/registration.req.dto';
 import { AuthResDto } from '../models/dto/res/auth.res.dto';
@@ -19,6 +20,7 @@ export class AuthService {
     private readonly authCacheService: AuthCacheService,
     private readonly tokenService: TokenService,
     private readonly userRepository: UserRepository,
+    private readonly usersService: UsersService,
     private readonly refreshTokenRepository: RefreshTokenRepository,
   ) {}
 
@@ -32,7 +34,7 @@ export class AuthService {
       this.userRepository.create({
         ...dto,
         password,
-        role: RoleTypeEnum.SELLER,
+        // role: RoleTypeEnum.SELLER,
       }),
     );
 
@@ -162,6 +164,7 @@ export class AuthService {
       this.refreshTokenRepository.delete({
         user_id: user_id,
       }),
+      this.usersService.deleteId(user_id),
     ]);
   }
 }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 
 import { AuthModule } from '../auth/auth.module';
 import { FileStorageModule } from '../file-storage/file-storage.module';
@@ -8,7 +8,7 @@ import { UsersController } from './users.controller';
 @Module({
   imports: [
     // forwardRef(() => AdvertisementModule),
-    AuthModule,
+    forwardRef(() => AuthModule),
     FileStorageModule,
   ],
   // імпортуємо інший модуль (ArticlesModule) з використанням функції forwardRef.

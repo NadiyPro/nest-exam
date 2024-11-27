@@ -39,6 +39,9 @@ import { UsersService } from './service/users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
   @ApiOperation({
     summary: 'Для видачі ролей',
     description:
@@ -88,15 +91,15 @@ export class UsersController {
     return UserMapper.toResDto(result);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(ApprovedRoleGuard)
-  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @ApiOperation({
     summary: 'Для видалення користувачем свого облікового запису',
     description:
       'Користувач може видалити свій обліковий запис.' +
       'Доступно для ролей: admin, manager, seller',
   })
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @Delete('me')
   public async removeMe(@CurrentUser() userData: IUserData) {
     return await this.usersService.removeMe(userData);
