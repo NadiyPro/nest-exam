@@ -12,9 +12,9 @@ export class CarsMapper {
     brands: CarsBrandsEntity,
   ): CarsResDto {
     return {
-      id: models.id,
       brands_id: models.brands_id,
       brands_name: brands.brands_name,
+      models_id: models.models_id,
       models_name: models.models_name,
       user_id: models.user_id,
     };
@@ -22,7 +22,7 @@ export class CarsMapper {
   // для Brands
   public static toCarData(car: CarsBrandsEntity): CarsBrandsEntity {
     return {
-      id: car.id,
+      brands_id: car.brands_id,
       brands_name: car.brands_name,
       user_id: car.user_id,
     } as CarsBrandsEntity; // Приведення до типу для коректності
@@ -42,9 +42,9 @@ export class CarsMapper {
   // для Models
   public static toModelsrData(car: CarsModelsEntity): CarsModelsEntity {
     return {
-      id: car.id,
+      models_id: car.models_id,
       models_name: car.models_name,
-      brands_id: car.brands_id, // Виправлено
+      brands_id: car.brands_id,
       user_id: car.user_id,
     } as CarsModelsEntity;
   }
@@ -69,9 +69,9 @@ export class CarsMapper {
     const cars = entities
       .map((brand) => {
         return brand.models.map((model) => ({
-          id: model.id,
-          brands_id: brand.id,
+          brands_id: brand.brands_id,
           brands_name: brand.brands_name,
+          models_id: model.models_id,
           models_name: model.models_name,
           user_id: brand.user_id,
         }));
@@ -84,49 +84,4 @@ export class CarsMapper {
       total,
     };
   }
-  // public static toAllResDto(entities: CarsBrandsEntity[]): CarsResDto[] {
-  //   return entities.map((entity) => ({
-  //     id: entity.id,
-  //     brands_id: entity.id,
-  //     brands_name: entity.brands_name,
-  //     models_name: entity.models.map((model) => model.models_name).join(', '),
-  //     user_id: entity.user_id,
-  //   }));
-  // }
-  //
-  // public static toAllResDtoCars(
-  //   entities: CarsBrandsEntity[],
-  //   total: number,
-  //   query: ListCarsQueryReqDto,
-  // ): ListCarsQueryResDto {
-  //   const cars = this.toAllResDto(entities);
-  //   return {
-  //     ...query,
-  //     cars,
-  //     total,
-  //   };
-  // }
 }
-
-//
-// public static toIUserData(
-//   user: UserEntity,
-//   jwtPayload: IJwtPayload,
-// ): IUserData {
-//   return {
-//     userId: user.id,
-//     deviceId: jwtPayload.deviceId,
-//     email: user.email,
-//     accountType: user.accountType,
-//     role: user.role,
-//   };
-// }
-//
-// public static toAllResDtoList(
-//   users: UserEntity[],
-//   total: number,
-//   query: ListUsersQueryReqDto,
-// ): ListResQueryDto {
-//   return { users: users.map(this.toResDto), total, ...query };
-// }
-// кількість юзерів, поля query передані в моделі (limit, offset, search)

@@ -148,7 +148,7 @@ export class CarsController {
     description:
       'Користувач може оновити запис про автомобіль (бренд та модель) ' +
       'Вказавши саме brands_id до якого підвязана конкретна модель. ' +
-      'Даний brands_id можна взяти як варіант з cars/all/cars_models.' +
+      'Даний brands_id можна взяти як варіант з cars/all/cars_brands.' +
       'Увага! Для оновлення треба: ' +
       '1.здійснити пошук потрібного нам автомобіля по brands_id; ' +
       '2.вказати обовязково два аргументи brands_name та models_name' +
@@ -163,6 +163,23 @@ export class CarsController {
     return await this.carsService.updateCars(brands_id, dto);
   }
 
+  // @ApiBearerAuth()
+  // @UseGuards(ApprovedRoleGuard)
+  // @Role([RoleTypeEnum.MANAGER, RoleTypeEnum.ADMIN])
+  // @ApiOperation({
+  //   summary: 'Для видалення моделі автомобіля за його id',
+  //   description:
+  //     'Користувач може видалити модель автомобіля по його id.' +
+  //     'Зверніть увагу! При видалені моделі автомобіля буде каскадно видалено всі моделі закріплені за ним.' +
+  //     'Доступно для ролей: admin, manager',
+  // })
+  // @Delete('cars_models/:carsModelsId')
+  // public async deleteCarsId(
+  //   @Param('models_id', ParseUUIDPipe) models_id: string,
+  // ): Promise<void> {
+  //   return await this.carsService.deleteIdModelsId(models_id);
+  // }
+
   @ApiBearerAuth()
   @UseGuards(ApprovedRoleGuard)
   @Role([RoleTypeEnum.MANAGER, RoleTypeEnum.ADMIN])
@@ -170,7 +187,6 @@ export class CarsController {
     summary: 'Для видалення бренду автомобіля за його id',
     description:
       'Користувач може видалити бренд автомобіля по його id. ' +
-      'Зверніть увагу! При видалені бренда автомобіля буде каскадно видалено всі моделі закріплені за ним.' +
       'Доступно для ролей: admin, manager',
   })
   @Delete('cars_brands/:brands_id') // тут додати каскадне видалення всіх моделей в емтіті
@@ -189,11 +205,11 @@ export class CarsController {
     summary: 'Для видалення моделі автомобіля за його id',
     description:
       'Користувач може видалити модель автомобіля по його id.' +
+      'Зверніть увагу! При видалені моделі автомобіля буде каскадно видалено всі моделі закріплені за ним.' +
       'Доступно для ролей: admin, manager',
   })
-  @Delete('cars_models/:carsModelsId')
+  @Delete('cars_models/:models_id')
   public async deleteIdModelsId(
-    @CurrentUser() user: IUserData,
     @Param('models_id', ParseUUIDPipe) models_id: string,
   ): Promise<void> {
     return await this.carsService.deleteIdModelsId(models_id);

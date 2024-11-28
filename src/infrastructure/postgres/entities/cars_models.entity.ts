@@ -14,9 +14,9 @@ import { UserEntity } from './user.entity';
 @Entity(TableNameEnum.CARS_MODELS)
 export class CarsModelsEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  models_id: string;
 
-  @Column('text', { unique: true })
+  @Column('text')
   models_name: string;
 
   @Column()
@@ -25,9 +25,7 @@ export class CarsModelsEntity extends CreateUpdateModel {
   @Column('timestamp', { nullable: true })
   deleted: Date | null;
 
-  @ManyToOne(() => CarsBrandsEntity, (entity) => entity.models, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(() => CarsBrandsEntity, (entity) => entity.models)
   @JoinColumn({ name: 'brands_id' })
   cars_brands_models: CarsBrandsEntity;
 

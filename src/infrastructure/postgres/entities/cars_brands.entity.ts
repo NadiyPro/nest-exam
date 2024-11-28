@@ -15,7 +15,7 @@ import { UserEntity } from './user.entity';
 @Entity(TableNameEnum.CARS_BRANDS)
 export class CarsBrandsEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  brands_id: string;
 
   @Column('text')
   brands_name: string;
