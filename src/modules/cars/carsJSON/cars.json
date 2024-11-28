@@ -1,0 +1,12 @@
+{
+  "cars": [
+    {
+      "cars_brands": "BMW",
+      "cars_models": ["X5"]
+    },
+    {
+      "cars_brands": "Daewoo",
+      "cars_models": ["Lanos"]
+    }
+  ]
+}

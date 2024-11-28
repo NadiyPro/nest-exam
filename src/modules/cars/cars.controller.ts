@@ -22,6 +22,7 @@ import { ApprovedRoleGuard } from '../guards/approved_role.guard';
 import { Role } from '../guards/decorator/role.decorator';
 import { RoleTypeEnum } from '../users/enums/RoleType.enum';
 import { UsersService } from '../users/service/users.service';
+import { CarsJSONService } from './carsJSON/service/carsJSON.service';
 import { CreateCarsReqDto } from './models/dto/req/create_cars.req.dto';
 import { ListCarsQueryReqDto } from './models/dto/req/list-cars-query.req.dto';
 import { CarsResDto } from './models/dto/res/cars.res.dto';
@@ -30,7 +31,6 @@ import { ListCarsQueryResDto } from './models/dto/res/list-cars-query.res.dto';
 import { ListModelsResQueryDto } from './models/dto/res/list-models-query.res.dto';
 import { CarsMapper } from './service/cars.mapper';
 import { CarsService } from './service/cars.service';
-// import { CarsDeletedResDto } from './models/dto/res/cars.deleted.res.dto';
 
 @ApiTags('Cars')
 @Controller('cars')
@@ -39,7 +39,23 @@ export class CarsController {
     private readonly carsService: CarsService,
     private readonly emailService: EmailService,
     private readonly usersService: UsersService,
+    private readonly carsJSONService: CarsJSONService,
   ) {}
+
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN])
+  @ApiOperation({
+    summary: 'Завантажити з файлу JSON автомобілі для тестування',
+    description:
+      'Користувач з ролью admin може завантажити з файлу JSON автомобілі для тестування' +
+      'Доступно для ролей: admin',
+  })
+  @Post('import')
+  async importCars(@CurrentUser() userData: IUserData): Promise<string> {
+    await this.carsJSONService.importCarsJSON(userData.userId);
+    return 'Car data has been successfully imported into the database.';
+  }
 
   @ApiBearerAuth()
   @UseGuards(ApprovedRoleGuard)
