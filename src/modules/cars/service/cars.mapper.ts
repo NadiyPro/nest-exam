@@ -5,6 +5,7 @@ import { CarsResDto } from '../models/dto/res/cars.res.dto';
 import { ListBrandResQueryDto } from '../models/dto/res/list-brand-query.res.dto';
 import { ListCarsQueryResDto } from '../models/dto/res/list-cars-query.res.dto';
 import { ListModelsResQueryDto } from '../models/dto/res/list-models-query.res.dto';
+import { CarsDeletedResDto } from '../models/dto/res/cars.deleted.res.dto';
 
 export class CarsMapper {
   public static toResCreateDto(
@@ -82,6 +83,20 @@ export class CarsMapper {
       ...query,
       cars,
       total,
+    };
+  }
+
+  public static toResDeleteDto(
+    models: CarsModelsEntity,
+    brands: CarsBrandsEntity,
+  ): CarsDeletedResDto {
+    return {
+      brands_id: models.brands_id,
+      brands_name: brands.brands_name,
+      models_id: models.models_id,
+      models_name: models.models_name,
+      user_id: models.user_id,
+      deleted: models.deleted,
     };
   }
 }
