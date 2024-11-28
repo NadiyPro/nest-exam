@@ -175,8 +175,10 @@ export class CarsController {
   })
   @Delete('cars_brands/:brands_id') // тут додати каскадне видалення всіх моделей в емтіті
   public async deleteCarsBrandsId(
+    @CurrentUser() user: IUserData,
     @Param('brands_id', ParseUUIDPipe) brands_id: string,
   ): Promise<void> {
+    console.log('User performing action:', user.role);
     return await this.carsService.deleteCarsBrandsId(brands_id);
   }
 
@@ -191,6 +193,7 @@ export class CarsController {
   })
   @Delete('cars_models/:carsModelsId')
   public async deleteIdModelsId(
+    @CurrentUser() user: IUserData,
     @Param('models_id', ParseUUIDPipe) models_id: string,
   ): Promise<void> {
     return await this.carsService.deleteIdModelsId(models_id);
