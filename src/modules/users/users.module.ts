@@ -4,10 +4,10 @@ import { AuthModule } from '../auth/auth.module';
 import { FileStorageModule } from '../file-storage/file-storage.module';
 import { UsersService } from './service/users.service';
 import { UsersController } from './users.controller';
+import { UsersJSONService } from './usersJSON/service/usersJSON.service';
 
 @Module({
   imports: [
-    // forwardRef(() => AdvertisementModule),
     forwardRef(() => AuthModule),
     FileStorageModule,
   ],
@@ -16,8 +16,7 @@ import { UsersController } from './users.controller';
   // але спочатку підключи один з них, а потім повернись до другого".
   // Це розриває циклічну залежність.
   controllers: [UsersController],
-  providers: [UsersService],
-  exports: [UsersService],
-  // ставимо на експорт, оскільки даний сервіс ми використовуємо ще в ArticlesService
+  providers: [UsersService, UsersJSONService],
+  exports: [UsersService, UsersJSONService],
 })
 export class UsersModule {}

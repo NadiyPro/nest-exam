@@ -52,7 +52,7 @@ export class CarsController {
       'Доступно для ролей: admin',
   })
   @Post('import')
-  async importCars(@CurrentUser() userData: IUserData): Promise<string> {
+  async importCarsJSON(@CurrentUser() userData: IUserData): Promise<string> {
     await this.carsJSONService.importCarsJSON(userData.userId);
     return 'Car data has been successfully imported into the database.';
   }

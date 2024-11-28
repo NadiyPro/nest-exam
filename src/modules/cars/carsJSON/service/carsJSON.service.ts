@@ -4,6 +4,7 @@ import { DataSource } from 'typeorm';
 
 import { CarsBrandsEntity } from '../../../../infrastructure/postgres/entities/cars_brands.entity';
 import { CarsModelsEntity } from '../../../../infrastructure/postgres/entities/cars_models.entity';
+import { CreateCarsReqDto } from '../../models/dto/req/create_cars.req.dto';
 
 @Injectable()
 export class CarsJSONService implements OnModuleInit {
@@ -12,7 +13,8 @@ export class CarsJSONService implements OnModuleInit {
   onModuleInit(): void {}
 
   private readJSON(): {
-    cars: { cars_brands: string; cars_models: string[] }[];
+    cars: CreateCarsReqDto[];
+    // cars: { brands_name: string; models_name: string[] }[];
   } {
     const filePath =
       'C:/Users/User/nest-exam/src/modules/cars/carsJSON/cars.json';
@@ -23,49 +25,46 @@ export class CarsJSONService implements OnModuleInit {
   public async importCarsJSON(userId: string): Promise<void> {
     const data = this.readJSON();
 
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    const qb = this.dataSource.createQueryRunner();
+    await qb.connect();
+    await qb.startTransaction();
 
     try {
       for (const car of data.cars) {
-        let brand = await queryRunner.manager.findOne(CarsBrandsEntity, {
-          where: { brands_name: car.cars_brands },
+        let brand = await qb.manager.findOne(CarsBrandsEntity, {
+          where: { brands_name: car.brands_name },
         });
 
         if (!brand) {
-          brand = queryRunner.manager.create(CarsBrandsEntity, {
-            brands_name: car.cars_brands,
+          brand = qb.manager.create(CarsBrandsEntity, {
+            brands_name: car.brands_name,
             user_id: userId,
           });
-          await queryRunner.manager.save(brand);
+          await qb.manager.save(brand);
         }
 
-        for (const model of car.cars_models) {
-          const existingModel = await queryRunner.manager.findOne(
-            CarsModelsEntity,
-            {
-              where: { models_name: model, brands_id: brand.brands_id },
-            },
-          );
+        for (const model of car.models_name) {
+          const models = await qb.manager.findOne(CarsModelsEntity, {
+            where: { models_name: model, brands_id: brand.brands_id },
+          });
 
-          if (!existingModel) {
-            const newModel = queryRunner.manager.create(CarsModelsEntity, {
+          if (!models) {
+            const newModel = qb.manager.create(CarsModelsEntity, {
               models_name: model,
               brands_id: brand.brands_id,
               user_id: userId,
             });
-            await queryRunner.manager.save(newModel);
+            await qb.manager.save(newModel);
           }
         }
       }
 
-      await queryRunner.commitTransaction();
+      await qb.commitTransaction();
     } catch (error) {
-      await queryRunner.rollbackTransaction();
+      await qb.rollbackTransaction();
       throw error;
     } finally {
-      await queryRunner.release();
+      await qb.release();
     }
   }
 }

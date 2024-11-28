@@ -1,12 +1,12 @@
 {
   "cars": [
     {
-      "cars_brands": "BMW",
-      "cars_models": ["X5"]
+      "brands_name": "BMW",
+      "models_name": ["X5"]
     },
     {
-      "cars_brands": "Daewoo",
-      "cars_models": ["Lanos"]
+      "brands_name": "Toyota",
+      "models_name": ["Prado"]
     }
   ]
 }

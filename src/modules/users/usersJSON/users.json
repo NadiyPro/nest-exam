@@ -1,0 +1,76 @@
+{
+  "users": [
+    {
+      "name": "Sergey",
+      "email": ["Sergey123@gmail.com"],
+      "password": ["Sergey1!№3aS5df"],
+      "phone": ["380987654321"],
+      "accountType": ["premium"],
+      "role": ["admin"]
+    },
+    {
+      "name": "Nadia",
+      "email": ["Nadia123@gmail.com"],
+      "password": ["Nadia2&Nv56!"],
+      "phone": ["380876543219"],
+      "accountType": ["premium"],
+      "role": ["admin"]
+    },
+    {
+      "name": "Malcolm",
+      "email": ["Nadia123@gmail.com"],
+      "password": ["Malcolm235%bMsa"],
+      "phone": ["380765432198"],
+      "accountType": ["premium"],
+      "role": ["manager"]
+    },
+    {
+      "name": "John",
+      "email": ["Nadia123@gmail.com"],
+      "password": ["John!125ghj#kD52"],
+      "phone": ["380654321987"],
+      "accountType": ["premium"],
+      "role": ["manager"]
+    },
+    {
+      "name": "Fatima",
+      "email": ["Fatima123@gmail.com"],
+      "password": ["Fatima15&#fghF"],
+      "phone": ["380543219876"],
+      "accountType": ["premium"],
+      "role": ["seller"]
+    },
+    {
+      "name": "Leonard",
+      "email": ["Leonard123@gmail.com"],
+      "password": ["Leonar1d&f!L42f"],
+      "phone": ["380432198765"],
+      "accountType": ["premium"],
+      "role": ["seller"]
+    },
+    {
+      "name": "Mark",
+      "email": ["MarkMark123@gmail.com"],
+      "password": ["Mark96fds&#vfO"],
+      "phone": ["380321987654"],
+      "accountType": ["basic"],
+      "role": ["seller"]
+    },
+    {
+      "name": "Julia",
+      "email": ["Julia123@gmail.com"],
+      "password": ["Julia%gd&12Hd"],
+      "phone": ["380219876543"],
+      "accountType": ["basic"],
+      "role": ["seller"]
+    },
+    {
+      "name": "Nicholas",
+      "email": ["Nicholas123@gmail.com"],
+      "password": ["Nicholas&f156#6V"],
+      "phone": ["380198765432"],
+      "accountType": ["basic"],
+      "role": ["seller"]
+    }
+  ]
+}

@@ -34,11 +34,30 @@ import { ListResQueryDto } from './models/dto/res/list-users-query.res.dto';
 import { UserResDto } from './models/dto/res/user.res.dto';
 import { UserMapper } from './service/user.mapper';
 import { UsersService } from './service/users.service';
+import { UsersJSONService } from './usersJSON/service/usersJSON.service';
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly usersJSONService: UsersJSONService,
+  ) {}
+
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN])
+  @ApiOperation({
+    summary: 'Завантажити з файлу JSON користувачів для тестування',
+    description:
+      'Користувач з ролью admin може завантажити з файлу JSON користувачів для тестування' +
+      'Доступно для ролей: admin',
+  })
+  @Post('import')
+  async importCarsJSON(): Promise<string> {
+    await this.usersJSONService.importUsersJSON();
+    return 'Users data has been successfully imported into the database.';
+  }
 
   @ApiOperation({
     summary: 'Для видачі ролей',
