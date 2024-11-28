@@ -14,7 +14,6 @@ import { UserEntity } from './user.entity';
 @Entity(TableNameEnum.CARS_MODELS)
 export class CarsModelsEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('uuid')
-  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column('text', { unique: true })
