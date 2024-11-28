@@ -30,7 +30,7 @@ import { ListCarsQueryResDto } from './models/dto/res/list-cars-query.res.dto';
 import { ListModelsResQueryDto } from './models/dto/res/list-models-query.res.dto';
 import { CarsMapper } from './service/cars.mapper';
 import { CarsService } from './service/cars.service';
-import { CarsDeletedResDto } from './models/dto/res/cars.deleted.res.dto';
+// import { CarsDeletedResDto } from './models/dto/res/cars.deleted.res.dto';
 
 @ApiTags('Cars')
 @Controller('cars')
@@ -168,51 +168,15 @@ export class CarsController {
   @UseGuards(ApprovedRoleGuard)
   @Role([RoleTypeEnum.MANAGER, RoleTypeEnum.ADMIN])
   @ApiOperation({
-    summary: 'Для видалення моделі автомобіля за його id',
+    summary: 'Для видалення автомобіля за його id (бренда та модель)',
     description:
-      'Користувач може видалити модель автомобіля по його id.' +
-      'Зверніть увагу! При видалені моделі автомобіля буде каскадно видалено всі моделі закріплені за ним.' +
+      'Користувач може видалити модель автомобіля по його id (бренд та модель).' +
       'Доступно для ролей: admin, manager',
   })
   @Delete('brands_id/:brands_id')
   public async deleteCars(
     @Param('brands_id', ParseUUIDPipe) brands_id: string,
-  ): Promise<CarsDeletedResDto> {
+  ): Promise<string> {
     return await this.carsService.deleteCars(brands_id);
   }
-
-  // @ApiBearerAuth()
-  // @UseGuards(ApprovedRoleGuard)
-  // @Role([RoleTypeEnum.MANAGER, RoleTypeEnum.ADMIN])
-  // @ApiOperation({
-  //   summary: 'Для видалення бренду автомобіля за його id',
-  //   description:
-  //     'Користувач може видалити бренд автомобіля по його id. ' +
-  //     'Доступно для ролей: admin, manager',
-  // })
-  // @Delete('cars_brands/:brands_id') // тут додати каскадне видалення всіх моделей в емтіті
-  // public async deleteCarsBrandsId(
-  //   @CurrentUser() user: IUserData,
-  //   @Param('brands_id', ParseUUIDPipe) brands_id: string,
-  // ): Promise<void> {
-  //   console.log('User performing action:', user.role);
-  //   return await this.carsService.deleteCarsBrandsId(brands_id);
-  // }
-  //
-  // @ApiBearerAuth()
-  // @UseGuards(ApprovedRoleGuard)
-  // @Role([RoleTypeEnum.MANAGER, RoleTypeEnum.ADMIN])
-  // @ApiOperation({
-  //   summary: 'Для видалення моделі автомобіля за його id',
-  //   description:
-  //     'Користувач може видалити модель автомобіля по його id.' +
-  //     'Зверніть увагу! При видалені моделі автомобіля буде каскадно видалено всі моделі закріплені за ним.' +
-  //     'Доступно для ролей: admin, manager',
-  // })
-  // @Delete('cars_models/:models_id')
-  // public async deleteIdModelsId(
-  //   @Param('models_id', ParseUUIDPipe) models_id: string,
-  // ): Promise<void> {
-  //   return await this.carsService.deleteIdModelsId(models_id);
-  // }
 }

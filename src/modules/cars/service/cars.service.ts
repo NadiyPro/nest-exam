@@ -7,9 +7,9 @@ import { CarsModelsRepository } from '../../../infrastructure/repository/service
 import { IUserData } from '../../auth/models/interfaces/user_data.interface';
 import { CreateCarsReqDto } from '../models/dto/req/create_cars.req.dto';
 import { ListCarsQueryReqDto } from '../models/dto/req/list-cars-query.req.dto';
+// import { CarsDeletedResDto } from '../models/dto/res/cars.deleted.res.dto';
 import { CarsResDto } from '../models/dto/res/cars.res.dto';
 import { CarsMapper } from './cars.mapper';
-import { CarsDeletedResDto } from '../models/dto/res/cars.deleted.res.dto';
 
 @Injectable()
 export class CarsService {
@@ -84,39 +84,13 @@ export class CarsService {
     return CarsMapper.toResCreateDto(cars_model, cars_brands);
   }
 
-  public async deleteCars(brands_id: string): Promise<CarsDeletedResDto> {
+  public async deleteCars(brands_id: string): Promise<string> {
     const cars_brands = await this.carsBrandsRepository.findOneBy({ brands_id });
     if (!cars_brands) {
       throw new ConflictException('The specified brand does not exist');
     }
-    cars_brands.brands_name = 'delete';
-    cars_brands.deleted = new Date();
-    await this.carsBrandsRepository.save(cars_brands);
-
-    const cars_model = await this.carsModelsRepository.findOneBy({
-      brands_id: brands_id,
-    });
-    if (!cars_model) {
-      throw new ConflictException('The specified model does not exist');
-    }
-    cars_model.models_name = 'delete';
-    cars_model.deleted = new Date();
-    await this.carsModelsRepository.save(cars_model);
-
-    return CarsMapper.toResDeleteDto(cars_model, cars_brands);
+    await this.carsModelsRepository.delete({ brands_id });
+    await this.carsBrandsRepository.delete({ brands_id });
+    return 'Auto deleted successfully';
   }
-
-  // public async deleteCarsBrandsId(brands_id: string): Promise<void> {
-  //   await this.carsBrandsRepository.update(
-  //     { brands_id: brands_id },
-  //     { deleted: new Date() },
-  //   );
-  // }
-  //
-  // public async deleteIdModelsId(models_id: string): Promise<void> {
-  //   await this.carsModelsRepository.update(
-  //     { models_id: models_id },
-  //     { deleted: new Date() },
-  //   );
-  // }
 }
