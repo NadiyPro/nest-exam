@@ -40,9 +40,6 @@ export class UserEntity extends CreateUpdateModel {
   @Column('text', { default: AccountTypeEnum.BASIC })
   accountType: AccountTypeEnum;
 
-  // @Column('text', { default: RoleTypeEnum.SELLER })
-  // role: RoleTypeEnum;
-
   @Column({ type: 'enum', default: RoleTypeEnum.BUYER, enum: RoleTypeEnum })
   role: RoleTypeEnum;
 

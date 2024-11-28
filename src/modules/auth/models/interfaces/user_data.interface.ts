@@ -8,4 +8,5 @@ export interface IUserData {
   accountType: AccountTypeEnum;
   role: RoleTypeEnum;
   dealership?: string;
+  deleted: Date | null;
 }

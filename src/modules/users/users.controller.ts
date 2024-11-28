@@ -82,7 +82,7 @@ export class UsersController {
   @ApiOperation({
     summary: 'Для оновлення свого облікового запису користувачем',
     description:
-      'Користувач може оновити свій обліковий запис.' +
+      'Користувач може оновити свій обліковий запис (name та phone).' +
       'Доступно для ролей: admin, manager, seller',
   })
   @ApiBearerAuth()
@@ -150,6 +150,8 @@ export class UsersController {
     description:
       'Користувач може отримати інформацію про всі облікові записи користувачів' +
       ' та здійснити пошук по name користувача. ' +
+      '*відображаються всі актуальні користувачі, ' +
+      'видалені користувачі з датою видалення зберігаються в БД.' +
       'Доступно для ролей: всім',
   })
   @SkipAuth()
@@ -180,7 +182,8 @@ export class UsersController {
   @ApiOperation({
     summary: 'Для видалення облікового запису користувача за його id',
     description:
-      'Користувач може видалити обліковий запис іншого користувача по його id.' +
+      'Користувач може видалити обліковий запис іншого користувача по його id ' +
+      '*в БД в стовбчику deleted буде вказано дату видалення користувача.' +
       'Доступно для ролей: admin, manager',
   })
   @ApiBearerAuth()
@@ -189,7 +192,7 @@ export class UsersController {
   @Delete(':userId')
   public async deleteId(
     @Param('userId', ParseUUIDPipe) userId: string,
-  ): Promise<void> {
+  ): Promise<string> {
     return await this.usersService.deleteId(userId);
   }
 }

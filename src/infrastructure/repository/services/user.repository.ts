@@ -42,6 +42,7 @@ export class UserRepository extends Repository<UserEntity> {
     query: ListUsersQueryReqDto,
   ): Promise<[UserEntity[], number]> {
     const qb = this.createQueryBuilder('users');
+    qb.where('users.deleted IS NULL');
     qb.take(query.limit);
     qb.skip(query.offset);
 

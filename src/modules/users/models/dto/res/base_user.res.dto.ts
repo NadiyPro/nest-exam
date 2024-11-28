@@ -10,4 +10,5 @@ export class BaseResDto {
   role: RoleTypeEnum;
   dealership?: string;
   avatar?: string;
+  deleted: Date | null;
 }

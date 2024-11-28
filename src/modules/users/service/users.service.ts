@@ -32,8 +32,6 @@ export class UsersService {
       role === RoleTypeEnum.ADMIN ||
       (role === RoleTypeEnum.MANAGER &&
         [RoleTypeEnum.SELLER, RoleTypeEnum.BUYER].includes(new_role))
-      // якщо користувач менеджером, то перевіряємо через includes,
-      // чи запитана ним роль на видачу є SELLER або BUYER
     ) {
       const user = await this.userRepository.giveRole(user_id, new_role);
       return await this.userRepository.save(user);
@@ -112,11 +110,9 @@ export class UsersService {
     return await this.userRepository.findAll(query);
   }
 
-  public async deleteId(userId: string): Promise<void> {
-    await this.userRepository.update(
-      { id: userId },
-      { deleted: new Date() },
-    );
+  public async deleteId(userId: string): Promise<string> {
+    await this.userRepository.update({ id: userId }, { deleted: new Date() });
     await this.refreshTokenRepository.delete({ user_id: userId });
+    return 'The user in the table (db) has been successfully marked as deleted';
   }
 }

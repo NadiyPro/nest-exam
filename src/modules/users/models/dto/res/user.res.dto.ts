@@ -10,6 +10,7 @@ export class UserResDto extends PickType(BaseResDto, [
   'avatar',
   'accountType',
   'role',
+  'deleted',
 ]) {}
 // PickType() дозволяє "вибрати" тільки конкретні поля з базового класу
 // і використовувати їх у новому DTO.

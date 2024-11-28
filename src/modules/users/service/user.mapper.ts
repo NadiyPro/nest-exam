@@ -15,6 +15,7 @@ export class UserMapper {
       avatar: `${user.avatar}`,
       accountType: user.accountType,
       role: user.role,
+      deleted: user.deleted,
     };
   }
 
@@ -28,6 +29,7 @@ export class UserMapper {
       email: user.email,
       accountType: user.accountType,
       role: user.role,
+      deleted: user.deleted,
     };
   }
 
