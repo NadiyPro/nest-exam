@@ -7,9 +7,9 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+import { CurrencyEnum } from '../../../modules/advertisement/enums/currency_enum';
 import { CarsModelsEntity } from './cars_models.entity';
 import { DealershipEntity } from './dealership.entity';
-import { CurrencyEnum } from './enums/currency_enum';
 import { IsValidEnum } from './enums/isValid.enum';
 import { TableNameEnum } from './enums/table-name.enum';
 import { CreateUpdateModel } from './models/date.model';
@@ -28,13 +28,13 @@ export class AdvertisementEntity extends CreateUpdateModel {
   original_currency: CurrencyEnum;
 
   @Column('float')
-  courseUAH: number;
+  currencyUAH: number;
 
   @Column('float')
-  courseUSD: number;
+  currencyUSD: number;
 
   @Column('float')
-  courseEUR: number;
+  currencyEUR: number;
 
   @Column('float')
   priceUAH: number;
