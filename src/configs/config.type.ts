@@ -27,7 +27,8 @@ export type RedisConfig = {
 export type AwsConfig = {
   accessKey: string;
   secretKey: string;
-  bucketName: string;
+  bucketAvatar: string;
+  bucketCars: string;
   region: string;
   ACL: string;
   endpoint: string;

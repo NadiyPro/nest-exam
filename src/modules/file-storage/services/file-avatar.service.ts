@@ -13,7 +13,7 @@ import { AwsConfig, Config } from '../../../configs/config.type';
 import { ContentType } from '../enums/file-type.enum';
 
 @Injectable()
-export class FileStorageService {
+export class FileAvatarService {
   private readonly awsConfig: AwsConfig;
   // зберігає параметри AWS з нашого конфігураційного файлу AwsConfig
   private readonly s3Client: S3Client;
@@ -51,7 +51,7 @@ export class FileStorageService {
       // ідентифікатора та розширення, сам код методу прописаний вкінці
       await this.s3Client.send(
         new PutObjectCommand({
-          Bucket: this.awsConfig.bucketName,
+          Bucket: this.awsConfig.bucketAvatar,
           Key: filePath,
           Body: file.buffer,
           ContentType: file.mimetype,
@@ -74,7 +74,7 @@ export class FileStorageService {
     try {
       await this.s3Client.send(
         new DeleteObjectCommand({
-          Bucket: this.awsConfig.bucketName,
+          Bucket: this.awsConfig.bucketAvatar,
           Key: filePath,
         }), //  щоб видалити файл із S3-бакету за вказаним шляхом
       );

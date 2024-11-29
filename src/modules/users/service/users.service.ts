@@ -9,7 +9,7 @@ import { RefreshTokenRepository } from '../../../infrastructure/repository/servi
 import { UserRepository } from '../../../infrastructure/repository/services/user.repository';
 import { IUserData } from '../../auth/models/interfaces/user_data.interface';
 import { ContentType } from '../../file-storage/enums/file-type.enum';
-import { FileStorageService } from '../../file-storage/services/file-storage.service';
+import { FileAvatarService } from '../../file-storage/services/file-avatar.service';
 import { RoleTypeEnum } from '../enums/RoleType.enum';
 import { ListUsersQueryReqDto } from '../models/dto/req/list-users-query.req.dto';
 import { UpdateUserReqDto } from '../models/dto/req/update_user.req.dto';
@@ -18,7 +18,7 @@ import { UpdateUserReqDto } from '../models/dto/req/update_user.req.dto';
 export class UsersService {
   constructor(
     // private readonly configService: ConfigService<Config>,
-    private readonly fileStorageService: FileStorageService,
+    private readonly fileAvatarService: FileAvatarService,
     private readonly userRepository: UserRepository,
     private readonly refreshTokenRepository: RefreshTokenRepository,
   ) {}
@@ -69,13 +69,13 @@ export class UsersService {
     file: Express.Multer.File,
   ): Promise<void> {
     const user = await this.userRepository.findOneBy({ id: userData.userId });
-    const pathToFile = await this.fileStorageService.uploadFile(
+    const pathToFile = await this.fileAvatarService.uploadFile(
       file,
       ContentType.AVATAR,
       userData.userId,
     );
     if (user.avatar) {
-      await this.fileStorageService.deleteFile(user.avatar);
+      await this.fileAvatarService.deleteFile(user.avatar);
     }
     console.log(user.avatar);
     await this.userRepository.save({ ...user, avatar: pathToFile });
@@ -84,7 +84,7 @@ export class UsersService {
   public async deleteAvatar(userData: IUserData): Promise<void> {
     const user = await this.userRepository.findOneBy({ id: userData.userId });
     if (user.avatar) {
-      await this.fileStorageService.deleteFile(user.avatar);
+      await this.fileAvatarService.deleteFile(user.avatar);
       await this.userRepository.save({ ...user, avatar: null });
     }
   }

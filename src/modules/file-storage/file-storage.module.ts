@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 
-import { FileStorageService } from './services/file-storage.service';
+import { FileAvatarService } from './services/file-avatar.service';
+import { FileImageCarsService } from './services/file-image-cars.service';
 
 @Module({
   imports: [],
   controllers: [],
-  providers: [FileStorageService],
-  exports: [FileStorageService],
+  providers: [FileAvatarService, FileImageCarsService],
+  exports: [FileAvatarService, FileImageCarsService],
 })
 export class FileStorageModule {}
