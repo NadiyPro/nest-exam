@@ -28,13 +28,16 @@ export class AdvertisementEntity extends CreateUpdateModel {
   original_currency: CurrencyEnum;
 
   @Column('float')
-  currencyUAH: number;
+  curBuyingUSD: number;
 
   @Column('float')
-  currencyUSD: number;
+  curSalesUSD: number;
 
   @Column('float')
-  currencyEUR: number;
+  curBuyingEUR: number;
+
+  @Column('float')
+  curSalesEUR: number;
 
   @Column('float')
   priceUAH: number;

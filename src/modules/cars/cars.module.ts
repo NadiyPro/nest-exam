@@ -7,6 +7,7 @@ import { UsersModule } from '../users/users.module';
 import { CarsController } from './cars.controller';
 import { CarsJSONService } from './carsJSON/service/carsJSON.service';
 import { CarsService } from './service/cars.service';
+import { AvertisementModule } from '../advertisement/advertisement.module';
 
 @Module({
   imports: [AuthModule, UsersModule, FileStorageModule, EmailModule],
