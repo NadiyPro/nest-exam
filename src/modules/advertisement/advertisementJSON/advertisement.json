@@ -1,5 +1,10 @@
 {
-  "advertisement": [
-
+  "advertisement":[
+    {
+      "curBuyingUSD": 41.300,
+      "curSalesUSD": 41.841,
+      "curBuyingEUR": 43.650,
+      "curSalesEUR": 44.444
+    }
   ]
 }

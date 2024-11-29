@@ -15,6 +15,7 @@ import {
 } from '@nestjs/swagger';
 
 import { ApiFile } from '../../common/decorators/api-file.decorator';
+import { AdvertisementEntity } from '../../infrastructure/postgres/entities/advertisement.entity';
 import { CurrentUser } from '../auth/decorators/current_user.decorator';
 import { IUserData } from '../auth/models/interfaces/user_data.interface';
 import { CarsService } from '../cars/service/cars.service';
@@ -25,10 +26,9 @@ import { RoleTypeEnum } from '../users/enums/RoleType.enum';
 import { UsersService } from '../users/service/users.service';
 import { AdvertisementJSONService } from './advertisementJSON/service/advertisementJSON.service';
 import { AdvertisementReqDto } from './models/dto/req/advertisement.req.dto';
-import { AdvertisementService } from './service/advertisement.service';
-import { AuthUserResDto } from '../auth/models/dto/res/auth_user.res.dto';
+import { AdvertisementResDto } from './models/dto/res/advertisement.res.dto';
 import { IAdvertisemen } from './models/interface/user_advertisemen.interface';
-import { BaseResDto } from './models/dto/res/advertisement.res.dto';
+import { AdvertisementService } from './service/advertisement.service';
 
 @ApiTags('Advertisement')
 @Controller('advertisement')
@@ -50,28 +50,42 @@ export class AvertisementController {
   @UseGuards(ApprovedRoleGuard)
   @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('avatar'))
-  @ApiFile('avatar', false, true)
-  @Post('me/avatar')
-  public async creteAdvertisement(
+  @UseInterceptors(FileInterceptor('image_cars'))
+  @ApiFile('image_cars', false, true)
+  @Post('me/image_cars')
+  public async createAdvertisement(
     @CurrentUser() userData: IAdvertisemen,
     @Body() adReqDto: AdvertisementReqDto,
     @UploadedFile() file: Express.Multer.File,
-  ): Promise<BaseResDto> {
-    await this.advertisemenService.creteAdvertisement(userData, adReqDto, file);
-  }
+  ): Promise<AdvertisementResDto> {
+    const rates = this.advertisementJSONService.readJSON();
 
-  // @ApiOperation({
-  //   summary: 'Для видалення avatar користувачем із свого облікового запису',
-  //   description:
-  //     'Користувач може видалити avatar із свого облікового запису.' +
-  //     'Доступно для ролей: admin, manager, seller',
-  // })
-  // @ApiBearerAuth()
-  // @UseGuards(ApprovedRoleGuard)
-  // @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
-  // @Delete('me/avatar')
-  // public async deleteAvatar(@CurrentUser() userData: IUserData): Promise<void> {
-  //   await this.usersService.deleteAvatar(userData);
-  // }
+    // Створюємо об'єкт AdvertisementEntity (наприклад, якщо є дані за замовчуванням)
+    const ad = new AdvertisementEntity();
+    ad.original_currency = adReqDto.original_currency;
+    ad.price = adReqDto.price;
+
+    // Виклик сервісу з усіма аргументами
+    return await this.advertisemenService.createAdvertisement(
+      userData,
+      adReqDto,
+      file,
+      ad,
+      rates,
+    );
+  }
 }
+
+// @ApiOperation({
+//   summary: 'Для видалення avatar користувачем із свого облікового запису',
+//   description:
+//     'Користувач може видалити avatar із свого облікового запису.' +
+//     'Доступно для ролей: admin, manager, seller',
+// })
+// @ApiBearerAuth()
+// @UseGuards(ApprovedRoleGuard)
+// @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
+// @Delete('me/avatar')
+// public async deleteAvatar(@CurrentUser() userData: IUserData): Promise<void> {
+//   await this.usersService.deleteAvatar(userData);
+// }

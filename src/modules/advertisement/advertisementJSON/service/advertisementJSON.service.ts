@@ -1,58 +1,42 @@
+import * as fs from 'node:fs';
+
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import * as fs from 'fs';
+import { Cron } from '@nestjs/schedule';
 import { DataSource } from 'typeorm';
 
-import { UserEntity } from '../../../../infrastructure/postgres/entities/user.entity';
+import { AdvertisementEntity } from '../../../../infrastructure/postgres/entities/advertisement.entity';
 
 @Injectable()
 export class AdvertisementJSONService implements OnModuleInit {
   constructor(private readonly dataSource: DataSource) {}
 
   onModuleInit(): void {}
-  private readJSON(): {
-    users: UserEntity[];
+
+  readJSON(): {
+    curBuyingUSD: number;
+    curSalesUSD: number;
+    curBuyingEUR: number;
+    curSalesEUR: number;
   } {
     const filePath =
       'C:/Users/User/nest-exam/src/modules/advertisement/advertisementJSON/advertisement.json';
-    const data = fs.readFileSync(filePath, 'utf-8');
-    return JSON.parse(data);
+    if (!fs.existsSync(filePath)) {
+      throw new Error('JSON файл не знайдено.');
+    }
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    return data.advertisement[0]; // Звертаємо увагу на правильність доступу до об'єкта
   }
 
-  public async importAdvertisementJSON(): Promise<void> {
-    const data = this.readJSON();
+  @Cron('0 5 * * *') // Виконувати щодня о 5:00 ранку
+  public async updateCurrencyRates(): Promise<void> {
+    const rates = this.readJSON();
 
-    const qb = this.dataSource.createQueryRunner();
-    await qb.connect();
-    await qb.startTransaction();
+    await this.dataSource
+      .createQueryBuilder()
+      .update(AdvertisementEntity)
+      .set(rates)
+      .execute();
 
-    try {
-      for (const user of data.users) {
-        let userData = await qb.manager.findOne(UserEntity, {
-          where: { email: user.email, phone: user.phone },
-        });
-
-        if (!userData) {
-          userData = qb.manager.create(UserEntity, {
-            name: user.name,
-            email: user.email,
-            password: user.password,
-            phone: user.phone,
-            accountType: user.accountType,
-            role: user.role,
-            avatar: user.avatar,
-            deleted: user.deleted,
-            dealership: user.dealership,
-          });
-          await qb.manager.save(userData);
-        }
-      }
-
-      await qb.commitTransaction();
-    } catch (error) {
-      await qb.rollbackTransaction();
-      throw error;
-    } finally {
-      await qb.release();
-    }
+    console.log('Курси валют оновлено успішно.');
   }
 }
