@@ -6,6 +6,7 @@ import { UserRepository } from '../../../infrastructure/repository/services/user
 import { IUserData } from '../../auth/models/interfaces/user_data.interface';
 import { FileStorageService } from '../../file-storage/services/file-storage.service';
 import { RoleTypeEnum } from '../../users/enums/RoleType.enum';
+import { ContentType } from '../../file-storage/enums/file-type.enum';
 
 @Injectable()
 export class AdvertisementService {
@@ -16,10 +17,28 @@ export class AdvertisementService {
     private readonly refreshTokenRepository: RefreshTokenRepository,
   ) {}
 
-  // public async findMe(userData: IUserData): Promise<UserEntity> {
-  //   if (userData.role === RoleTypeEnum.BUYER) {
-  //     throw new ForbiddenException('No role to access');
+  public async uploadAvatar(
+    userData: IUserData,
+    file: Express.Multer.File,
+  ): Promise<void> {
+    const user = await this.userRepository.findOneBy({ id: userData.userId });
+    const pathToFile = await this.fileStorageService.uploadFile(
+      file,
+      ContentType.AVATAR,
+      userData.userId,
+    );
+    if (user.avatar) {
+      await this.fileStorageService.deleteFile(user.avatar);
+    }
+    console.log(user.avatar);
+    await this.userRepository.save({ ...user, avatar: pathToFile });
+  }
+
+  // public async deleteAvatar(userData: IUserData): Promise<void> {
+  //   const user = await this.userRepository.findOneBy({ id: userData.userId });
+  //   if (user.avatar) {
+  //     await this.fileStorageService.deleteFile(user.avatar);
+  //     await this.userRepository.save({ ...user, avatar: null });
   //   }
-  //   return await this.userRepository.findOneBy({ id: userData.userId });
   // }
 }

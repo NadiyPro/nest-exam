@@ -11,6 +11,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CarsModule } from './modules/cars/cars.module';
 import { EmailModule } from './modules/email/email.module';
 import { UsersModule } from './modules/users/users.module';
+import { AvertisementModule } from './modules/advertisement/advertisement.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { UsersModule } from './modules/users/users.module';
     UsersModule,
     CarsModule,
     EmailModule,
+    AvertisementModule,
   ],
 })
 export class AppModule {}

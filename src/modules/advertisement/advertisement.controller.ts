@@ -1,5 +1,5 @@
-import { Controller, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Controller, Delete, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { CurrentUser } from '../auth/decorators/current_user.decorator';
 import { IUserData } from '../auth/models/interfaces/user_data.interface';
@@ -11,9 +11,11 @@ import { Role } from '../guards/decorator/role.decorator';
 import { RoleTypeEnum } from '../users/enums/RoleType.enum';
 import { UsersService } from '../users/service/users.service';
 import { AdvertisementJSONService } from './advertisementJSON/service/advertisementJSON.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiFile } from '../../common/decorators/api-file.decorator';
 
-@ApiTags('Cars')
-@Controller('cars')
+@ApiTags('Advertisement')
+@Controller('advertisement')
 export class AvertisementController {
   constructor(
     private readonly carsService: CarsService,
@@ -21,19 +23,38 @@ export class AvertisementController {
     private readonly usersService: UsersService,
     private readonly advertisementJSONService: AdvertisementJSONService,
   ) {}
-  //
+  @ApiOperation({
+    summary: 'Для завантаження avatar користувачем у свій обліковий запис',
+    description:
+      'Користувач може завантажити avatar у свій обліковий запис.' +
+      'Доступно для ролей: admin, manager, seller',
+  })
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('avatar'))
+  @ApiFile('avatar', false, true)
+  @Post('me/avatar')
+  public async uploadAvatar(
+    @CurrentUser() userData: IUserData,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<void> {
+    console.log(userData.role);
+    await this.usersService.uploadAvatar(userData, file);
+  }
+
+  // @ApiOperation({
+  //   summary: 'Для видалення avatar користувачем із свого облікового запису',
+  //   description:
+  //     'Користувач може видалити avatar із свого облікового запису.' +
+  //     'Доступно для ролей: admin, manager, seller',
+  // })
   // @ApiBearerAuth()
   // @UseGuards(ApprovedRoleGuard)
-  // @Role([RoleTypeEnum.ADMIN])
-  // @ApiOperation({
-  //   summary: 'Завантажити з файлу JSON автомобілі для тестування',
-  //   description:
-  //     'Користувач з ролью admin може завантажити з файлу JSON автомобілі для тестування' +
-  //     'Доступно для ролей: admin',
-  // })
-  // @Post('import')
-  // async importCarsJSON(@CurrentUser() userData: IUserData): Promise<string> {
-  //   await this.advertisementJSONService.v(userData.userId);
-  //   return 'Car data has been successfully imported into the database.';
+  // @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
+  // @Delete('me/avatar')
+  // public async deleteAvatar(@CurrentUser() userData: IUserData): Promise<void> {
+  //   await this.usersService.deleteAvatar(userData);
   // }
 }
