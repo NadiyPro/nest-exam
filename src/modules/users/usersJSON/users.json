@@ -18,7 +18,7 @@
     },
     {
       "name": "Malcolm",
-      "email": "Nadia123@gmail.com",
+      "email": "Malcolm123@gmail.com",
       "password": "Malcolm235%bMsa",
       "phone": "380765432198",
       "accountType": "premium",
@@ -26,7 +26,7 @@
     },
     {
       "name": "John",
-      "email": "Nadia123@gmail.com",
+      "email": "JohnJohn123@gmail.com",
       "password": "John!125ghj#kD52",
       "phone": "380654321987",
       "accountType": "premium",
@@ -58,7 +58,7 @@
     },
     {
       "name": "Julia",
-      "email": "Julia123@gmail.com",
+      "email": "JuliaJulia123@gmail.com",
       "password": "Julia%gd&12Hd",
       "phone": "380219876543",
       "accountType": "basic",

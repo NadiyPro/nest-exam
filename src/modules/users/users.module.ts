@@ -7,11 +7,8 @@ import { UsersController } from './users.controller';
 import { UsersJSONService } from './usersJSON/service/usersJSON.service';
 
 @Module({
-  imports: [
-    forwardRef(() => AuthModule),
-    FileStorageModule,
-  ],
-  // імпортуємо інший модуль (ArticlesModule) з використанням функції forwardRef.
+  imports: [forwardRef(() => AuthModule), FileStorageModule],
+  // імпортуємо інший модуль з використанням функції forwardRef.
   // forwardRef дозволяє сказати NestJS: "Ми знаємо, що модулі залежать один від одного,
   // але спочатку підключи один з них, а потім повернись до другого".
   // Це розриває циклічну залежність.

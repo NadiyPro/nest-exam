@@ -147,6 +147,7 @@ export class UsersController {
     @CurrentUser() userData: IUserData,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<void> {
+    console.log(userData.role);
     await this.usersService.uploadAvatar(userData, file);
   }
 
