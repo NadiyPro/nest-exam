@@ -16,6 +16,7 @@ import {
 
 import { ApiFile } from '../../common/decorators/api-file.decorator';
 import { CurrentUser } from '../auth/decorators/current_user.decorator';
+import { IUserData } from '../auth/models/interfaces/user_data.interface';
 import { CarsService } from '../cars/service/cars.service';
 import { EmailService } from '../email/service/email.service';
 import { ApprovedRoleGuard } from '../guards/approved_role.guard';
@@ -27,7 +28,6 @@ import { AdvertisementReqDto } from './models/dto/req/advertisement.req.dto';
 import { AdvertisementResDto } from './models/dto/res/advertisement.res.dto';
 import { IAdvertisemen } from './models/interface/user_advertisemen.interface';
 import { AdvertisementService } from './service/advertisement.service';
-import { IUserData } from '../auth/models/interfaces/user_data.interface';
 
 @ApiTags('Advertisement')
 @Controller('advertisement')
@@ -78,13 +78,13 @@ export class AvertisementController {
   @ApiFile('image_cars', true, true)
   @Post('me/image_cars')
   public async uploadImageCars(
-      @CurrentUser() userData: IUserData,
+    @CurrentUser() userData: IUserData,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<void> {
-      console.log(userData.role);
-      await this.advertisemenService.uploadImageCars(userData, file);
-    }
+    console.log(userData.role);
+    await this.advertisemenService.uploadImageCars(userData, file);
   }
+}
 
 // @ApiOperation({
 //   summary: 'Для видалення avatar користувачем із свого облікового запису',
