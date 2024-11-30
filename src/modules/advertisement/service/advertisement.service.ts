@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 
 import { AdvertisementEntity } from '../../../infrastructure/postgres/entities/advertisement.entity';
+import { UserEntity } from '../../../infrastructure/postgres/entities/user.entity';
 import { AvertisementRepository } from '../../../infrastructure/repository/services/advertisement.repository';
 import { CarsBrandsRepository } from '../../../infrastructure/repository/services/cars_brands.repository';
 import { CarsModelsRepository } from '../../../infrastructure/repository/services/cars_models.repository';
 import { UserRepository } from '../../../infrastructure/repository/services/user.repository';
+import { IUserData } from '../../auth/models/interfaces/user_data.interface';
 import { ContentType } from '../../file-storage/enums/file-type.enum';
 import { FileImageCarsService } from '../../file-storage/services/file-image-cars.service';
 import { AdvertisementJSONService } from '../advertisementJSON/service/advertisementJSON.service';
 import { AdvertisementReqDto } from '../models/dto/req/advertisement.req.dto';
 import { AdvertisementResDto } from '../models/dto/res/advertisement.res.dto';
 import { IAdvertisemen } from '../models/interface/user_advertisemen.interface';
-import { IUserData } from '../../auth/models/interfaces/user_data.interface';
-import { UserEntity } from '../../../infrastructure/postgres/entities/user.entity';
 
 @Injectable()
 export class AdvertisementService {
@@ -92,30 +92,39 @@ export class AdvertisementService {
     return newAdvertisement;
   }
 
-
   public async uploadImageCars(
-    userData: IUserData,
+    advertisemenId: string,
     file: Express.Multer.File,
   ): Promise<void> {
-    const user = await this.avertisementRepository.findOneBy({ user_id: userData.userId });
+    const advertisemen = await this.avertisementRepository.findOneBy({
+      id: advertisemenId,
+    });
     const pathToFile = await this.fileImageCarsService.uploadFile(
       file,
       ContentType.IMAGE_CARS,
-      userData.userId,
+      advertisemenId,
     );
 
-    if (user.image_cars) {
-      await this.fileImageCarsService.deleteFile(user.image_cars);
+    if (advertisemen.image_cars) {
+      await this.fileImageCarsService.deleteFile(advertisemen.image_cars);
     }
-    console.log(user.image_cars);
-    await this.avertisementRepository.save({ ...user, image_cars: pathToFile });
+    console.log(advertisemen.image_cars);
+    await this.avertisementRepository.save({
+      ...advertisemen,
+      image_cars: pathToFile,
+    });
   }
 
-  public async deleteImageCars(userData: IUserData): Promise<void> {
-    const user = await this.avertisementRepository.findOneBy({ id: userData.userId });
-    if (user.image_cars) {
-      await this.fileImageCarsService.deleteFile(user.image_cars);
-      await this.avertisementRepository.save({ ...user, image_cars: null });
+  public async deleteImageCars(advertisemenId: string): Promise<void> {
+    const advertisemen = await this.avertisementRepository.findOneBy({
+      id: advertisemenId,
+    });
+    if (advertisemen.image_cars) {
+      await this.fileImageCarsService.deleteFile(advertisemen.image_cars);
+      await this.avertisementRepository.save({
+        ...advertisemen,
+        image_cars: null,
+      });
     }
   }
 

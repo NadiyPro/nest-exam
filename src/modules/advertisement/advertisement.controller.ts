@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Param,
   Post,
   UploadedFile,
   UseGuards,
@@ -16,7 +17,6 @@ import {
 
 import { ApiFile } from '../../common/decorators/api-file.decorator';
 import { CurrentUser } from '../auth/decorators/current_user.decorator';
-import { IUserData } from '../auth/models/interfaces/user_data.interface';
 import { CarsService } from '../cars/service/cars.service';
 import { EmailService } from '../email/service/email.service';
 import { ApprovedRoleGuard } from '../guards/approved_role.guard';
@@ -76,13 +76,14 @@ export class AvertisementController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('image_cars'))
   @ApiFile('image_cars', true, true)
-  @Post('me/image_cars')
+  @Post('me/image_cars/:advertisemenId')
   public async uploadImageCars(
-    @CurrentUser() userData: IUserData,
-    @UploadedFile() file: Express.Multer.File,
+    // @CurrentUser() userData: IUserData,
+    @Param('advertisemenId') advertisemenId: string,
+    @UploadedFile()
+    file: Express.Multer.File,
   ): Promise<void> {
-    console.log(userData.role);
-    await this.advertisemenService.uploadImageCars(userData, file);
+    await this.advertisemenService.uploadImageCars(advertisemenId, file);
   }
 }
 
