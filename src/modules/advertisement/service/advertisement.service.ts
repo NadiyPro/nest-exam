@@ -11,6 +11,8 @@ import { AdvertisementJSONService } from '../advertisementJSON/service/advertise
 import { AdvertisementReqDto } from '../models/dto/req/advertisement.req.dto';
 import { AdvertisementResDto } from '../models/dto/res/advertisement.res.dto';
 import { IAdvertisemen } from '../models/interface/user_advertisemen.interface';
+import { IUserData } from '../../auth/models/interfaces/user_data.interface';
+import { UserEntity } from '../../../infrastructure/postgres/entities/user.entity';
 
 @Injectable()
 export class AdvertisementService {
@@ -26,7 +28,6 @@ export class AdvertisementService {
   public async createAdvertisement(
     userData: IAdvertisemen,
     adReqDto: AdvertisementReqDto,
-    // file: Express.Multer.File,
   ): Promise<AdvertisementResDto> {
     const ad = new AdvertisementEntity();
     const { price, original_currency } = ad;
@@ -69,21 +70,6 @@ export class AdvertisementService {
       throw new Error('Model not found');
     }
 
-    // Завантаження зображення
-    // const pathToFile = await this.fileImageCarsService.uploadFile(
-    //   file,
-    //   ContentType.IMAGE_CARS,
-    //   userData.id,
-    // );
-    //
-    // const existingAd = await this.avertisementRepository.findOneBy({
-    //   user_id: user.id,
-    // });
-    //
-    // if (existingAd?.image_cars) {
-    //   await this.fileImageCarsService.deleteFile(existingAd.image_cars);
-    // }
-
     const newAdvertisement = await this.avertisementRepository.save({
       ...ad,
       user_id: user.id,
@@ -91,8 +77,7 @@ export class AdvertisementService {
       phone: user.phone,
       brands_name: newBrand.brands_name,
       models_name: newModel.models_name,
-      cars_brands_models_id: newModel.models_id, // Додайте це поле
-      // image_cars: pathToFile,
+      cars_brands_models_id: newModel.models_id,
       curBuyingUSD: rates.curBuyingUSD,
       curSalesUSD: rates.curSalesUSD,
       curBuyingEUR: rates.curBuyingEUR,
@@ -105,5 +90,36 @@ export class AdvertisementService {
     });
 
     return newAdvertisement;
+  }
+
+
+  public async uploadImageCars(
+    userData: IUserData,
+    file: Express.Multer.File,
+  ): Promise<void> {
+    const user = await this.avertisementRepository.findOneBy({ user_id: userData.userId });
+    const pathToFile = await this.fileImageCarsService.uploadFile(
+      file,
+      ContentType.IMAGE_CARS,
+      userData.userId,
+    );
+
+    if (user.image_cars) {
+      await this.fileImageCarsService.deleteFile(user.image_cars);
+    }
+    console.log(user.image_cars);
+    await this.avertisementRepository.save({ ...user, image_cars: pathToFile });
+  }
+
+  public async deleteImageCars(userData: IUserData): Promise<void> {
+    const user = await this.avertisementRepository.findOneBy({ id: userData.userId });
+    if (user.image_cars) {
+      await this.fileImageCarsService.deleteFile(user.image_cars);
+      await this.avertisementRepository.save({ ...user, image_cars: null });
+    }
+  }
+
+  public async findAllManager(): Promise<UserEntity[]> {
+    return await this.userRepository.findAllManager();
   }
 }

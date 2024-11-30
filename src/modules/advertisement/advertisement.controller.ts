@@ -27,6 +27,7 @@ import { AdvertisementReqDto } from './models/dto/req/advertisement.req.dto';
 import { AdvertisementResDto } from './models/dto/res/advertisement.res.dto';
 import { IAdvertisemen } from './models/interface/user_advertisemen.interface';
 import { AdvertisementService } from './service/advertisement.service';
+import { IUserData } from '../auth/models/interfaces/user_data.interface';
 
 @ApiTags('Advertisement')
 @Controller('advertisement')
@@ -40,88 +41,50 @@ export class AvertisementController {
   ) {}
 
   @ApiOperation({
-    summary: 'Для завантаження avatar користувачем у свій обліковий запис',
+    summary: 'Для завантаження оголошення про продаж автомобіля',
     description:
-      'Користувач може завантажити avatar у свій обліковий запис.' +
+      'Користувач може завантажити оголошення про продаж автомобіля. ' +
+      'Увага! Продавець з типом акаунту basic може завантажити лише одне оголошення, ' +
+      'для акаунту premium - кількість оголошень не обмежена. ' +
+      '*Менеджеру надходить лист на пошту для перевірки оголошення, ' +
+      'якщо в ньому потенційно є некоректний/нецензурний текст.' +
       'Доступно для ролей: admin, manager, seller',
   })
   @ApiBearerAuth()
   @UseGuards(ApprovedRoleGuard)
   @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
-  // @ApiConsumes('multipart/form-data')
-  // @UseInterceptors(FileInterceptor('image_cars'))
-  // @ApiFile('image_cars', false, true)
   @Post('me/advertisement')
   public async createAdvertisement(
     @CurrentUser() userData: IAdvertisemen,
     @Body() adReqDto: AdvertisementReqDto,
-    // @UploadedFile() file: Express.Multer.File,
   ): Promise<AdvertisementResDto> {
-    // const rates = this.advertisementJSONService.readJSON();
-    //
-    // // Створюємо об'єкт AdvertisementEntity (наприклад, якщо є дані за замовчуванням)
-    // const ad = new AdvertisementEntity();
-    // ad.original_currency = adReqDto.original_currency;
-    // ad.price = adReqDto.price;
-
-    // Виклик сервісу з усіма аргументами
     return await this.advertisemenService.createAdvertisement(
       userData,
       adReqDto,
-      // file,
-      // ad,
-      // rates,
     );
-    // @ApiOperation({
-    //   summary: 'Для завантаження avatar користувачем у свій обліковий запис',
-    //   description:
-    //     'Користувач може завантажити avatar у свій обліковий запис.' +
-    //     'Доступно для ролей: admin, manager, seller',
-    // })
-    // @ApiBearerAuth()
-    // @UseGuards(ApprovedRoleGuard)
-    // @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
-    // @ApiConsumes('multipart/form-data')
-    // @UseInterceptors(FileInterceptor('image_cars'))
-    // @ApiFile('image_cars', false, true)
-    // @Post('me/image_cars')
-    // public async createAdvertisement(
-    //   @CurrentUser() userData: IAdvertisemen,
-    //   @Body() adReqDto: AdvertisementReqDto,
-    //   @UploadedFile() file: Express.Multer.File,
-    // ): Promise<AdvertisementResDto> {
-    //   // const rates = this.advertisementJSONService.readJSON();
-    //   //
-    //   // // Створюємо об'єкт AdvertisementEntity (наприклад, якщо є дані за замовчуванням)
-    //   // const ad = new AdvertisementEntity();
-    //   // ad.original_currency = adReqDto.original_currency;
-    //   // ad.price = adReqDto.price;
-    //
-    //   // Виклик сервісу з усіма аргументами
-    //   return await this.advertisemenService.createAdvertisement(
-    //     userData,
-    //     adReqDto,
-    //     file,
-    //     // ad,
-    //     // rates,
-    //   );
-    // const rates = this.advertisementJSONService.readJSON();
-    //
-    // // Створюємо об'єкт AdvertisementEntity (наприклад, якщо є дані за замовчуванням)
-    // const ad = new AdvertisementEntity();
-    // ad.original_currency = adReqDto.original_currency;
-    // ad.price = adReqDto.price;
-    //
-    // // Виклик сервісу з усіма аргументами
-    // return await this.advertisemenService.createAdvertisement(
-    //   userData,
-    //   adReqDto,
-    //   file,
-    //   ad,
-    //   rates,
-    // );
   }
-}
+
+  @ApiOperation({
+    summary: 'Для завантаження фото автомобіля користувачем для оголошення',
+    description:
+      'Користувач може завантажити фото автомобіля для оголошення.' +
+      'Доступно для ролей: admin, manager, seller',
+  })
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('image_cars'))
+  @ApiFile('image_cars', true, true)
+  @Post('me/image_cars')
+  public async uploadImageCars(
+      @CurrentUser() userData: IUserData,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<void> {
+      console.log(userData.role);
+      await this.advertisemenService.uploadImageCars(userData, file);
+    }
+  }
 
 // @ApiOperation({
 //   summary: 'Для видалення avatar користувачем із свого облікового запису',
