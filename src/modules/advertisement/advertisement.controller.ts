@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Param,
   Post,
   UploadedFile,
@@ -78,25 +79,26 @@ export class AvertisementController {
   @ApiFile('image_cars', true, true)
   @Post('me/image_cars/:advertisemenId')
   public async uploadImageCars(
-    // @CurrentUser() userData: IUserData,
     @Param('advertisemenId') advertisemenId: string,
     @UploadedFile()
     file: Express.Multer.File,
   ): Promise<void> {
     await this.advertisemenService.uploadImageCars(advertisemenId, file);
   }
-}
 
-// @ApiOperation({
-//   summary: 'Для видалення avatar користувачем із свого облікового запису',
-//   description:
-//     'Користувач може видалити avatar із свого облікового запису.' +
-//     'Доступно для ролей: admin, manager, seller',
-// })
-// @ApiBearerAuth()
-// @UseGuards(ApprovedRoleGuard)
-// @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
-// @Delete('me/avatar')
-// public async deleteAvatar(@CurrentUser() userData: IUserData): Promise<void> {
-//   await this.usersService.deleteAvatar(userData);
-// }
+  @ApiOperation({
+    summary: 'Для видалення фото автомобіля користувачем для оголошення',
+    description:
+      'Користувач може видалити фото автомобіля для оголошення.' +
+      'Доступно для ролей: admin, manager, seller',
+  })
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
+  @Delete('me/image_cars/:advertisemenId')
+  public async deleteAvatar(
+    @Param('advertisemenId') advertisemenId: string,
+  ): Promise<void> {
+    await this.advertisemenService.deleteImageCars(advertisemenId);
+  }
+}
