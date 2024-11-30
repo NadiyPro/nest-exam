@@ -85,7 +85,9 @@ export class CarsService {
   }
 
   public async deleteCars(brands_id: string): Promise<string> {
-    const cars_brands = await this.carsBrandsRepository.findOneBy({ brands_id });
+    const cars_brands = await this.carsBrandsRepository.findOneBy({
+      brands_id,
+    });
     if (!cars_brands) {
       throw new ConflictException('The specified brand does not exist');
     }

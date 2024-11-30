@@ -1,10 +1,10 @@
 {
   "advertisement":[
     {
-      "curBuyingUSD": 41.300,
-      "curSalesUSD": 41.841,
-      "curBuyingEUR": 43.650,
-      "curSalesEUR": 44.444
+      "curBuyingUSD": 41.841,
+      "curSalesUSD": 41.300,
+      "curBuyingEUR": 44.444,
+      "curSalesEUR": 43.650
     }
   ]
 }

@@ -19,6 +19,6 @@ export class AdvertisementResDto {
   priceUSD: number;
   priceEUR: number;
   priceUAH: number;
-  image_cars: string;
-  isValid: IsValidEnum;
+  // image_cars: string;
+  // isValid: IsValidEnum;
 }

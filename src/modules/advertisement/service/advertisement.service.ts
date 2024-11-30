@@ -20,48 +20,44 @@ export class AdvertisementService {
     private readonly carsBrandsRepository: CarsBrandsRepository,
     private readonly carsModelsRepository: CarsModelsRepository,
     private readonly avertisementRepository: AvertisementRepository,
-    private readonly advertisementJSONService: AdvertisementJSONService,
+    private readonly adJSONServiced: AdvertisementJSONService,
   ) {}
 
   public async createAdvertisement(
     userData: IAdvertisemen,
     adReqDto: AdvertisementReqDto,
-    file: Express.Multer.File,
-    ad: AdvertisementEntity,
-    rates: {
-      curBuyingUSD: number;
-      curSalesUSD: number;
-      curBuyingEUR: number;
-      curSalesEUR: number;
-    },
+    // file: Express.Multer.File,
   ): Promise<AdvertisementResDto> {
+    const ad = new AdvertisementEntity();
     const { price, original_currency } = ad;
-
-    // Розрахунок валют
-    let priceUAH, priceUSD, priceEUR;
+    ad.price = adReqDto.price;
+    ad.original_currency = adReqDto.original_currency;
+    const rates = this.adJSONServiced.readJSON();
 
     if (original_currency === 'USD') {
-      priceUAH = price * rates.curSalesUSD;
-      priceEUR = price * (rates.curSalesUSD / rates.curSalesEUR);
-      priceUSD = price;
+      ad.priceUAH = ad.price * rates.curSalesUSD;
+      ad.priceEUR = ad.price * (rates.curSalesUSD / rates.curSalesEUR);
+      ad.priceUSD = ad.price;
     } else if (original_currency === 'EUR') {
-      priceUAH = price * rates.curSalesEUR;
-      priceUSD = price * (rates.curSalesEUR / rates.curSalesUSD);
-      priceEUR = price;
+      ad.priceUAH = ad.price * rates.curSalesEUR;
+      ad.priceUSD = ad.price * (rates.curSalesEUR / rates.curSalesUSD);
+      ad.priceEUR = ad.price;
     } else {
-      priceUSD = price / rates.curBuyingUSD;
-      priceEUR = price / rates.curBuyingEUR;
-      priceUAH = price;
+      ad.priceUSD = ad.price / rates.curBuyingUSD;
+      ad.priceEUR = ad.price / rates.curBuyingEUR;
+      ad.priceUAH = ad.price;
     }
 
-    // Отримання користувача
     const user = await this.userRepository.findOneBy({ id: userData.id });
 
-    // Отримання даних про бренд та модель
     const newBrand = await this.carsBrandsRepository.findOneBy({
       brands_name: adReqDto.brands_name,
       user_id: userData.id,
     });
+
+    if (!newBrand) {
+      throw new Error('Brand not found');
+    }
 
     const newModel = await this.carsModelsRepository.findOneBy({
       models_name: adReqDto.models_name,
@@ -69,22 +65,25 @@ export class AdvertisementService {
       user_id: userData.id,
     });
 
-    // Завантаження зображення
-    const pathToFile = await this.fileImageCarsService.uploadFile(
-      file,
-      ContentType.IMAGE_CARS,
-      userData.id,
-    );
-
-    const existingAd = await this.avertisementRepository.findOneBy({
-      user_id: user.id,
-    });
-
-    if (existingAd?.image_cars) {
-      await this.fileImageCarsService.deleteFile(existingAd.image_cars);
+    if (!newModel) {
+      throw new Error('Model not found');
     }
 
-    // Збереження реклами
+    // Завантаження зображення
+    // const pathToFile = await this.fileImageCarsService.uploadFile(
+    //   file,
+    //   ContentType.IMAGE_CARS,
+    //   userData.id,
+    // );
+    //
+    // const existingAd = await this.avertisementRepository.findOneBy({
+    //   user_id: user.id,
+    // });
+    //
+    // if (existingAd?.image_cars) {
+    //   await this.fileImageCarsService.deleteFile(existingAd.image_cars);
+    // }
+
     const newAdvertisement = await this.avertisementRepository.save({
       ...ad,
       user_id: user.id,
@@ -92,109 +91,19 @@ export class AdvertisementService {
       phone: user.phone,
       brands_name: newBrand.brands_name,
       models_name: newModel.models_name,
-      image_cars: pathToFile,
-      priceUAH,
-      priceUSD,
-      priceEUR,
+      cars_brands_models_id: newModel.models_id, // Додайте це поле
+      // image_cars: pathToFile,
+      curBuyingUSD: rates.curBuyingUSD,
+      curSalesUSD: rates.curSalesUSD,
+      curBuyingEUR: rates.curBuyingEUR,
+      curSalesEUR: rates.curSalesEUR,
+      priceUAH: ad.priceUAH,
+      priceUSD: ad.priceUSD,
+      priceEUR: ad.priceEUR,
+      region: adReqDto.region,
+      text_advertisement: adReqDto.text_advertisement,
     });
 
     return newAdvertisement;
   }
 }
-// constructor(
-//   // private readonly configService: ConfigService<Config>,
-//   private readonly fileImageCarsService: FileImageCarsService,
-//   private readonly userRepository: UserRepository,
-//   private readonly carsBrandsRepository: CarsBrandsRepository,
-//   private readonly carsModelsRepository: CarsModelsRepository,
-//   private readonly avertisementRepository: AvertisementRepository,
-//   private readonly advertisementJSONService: AdvertisementJSONService,
-// ) {}
-//
-// public async creteAdvertisement(
-//   userData: IAdvertisemen,
-//   adReqDto: AdvertisementReqDto,
-//   file: Express.Multer.File,
-// ): Promise<AdvertisementResDto> {
-//   const user = await this.userRepository.findOneBy({
-//     id: userData.id,
-//   }); // витягаємо дані по юзеру
-//   ///////// витягаємо дані по cars/////
-//   const new_brand = await this.carsBrandsRepository.findOneBy({
-//     brands_name: adReqDto.brands_name,
-//     user_id: userData.id,
-//   });
-//   const new_model = await this.carsModelsRepository.findOneBy({
-//     models_name: adReqDto.models_name,
-//     brands_id: new_brand.brands_id,
-//     user_id: userData.id,
-//   });
-//   //////////////////////////IMAGE_CARS//////////////////////////////
-//   const avertisement = await this.avertisementRepository.findOneBy({
-//     user_id: user.id,
-//   });
-//   const pathToFile = await this.fileImageCarsService.uploadFile(
-//     file,
-//     ContentType.IMAGE_CARS,
-//     userData.id,
-//   );
-//   if (file.filename === avertisement.image_cars) {
-//     await this.fileImageCarsService.deleteFile(avertisement.image_cars);
-//   }
-//
-//   const currency =
-//     await this.advertisementJSONService.importAdvertisementJSON();
-//   const curBuyingUSD = currency.curBuyingUSD;
-//   const curSalesUSD = currency.curBuyingUSD;
-//   const curBuyingEUR = currency.curBuyingUSD;
-//   const curSalesEUR = currency.curBuyingUSD;
-//
-//   const priceUAH = await if (adReqDto.original_currency !== CurrencyEnum.UAH){
-//     If (CurrencyEnum.UAH === CurrencyEnum.USD){
-//       const priceUAHUSD = adReqDto.price * curBuyingUSD
-//     } else {
-//       const priceUAHUSD = adReqDto.price * curSalesEUR
-//     }
-//   } else { priceUAH = adReqDto.price}
-//
-//   priceUSD = if (adReqDto.original_currency !== CurrencyEnum.USD){
-//     If (CurrencyEnum.UAH === CurrencyEnum.USD){
-//       const priceUAHEUR = adReqDto.price * curBuyingUAH
-//     } else {
-//       const priceUAHUSD = adReqDto.price * curSalesEUR
-//     }
-//   } else { priceUAH = adReqDto.price}
-//
-//
-//   priceEUR =
-//
-//    const avertisemen = await this.avertisementRepository.save({
-//     ...avertisement,
-//     image_cars: pathToFile,
-//     user_id: user.id,
-//     name: user.name,
-//     phone: user.phone,
-//     brands_name: new_brand.brands_name,
-//     models_name: new_model.models_name,
-//     price: adReqDto.price,
-//     original_currency: adReqDto.original_currency,
-//     region: adReqDto.region,
-//     text_advertisement: adReqDto.text_advertisement,
-//      priceUAH: priceUAH,
-//      priceUSD: priceUSD,
-//      priceEUR: priceEUR,
-//      curBuyingUSD: curBuyingUSD,
-//      curSalesUSD: curSalesUSD,
-//      curBuyingEUR: curBuyingEUR,
-//      curSalesEUR: curSalesEUR
-//   });
-//   return avertisemen;
-// }
-
-// public async deleteAvatar(userData: IUserData): Promise<void> {
-//   const user = await this.userRepository.findOneBy({ id: userData.userId });
-//   if (user.avatar) {
-//     await this.fileStorageService.deleteFile(user.avatar);
-//     await this.userRepository.save({ ...user, avatar: null });
-//   }
-// }

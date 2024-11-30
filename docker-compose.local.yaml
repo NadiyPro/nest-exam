@@ -37,3 +37,4 @@ services:
 volumes:
   nest-exam-api-db:
   nest-exam-avatar-api-s3:
+  nest-exam-cars-api-s3:

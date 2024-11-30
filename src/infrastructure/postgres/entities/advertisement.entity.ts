@@ -21,7 +21,7 @@ export class AdvertisementEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('float')
+  @Column('float', { nullable: false })
   price: number;
 
   @Column('text', { default: CurrencyEnum.UAH })
@@ -51,8 +51,8 @@ export class AdvertisementEntity extends CreateUpdateModel {
   @Column('text')
   region: string;
 
-  @Column('text')
-  image_cars: string;
+  @Column('text', { nullable: true })
+  image_cars?: string;
 
   @Column('text', { default: IsValidEnum.ACTIVE })
   isValid: IsValidEnum;
@@ -75,7 +75,7 @@ export class AdvertisementEntity extends CreateUpdateModel {
   @OneToOne(() => StatisticsEntity, (entity) => entity.statistics_advertisement)
   advertisement_statistics: StatisticsEntity;
 
-  @Column()
+  @Column({ nullable: true })
   dealership_id: string;
   @ManyToOne(() => DealershipEntity, (entity) => entity.users)
   @JoinColumn({ name: 'dealership_id' })

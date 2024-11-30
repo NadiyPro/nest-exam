@@ -1,5 +1,6 @@
-import { IsString, Length, Matches } from 'class-validator';
-import { Column } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsNumber, IsString, Length } from 'class-validator';
 
 import { CurrencyEnum } from '../../../enums/currency_enum';
 
@@ -12,15 +13,21 @@ export class AdvertisementReqDto {
   @Length(2, 50)
   models_name: string;
 
-  @Column('float')
+  @ApiProperty({ example: 20000 })
+  @IsNumber()
+  @Type(() => Number)
   price: number;
 
-  @Column('text', { default: CurrencyEnum.UAH })
+  @ApiProperty({ example: 'UAH' })
+  @IsString()
   original_currency: CurrencyEnum;
 
-  @Column('text')
+  @ApiProperty({ example: 'Dnipro' })
+  @IsString()
+  @Length(3, 30)
   region: string;
 
-  @Column('text')
+  @IsString()
+  @Length(10, 400)
   text_advertisement: string;
 }
