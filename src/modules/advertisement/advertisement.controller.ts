@@ -30,7 +30,7 @@ import { Role } from '../guards/decorator/role.decorator';
 import { RoleTypeEnum } from '../users/enums/RoleType.enum';
 import { UsersService } from '../users/service/users.service';
 import { AdvertisementJSONService } from './advertisementJSON/service/advertisementJSON.service';
-import { RoleSeller } from './guards/decorator/role_seller.decorator';
+import { RoleCount } from './guards/decorator/role_seller.decorator';
 import { AdvertisementReqDto } from './models/dto/req/advertisement.req.dto';
 import { ListAdQueryReqDto } from './models/dto/req/list-advertisement_query.req.dto';
 import { UpdateAdMeReqDto } from './models/dto/req/update_advertisement.req.dto';
@@ -72,7 +72,7 @@ export class AvertisementController {
   })
   @ApiBearerAuth()
   @UseGuards(ApprovedRoleGuard)
-  @RoleSeller([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
+  @RoleCount([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   // @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @Post('me/advertisement')
   public async createAdvertisement(
