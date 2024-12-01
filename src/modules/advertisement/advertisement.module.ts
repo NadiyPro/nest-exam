@@ -7,6 +7,7 @@ import { FileStorageModule } from '../file-storage/file-storage.module';
 import { UsersModule } from '../users/users.module';
 import { AvertisementController } from './advertisement.controller';
 import { AdvertisementJSONService } from './advertisementJSON/service/advertisementJSON.service';
+import { AdvertisementMapper } from './service/advertisement.mapper';
 import { AdvertisementService } from './service/advertisement.service';
 
 @Module({
@@ -18,7 +19,15 @@ import { AdvertisementService } from './service/advertisement.service';
     CarsModule,
   ],
   controllers: [AvertisementController],
-  providers: [AdvertisementService, AdvertisementJSONService],
-  exports: [AdvertisementService, AdvertisementJSONService],
+  providers: [
+    AdvertisementService,
+    AdvertisementJSONService,
+    AdvertisementMapper,
+  ],
+  exports: [
+    AdvertisementService,
+    AdvertisementJSONService,
+    AdvertisementMapper,
+  ],
 })
 export class AvertisementModule {}

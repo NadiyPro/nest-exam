@@ -21,18 +21,6 @@ export class AdvertisementEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  name: string;
-
-  @Column()
-  phone: string;
-
-  @Column()
-  brands_name: string;
-
-  @Column()
-  models_name: string;
-
   @Column('float', { nullable: false })
   price: number;
 

@@ -1,6 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 
 import { AdvertisementEntity } from '../../../infrastructure/postgres/entities/advertisement.entity';
+import { IsValidEnum } from '../../../infrastructure/postgres/entities/enums/isValid.enum';
 import { UserEntity } from '../../../infrastructure/postgres/entities/user.entity';
 import { AvertisementRepository } from '../../../infrastructure/repository/services/advertisement.repository';
 import { CarsBrandsRepository } from '../../../infrastructure/repository/services/cars_brands.repository';
@@ -16,6 +17,7 @@ import { UpdateAdMeReqDto } from '../models/dto/req/update_advertisement.req.dto
 import { AdvertisementResDto } from '../models/dto/res/advertisement.res.dto';
 import { AdvertisementMeResDto } from '../models/dto/res/advertisement_me.res.dto';
 import { IAdvertisemen } from '../models/interface/user_advertisemen.interface';
+import { AdvertisementMapper } from './advertisement.mapper';
 
 @Injectable()
 export class AdvertisementService {
@@ -26,6 +28,7 @@ export class AdvertisementService {
     private readonly carsModelsRepository: CarsModelsRepository,
     private readonly avertisementRepository: AvertisementRepository,
     private readonly adJSONServiced: AdvertisementJSONService,
+    // private readonly advertisementMapper: AdvertisementMapper,
   ) {}
 
   public async createAdvertisement(
@@ -76,12 +79,7 @@ export class AdvertisementService {
     }
 
     const newAdvertisement = await this.avertisementRepository.save({
-      ...avertisement,
       user_id: user.id,
-      name: user.name,
-      phone: user.phone,
-      brands_name: brand.brands_name,
-      models_name: model.models_name,
       price: avertisement.price,
       original_currency: avertisement.original_currency,
       cars_brands_models_id: model.models_id,
@@ -96,7 +94,27 @@ export class AdvertisementService {
       text_advertisement: adReqDto.text_advertisement,
     });
 
-    return newAdvertisement;
+    const createdAd = {
+      id: newAdvertisement.id,
+      user_id: newAdvertisement.id,
+      name: user.name,
+      phone: user.phone,
+      brands_name: brand.brands_name,
+      models_name: model.models_name,
+      price: newAdvertisement.price,
+      original_currency: newAdvertisement.original_currency,
+      curBuyingUSD: newAdvertisement.curBuyingUSD,
+      curSalesUSD: newAdvertisement.curSalesUSD,
+      curBuyingEUR: newAdvertisement.curBuyingEUR,
+      curSalesEUR: newAdvertisement.curSalesEUR,
+      priceUAH: newAdvertisement.priceUAH,
+      priceUSD: newAdvertisement.priceUSD,
+      priceEUR: newAdvertisement.priceEUR,
+      region: newAdvertisement.region,
+      text_advertisement: newAdvertisement.text_advertisement,
+      isValid: avertisement.isValid,
+    };
+    return createdAd;
   }
 
   public async findAdvertisementAll(
@@ -113,7 +131,48 @@ export class AdvertisementService {
     const avertisement = await this.avertisementRepository.findOneBy({
       user_id: userData.userId,
     });
-    return avertisement;
+
+    const user = await this.userRepository.findOneBy({
+      id: avertisement.user_id,
+    });
+
+    const model = await this.carsModelsRepository.findOneBy({
+      models_id: avertisement.cars_brands_models_id,
+    });
+
+    if (!model) {
+      throw new Error('Model not found');
+    }
+
+    const brand = await this.carsBrandsRepository.findOneBy({
+      brands_id: model.brands_id,
+    });
+
+    if (!brand) {
+      throw new Error('Brand not found');
+    }
+
+    return {
+      id: avertisement.id,
+      user_id: avertisement.id,
+      name: user.name,
+      phone: user.phone,
+      brands_name: brand.brands_name,
+      models_name: model.models_name,
+      price: avertisement.price,
+      original_currency: avertisement.original_currency,
+      curBuyingUSD: avertisement.curBuyingUSD,
+      curSalesUSD: avertisement.curSalesUSD,
+      curBuyingEUR: avertisement.curBuyingEUR,
+      curSalesEUR: avertisement.curSalesEUR,
+      priceUAH: avertisement.priceUAH,
+      priceUSD: avertisement.priceUSD,
+      priceEUR: avertisement.priceEUR,
+      region: avertisement.region,
+      text_advertisement: avertisement.text_advertisement,
+      image_cars: avertisement.image_cars,
+      isValid: avertisement.isValid,
+    };
   }
 
   public async updateAdvertisementMe(
@@ -133,7 +192,47 @@ export class AdvertisementService {
       text_advertisement: dto.text_advertisement,
     });
 
-    return newAdvertisement;
+    const user = await this.userRepository.findOneBy({
+      id: newAdvertisement.user_id,
+    });
+
+    const model = await this.carsModelsRepository.findOneBy({
+      models_id: newAdvertisement.cars_brands_models_id,
+    });
+
+    if (!model) {
+      throw new Error('Model not found');
+    }
+
+    const brand = await this.carsBrandsRepository.findOneBy({
+      brands_id: model.brands_id,
+    });
+
+    if (!brand) {
+      throw new Error('Brand not found');
+    }
+
+    // return newAdvertisement;
+    return {
+      id: newAdvertisement.id,
+      user_id: user.id,
+      name: user.name,
+      phone: user.phone,
+      brands_name: brand.brands_name,
+      models_name: model.models_name,
+      price: newAdvertisement.price,
+      original_currency: newAdvertisement.original_currency,
+      curBuyingUSD: newAdvertisement.curBuyingUSD,
+      curSalesUSD: newAdvertisement.curSalesUSD,
+      curBuyingEUR: newAdvertisement.curBuyingEUR,
+      curSalesEUR: newAdvertisement.curSalesEUR,
+      priceUAH: newAdvertisement.priceUAH,
+      priceUSD: newAdvertisement.priceUSD,
+      priceEUR: newAdvertisement.priceEUR,
+      region: newAdvertisement.region,
+      text_advertisement: newAdvertisement.text_advertisement,
+      isValid: newAdvertisement.isValid,
+    };
   }
 
   public async deleteAdvertisementMe(
@@ -157,7 +256,48 @@ export class AdvertisementService {
     const avertisement = await this.avertisementRepository.findOneBy({
       id: advertisementId,
     });
-    return avertisement;
+    const user = await this.userRepository.findOneBy({
+      id: avertisement.user_id,
+    });
+
+    const model = await this.carsModelsRepository.findOneBy({
+      models_id: avertisement.cars_brands_models_id,
+    });
+
+    if (!model) {
+      throw new Error('Model not found');
+    }
+
+    const brand = await this.carsBrandsRepository.findOneBy({
+      brands_id: model.brands_id,
+    });
+
+    if (!brand) {
+      throw new Error('Brand not found');
+    }
+
+    return {
+      id: avertisement.id,
+      user_id: user.id,
+      name: user.name,
+      phone: user.phone,
+      brands_name: brand.brands_name,
+      models_name: model.models_name,
+      price: avertisement.price,
+      original_currency: avertisement.original_currency,
+      curBuyingUSD: avertisement.curBuyingUSD,
+      curSalesUSD: avertisement.curSalesUSD,
+      curBuyingEUR: avertisement.curBuyingEUR,
+      curSalesEUR: avertisement.curSalesEUR,
+      priceUAH: avertisement.priceUAH,
+      priceUSD: avertisement.priceUSD,
+      priceEUR: avertisement.priceEUR,
+      region: avertisement.region,
+      text_advertisement: avertisement.text_advertisement,
+      image_cars: avertisement.image_cars,
+      isValid: avertisement.isValid,
+    };
+    // return avertisement;
   }
 
   public async deleteAdvertisementId(advertisementId: string): Promise<string> {
@@ -192,6 +332,26 @@ export class AdvertisementService {
       ...advertisement,
       image_cars: pathToFile,
     });
+    // for (const fileOne in file) {
+    //   const advertisement = await this.avertisementRepository.findOneBy({
+    //     id: advertisementId,
+    //   });
+    //   const pathToFile = await this.fileImageCarsService.uploadFile(
+    //     file[0],
+    //     ContentType.IMAGE_CARS,
+    //     advertisementId,
+    //   );
+    //
+    //   if (advertisement.image_cars) {
+    //     await this.fileImageCarsService.deleteFile(advertisement.image_cars);
+    //   }
+    //   console.log(advertisement.image_cars);
+    //   await this.avertisementRepository.save({
+    //     ...advertisement,
+    //     image_cars: pathToFile,
+    //   });
+    // }
+
   }
 
   public async deleteImageCars(advertisemenId: string): Promise<void> {

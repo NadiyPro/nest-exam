@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNumber, IsString, Length } from 'class-validator';
+import { IsNumber, IsString, Length, Matches } from 'class-validator';
 
 import { CurrencyEnum } from '../../../enums/currency_enum';
 

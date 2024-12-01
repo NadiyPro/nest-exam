@@ -40,6 +40,9 @@ import { ListAdAllQueryResDto } from './models/dto/res/list-advertisement_query.
 import { IAdvertisemen } from './models/interface/user_advertisemen.interface';
 import { AdvertisementMapper } from './service/advertisement.mapper';
 import { AdvertisementService } from './service/advertisement.service';
+import { UserRepository } from '../../infrastructure/repository/services/user.repository';
+import { CarsBrandsRepository } from '../../infrastructure/repository/services/cars_brands.repository';
+import { CarsModelsRepository } from '../../infrastructure/repository/services/cars_models.repository';
 
 @ApiTags('Advertisement')
 @Controller('advertisement')
@@ -47,10 +50,19 @@ export class AvertisementController {
   constructor(
     private readonly carsService: CarsService,
     private readonly emailService: EmailService,
-    private readonly usersService: UsersService,
+    private readonly advertisementMapper: AdvertisementMapper,
     private readonly advertisementService: AdvertisementService,
+    private readonly userRepository: UserRepository,
+    private readonly carsBrandsRepository: CarsBrandsRepository,
+    private readonly carsModelsRepository: CarsModelsRepository,
     private readonly advertisementJSONService: AdvertisementJSONService,
-  ) {}
+  ) {
+    this.advertisementMapper = new AdvertisementMapper(
+      this.userRepository,
+      this.carsBrandsRepository,
+      this.carsModelsRepository,
+    );
+  }
 
   @ApiOperation({
     summary: 'Для завантаження оголошення про продаж автомобіля',
@@ -74,7 +86,7 @@ export class AvertisementController {
   @UseGuards(ApprovedRoleGuard)
   @RoleCount([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   // @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
-  @Post('me/advertisement')
+  @Post()
   public async createAdvertisement(
     @CurrentUser() userData: IAdvertisemen,
     @Body() adReqDto: AdvertisementReqDto,
@@ -99,7 +111,11 @@ export class AvertisementController {
   ): Promise<ListAdAllQueryResDto> {
     const [entities, total] =
       await this.advertisementService.findAdvertisementAll(query);
-    return AdvertisementMapper.toAllAdResDtoList(entities, total, query);
+    return await this.advertisementMapper.toAllAdResDtoList(
+      entities,
+      total,
+      query,
+    );
   }
 
   @ApiOperation({
@@ -211,7 +227,7 @@ export class AvertisementController {
   @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('image_cars'))
-  @ApiFile('image_cars', true, true)
+  @ApiFile('image_cars', false, true)
   @Post('me/image_cars/:advertisementId')
   public async uploadImageCars(
     @Param('advertisementId') advertisementId: string,

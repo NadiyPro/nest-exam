@@ -14,19 +14,21 @@ export class AvertisementRepository extends Repository<AdvertisementEntity> {
     query: ListAdQueryReqDto,
   ): Promise<[AdvertisementEntity[], number]> {
     const qb = this.createQueryBuilder('advertisement')
+      .leftJoinAndSelect('advertisement.advertisement_cars', 'carsModel')
+      .leftJoinAndSelect('carsModel.cars_brands_models', 'brand')
       .take(query.limit)
       .skip(query.offset);
 
     if (query.search) {
       qb.andWhere(
-        '(advertisement.brands_name ILIKE :search OR ' +
-          'advertisement.models_name ILIKE :search OR ' +
-          'advertisement.name ILIKE :search)',
+        '(brand.brands_name ILIKE :search OR ' +
+          'carsModel.models_name ILIKE :search OR ' +
+          'advertisement.text_advertisement ILIKE :search)',
         { search: `%${query.search}%` },
       );
     }
 
-    qb.orderBy('advertisement.brands_name', 'ASC');
+    qb.orderBy('brand.brands_name', 'ASC');
     return await qb.getManyAndCount();
   }
 
