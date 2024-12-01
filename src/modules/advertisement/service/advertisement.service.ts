@@ -96,33 +96,36 @@ export class AdvertisementService {
   public async findfindAdvertisementMe(
     userData: IUserData,
   ): Promise<AdvertisementMeResDto> {
-    const user = await this.userRepository.findOneBy({ id: userData.userId });
-    const brand = await this.carsBrandsRepository.findOneBy({
-      user_id: userData.userId,
-    });
-
-    if (!brand) {
-      throw new Error('Brand not found');
-    }
-
-    const model = await this.carsModelsRepository.findOneBy({
-      user_id: userData.userId,
-    });
-
-    if (!model) {
-      throw new Error('Model not found');
-    }
     const avertisement = await this.avertisementRepository.findOneBy({
       user_id: userData.userId,
     });
+    const user = await this.userRepository.findOneBy({
+      id: avertisement.user_id,
+    });
+
+    const models = await this.carsModelsRepository.findOneBy({
+      models_id: avertisement.cars_brands_models_id,
+    });
+
+    if (!models) {
+      throw new Error('Model not found');
+    }
+
+    const brands = await this.carsBrandsRepository.findOneBy({
+      brands_id: models.brands_id,
+    });
+
+    if (!brands) {
+      throw new Error('Brand not found');
+    }
 
     return {
       id: avertisement.id,
       user_id: avertisement.user_id,
       name: user.name,
       phone: user.phone,
-      brands_name: brand.brands_name,
-      models_name: model.models_name,
+      brands_name: brands.brands_name,
+      models_name: models.models_name,
       price: avertisement.price,
       original_currency: avertisement.original_currency,
       region: avertisement.region,
@@ -152,6 +155,57 @@ export class AdvertisementService {
     }
     await this.avertisementRepository.delete(advertisement);
     return 'Advertisement deleted successfully';
+  }
+
+  public async findfindAdvertisementId(
+    advertisementId: string,
+  ): Promise<AdvertisementMeResDto> {
+    const avertisement = await this.avertisementRepository.findOneBy({
+      id: advertisementId,
+    });
+
+    const user = await this.userRepository.findOneBy({
+      id: avertisement.user_id,
+    });
+
+    const models = await this.carsModelsRepository.findOneBy({
+      models_id: avertisement.cars_brands_models_id,
+    });
+
+    if (!models) {
+      throw new Error('Model not found');
+    }
+
+    const brands = await this.carsBrandsRepository.findOneBy({
+      brands_id: models.brands_id,
+    });
+
+    if (!brands) {
+      throw new Error('Brand not found');
+    }
+
+
+    return {
+      id: avertisement.id,
+      user_id: avertisement.user_id,
+      name: user.name,
+      phone: user.phone,
+      brands_name: brands.brands_name,
+      models_name: models.models_name,
+      price: avertisement.price,
+      original_currency: avertisement.original_currency,
+      region: avertisement.region,
+      text_advertisement: avertisement.text_advertisement,
+      curBuyingUSD: avertisement.curBuyingUSD,
+      curSalesUSD: avertisement.curSalesUSD,
+      curBuyingEUR: avertisement.curBuyingEUR,
+      curSalesEUR: avertisement.curSalesEUR,
+      priceUSD: avertisement.priceUSD,
+      priceEUR: avertisement.priceEUR,
+      priceUAH: avertisement.priceUAH,
+      image_cars: avertisement.image_cars,
+      // isValid: IsValidEnum;
+    };
   }
 
   public async uploadImageCars(

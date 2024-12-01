@@ -104,6 +104,22 @@ export class AvertisementController {
   }
 
   @ApiOperation({
+    summary: 'Для виванатження оголошення по його id',
+    description:
+      'Користувач може вивантажити оголошення по його id.' +
+      'Доступно для ролей: admin, manager, seller',
+  })
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
+  @Get(':advertisementId')
+  public async findAdvertisementID(
+    @Param('advertisemenId') advertisementId: string,
+  ) {
+    return await this.advertisementService.findfindAdvertisementId(advertisementId);
+  }
+
+  @ApiOperation({
     summary: 'Для завантаження фото автомобіля користувачем для оголошення',
     description:
       'Користувач може завантажити фото автомобіля для оголошення.' +
@@ -115,9 +131,9 @@ export class AvertisementController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('image_cars'))
   @ApiFile('image_cars', true, true)
-  @Post('me/image_cars/:advertisemenId')
+  @Post('me/image_cars/:advertisementId')
   public async uploadImageCars(
-    @Param('advertisemenId') advertisementId: string,
+    @Param('advertisementId') advertisementId: string,
     @UploadedFile()
     file: Express.Multer.File,
   ): Promise<void> {
