@@ -184,7 +184,6 @@ export class AdvertisementService {
       throw new Error('Brand not found');
     }
 
-
     return {
       id: avertisement.id,
       user_id: avertisement.user_id,
