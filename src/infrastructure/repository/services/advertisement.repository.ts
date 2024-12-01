@@ -29,4 +29,10 @@ export class AvertisementRepository extends Repository<AdvertisementEntity> {
     qb.orderBy('advertisement.brands_name', 'ASC');
     return await qb.getManyAndCount();
   }
+
+  public async findCount(userId: string) {
+    const qb = this.createQueryBuilder('advertisement');
+    await qb.where('advertisement.user_id = :userId', { userId });
+    return await qb.getCount();
+  }
 }
