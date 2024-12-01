@@ -116,7 +116,27 @@ export class AvertisementController {
   public async findAdvertisementID(
     @Param('advertisemenId') advertisementId: string,
   ) {
-    return await this.advertisementService.findfindAdvertisementId(advertisementId);
+    return await this.advertisementService.findfindAdvertisementId(
+      advertisementId,
+    );
+  }
+
+  @ApiOperation({
+    summary: 'Для виванатження оголошення по його id',
+    description:
+      'Користувач може вивантажити оголошення по його id.' +
+      'Доступно для ролей: admin, manager, seller',
+  })
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
+  @Get(':advertisementId')
+  public async deleteAdvertisementId(
+    @Param('advertisemenId') advertisementId: string,
+  ) {
+    return await this.advertisementService.deleteAdvertisementId(
+      advertisementId,
+    );
   }
 
   @ApiOperation({

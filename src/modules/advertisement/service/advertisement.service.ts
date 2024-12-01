@@ -207,6 +207,17 @@ export class AdvertisementService {
     };
   }
 
+  public async deleteAdvertisementId(advertisementId: string): Promise<string> {
+    const advertisement = await this.avertisementRepository.findOneBy({
+      id: advertisementId,
+    });
+    if (!advertisement) {
+      throw new ConflictException('The specified brand does not exist');
+    }
+    await this.avertisementRepository.delete(advertisement);
+    return 'Advertisement deleted successfully';
+  }
+
   public async uploadImageCars(
     advertisementId: string,
     file: Express.Multer.File,
