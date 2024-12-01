@@ -20,6 +20,9 @@ import {
 } from '@nestjs/swagger';
 
 import { ApiFile } from '../../common/decorators/api-file.decorator';
+import { CarsBrandsRepository } from '../../infrastructure/repository/services/cars_brands.repository';
+import { CarsModelsRepository } from '../../infrastructure/repository/services/cars_models.repository';
+import { UserRepository } from '../../infrastructure/repository/services/user.repository';
 import { CurrentUser } from '../auth/decorators/current_user.decorator';
 import { SkipAuth } from '../auth/decorators/skip_auth.decorator';
 import { IUserData } from '../auth/models/interfaces/user_data.interface';
@@ -28,7 +31,6 @@ import { EmailService } from '../email/service/email.service';
 import { ApprovedRoleGuard } from '../guards/approved_role.guard';
 import { Role } from '../guards/decorator/role.decorator';
 import { RoleTypeEnum } from '../users/enums/RoleType.enum';
-import { UsersService } from '../users/service/users.service';
 import { AdvertisementJSONService } from './advertisementJSON/service/advertisementJSON.service';
 import { RoleCount } from './guards/decorator/role_seller.decorator';
 import { AdvertisementReqDto } from './models/dto/req/advertisement.req.dto';
@@ -40,9 +42,6 @@ import { ListAdAllQueryResDto } from './models/dto/res/list-advertisement_query.
 import { IAdvertisemen } from './models/interface/user_advertisemen.interface';
 import { AdvertisementMapper } from './service/advertisement.mapper';
 import { AdvertisementService } from './service/advertisement.service';
-import { UserRepository } from '../../infrastructure/repository/services/user.repository';
-import { CarsBrandsRepository } from '../../infrastructure/repository/services/cars_brands.repository';
-import { CarsModelsRepository } from '../../infrastructure/repository/services/cars_models.repository';
 
 @ApiTags('Advertisement')
 @Controller('advertisement')
