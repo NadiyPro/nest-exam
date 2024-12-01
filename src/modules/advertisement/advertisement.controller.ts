@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Post,
   UploadedFile,
@@ -18,6 +19,7 @@ import {
 
 import { ApiFile } from '../../common/decorators/api-file.decorator';
 import { CurrentUser } from '../auth/decorators/current_user.decorator';
+import { IUserData } from '../auth/models/interfaces/user_data.interface';
 import { CarsService } from '../cars/service/cars.service';
 import { EmailService } from '../email/service/email.service';
 import { ApprovedRoleGuard } from '../guards/approved_role.guard';
@@ -63,6 +65,20 @@ export class AvertisementController {
       userData,
       adReqDto,
     );
+  }
+
+  @ApiOperation({
+    summary: 'Для виванатження своїх оголошень',
+    description:
+      'Користувач може вивантажити всі свої оголошення.' +
+      'Доступно для ролей: admin, manager, seller',
+  })
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
+  @Get('me')
+  public async findAdvertisementMe(@CurrentUser() userData: IUserData) {
+    return await this.advertisemenService.findfindAdvertisementMe(userData);
   }
 
   @ApiOperation({
