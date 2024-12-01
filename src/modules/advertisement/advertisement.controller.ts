@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseUUIDPipe,
   Patch,
   Post,
   UploadedFile,
@@ -22,8 +21,6 @@ import {
 import { ApiFile } from '../../common/decorators/api-file.decorator';
 import { CurrentUser } from '../auth/decorators/current_user.decorator';
 import { IUserData } from '../auth/models/interfaces/user_data.interface';
-import { CreateCarsReqDto } from '../cars/models/dto/req/create_cars.req.dto';
-import { CarsResDto } from '../cars/models/dto/res/cars.res.dto';
 import { CarsService } from '../cars/service/cars.service';
 import { EmailService } from '../email/service/email.service';
 import { ApprovedRoleGuard } from '../guards/approved_role.guard';
@@ -32,7 +29,9 @@ import { RoleTypeEnum } from '../users/enums/RoleType.enum';
 import { UsersService } from '../users/service/users.service';
 import { AdvertisementJSONService } from './advertisementJSON/service/advertisementJSON.service';
 import { AdvertisementReqDto } from './models/dto/req/advertisement.req.dto';
+import { UpdateAdMeReqDto } from './models/dto/req/update_advertisement.req.dto';
 import { AdvertisementResDto } from './models/dto/res/advertisement.res.dto';
+import { AdvertisementMeResDto } from './models/dto/res/advertisement_me.res.dto';
 import { IAdvertisemen } from './models/interface/user_advertisemen.interface';
 import { AdvertisementService } from './service/advertisement.service';
 
@@ -98,11 +97,11 @@ export class AvertisementController {
       'Доступно для ролей: admin, manager, seller',
   })
   @Delete('me/:advertisemenId')
-  public async deleteAdvertisement(
+  public async deleteAdvertisementMe(
     @CurrentUser() userData: IAdvertisemen,
     @Param('advertisemenId') advertisementId: string,
   ): Promise<string> {
-    return await this.advertisementService.deleteAdvertisement(
+    return await this.advertisementService.deleteAdvertisementMe(
       userData,
       advertisementId,
     );
@@ -121,12 +120,17 @@ export class AvertisementController {
       'Після перевірки тексту оголошення менеджером, статус зміниться на active або inactive відповідно.' +
       'Доступно для ролей: admin, manager',
   })
-  @Patch(':carsBrandsId')
-  public async updateCars(
-    @Param('brands_id', ParseUUIDPipe) brands_id: string,
-    @Body() dto: CreateCarsReqDto,
-  ): Promise<CarsResDto> {
-    return await this.carsService.updateCars(brands_id, dto);
+  @Patch('me/:carsBrandsId')
+  public async updateAdvertisementMe(
+    @CurrentUser() userData: IAdvertisemen,
+    @Param('advertisemenId') advertisementId: string,
+    @Body() dto: UpdateAdMeReqDto,
+  ): Promise<AdvertisementMeResDto> {
+    return await this.advertisementService.updateAdvertisementMe(
+      userData,
+      advertisementId,
+      dto,
+    );
   }
 
   @ApiOperation({
@@ -146,31 +150,6 @@ export class AvertisementController {
       advertisementId,
     );
   }
-
-  // @ApiBearerAuth()
-  // @UseGuards(ApprovedRoleGuard)
-  // @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
-  // @ApiOperation({
-  //   summary:
-  //     'Для оновлення конкретного запису про автомобіль (бренд та модель) ' +
-  //     'по id бренду до якого підвязана конкретна модель',
-  //   description:
-  //     'Користувач може оновити запис про автомобіль (бренд та модель) ' +
-  //     'Вказавши саме brands_id до якого підвязана конкретна модель. ' +
-  //     'Даний brands_id можна взяти як варіант з cars/all/cars_brands.' +
-  //     'Увага! Для оновлення треба: ' +
-  //     '1.здійснити пошук потрібного нам автомобіля по brands_id; ' +
-  //     '2.вказати обовязково два аргументи brands_name та models_name' +
-  //     'Наприклад якщо була допущена помилка в записі та інше.' +
-  //     'Доступно для ролей: admin, manager',
-  // })
-  // @Patch(':carsBrandsId')
-  // public async updateCars(
-  //   @Param('brands_id', ParseUUIDPipe) brands_id: string,
-  //   @Body() dto: CreateCarsReqDto,
-  // ): Promise<CarsResDto> {
-  //   return await this.carsService.updateCars(brands_id, dto);
-  // }
 
   @ApiOperation({
     summary: 'Для виванатження оголошення по його id',

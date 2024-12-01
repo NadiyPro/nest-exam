@@ -11,6 +11,7 @@ import { ContentType } from '../../file-storage/enums/file-type.enum';
 import { FileImageCarsService } from '../../file-storage/services/file-image-cars.service';
 import { AdvertisementJSONService } from '../advertisementJSON/service/advertisementJSON.service';
 import { AdvertisementReqDto } from '../models/dto/req/advertisement.req.dto';
+import { UpdateAdMeReqDto } from '../models/dto/req/update_advertisement.req.dto';
 import { AdvertisementResDto } from '../models/dto/res/advertisement.res.dto';
 import { AdvertisementMeResDto } from '../models/dto/res/advertisement_me.res.dto';
 import { IAdvertisemen } from '../models/interface/user_advertisemen.interface';
@@ -30,24 +31,26 @@ export class AdvertisementService {
     userData: IAdvertisemen,
     adReqDto: AdvertisementReqDto,
   ): Promise<AdvertisementResDto> {
-    const ad = new AdvertisementEntity();
-    const { price, original_currency } = ad;
-    ad.price = adReqDto.price;
-    ad.original_currency = adReqDto.original_currency;
+    const avertisement = new AdvertisementEntity();
+    const { price, original_currency } = avertisement;
+    avertisement.price = adReqDto.price;
+    avertisement.original_currency = adReqDto.original_currency;
     const rates = this.adJSONServiced.readJSON();
 
     if (original_currency === 'USD') {
-      ad.priceUAH = ad.price * rates.curSalesUSD;
-      ad.priceEUR = ad.price * (rates.curSalesUSD / rates.curSalesEUR);
-      ad.priceUSD = ad.price;
+      avertisement.priceUAH = avertisement.price * rates.curSalesUSD;
+      avertisement.priceEUR =
+        avertisement.price * (rates.curSalesUSD / rates.curSalesEUR);
+      avertisement.priceUSD = avertisement.price;
     } else if (original_currency === 'EUR') {
-      ad.priceUAH = ad.price * rates.curSalesEUR;
-      ad.priceUSD = ad.price * (rates.curSalesEUR / rates.curSalesUSD);
-      ad.priceEUR = ad.price;
+      avertisement.priceUAH = avertisement.price * rates.curSalesEUR;
+      avertisement.priceUSD =
+        avertisement.price * (rates.curSalesEUR / rates.curSalesUSD);
+      avertisement.priceEUR = avertisement.price;
     } else {
-      ad.priceUSD = ad.price / rates.curBuyingUSD;
-      ad.priceEUR = ad.price / rates.curBuyingEUR;
-      ad.priceUAH = ad.price;
+      avertisement.priceUSD = avertisement.price / rates.curBuyingUSD;
+      avertisement.priceEUR = avertisement.price / rates.curBuyingEUR;
+      avertisement.priceUAH = avertisement.price;
     }
 
     const user = await this.userRepository.findOneBy({ id: userData.id });
@@ -72,20 +75,22 @@ export class AdvertisementService {
     }
 
     const newAdvertisement = await this.avertisementRepository.save({
-      ...ad,
+      ...avertisement,
       user_id: user.id,
       name: user.name,
       phone: user.phone,
       brands_name: brand.brands_name,
       models_name: model.models_name,
+      price: avertisement.price,
+      original_currency: avertisement.original_currency,
       cars_brands_models_id: model.models_id,
       curBuyingUSD: rates.curBuyingUSD,
       curSalesUSD: rates.curSalesUSD,
       curBuyingEUR: rates.curBuyingEUR,
       curSalesEUR: rates.curSalesEUR,
-      priceUAH: ad.priceUAH,
-      priceUSD: ad.priceUSD,
-      priceEUR: ad.priceEUR,
+      priceUAH: avertisement.priceUAH,
+      priceUSD: avertisement.priceUSD,
+      priceEUR: avertisement.priceEUR,
       region: adReqDto.region,
       text_advertisement: adReqDto.text_advertisement,
     });
@@ -99,50 +104,30 @@ export class AdvertisementService {
     const avertisement = await this.avertisementRepository.findOneBy({
       user_id: userData.userId,
     });
-    const user = await this.userRepository.findOneBy({
-      id: avertisement.user_id,
-    });
-
-    const models = await this.carsModelsRepository.findOneBy({
-      models_id: avertisement.cars_brands_models_id,
-    });
-
-    if (!models) {
-      throw new Error('Model not found');
-    }
-
-    const brands = await this.carsBrandsRepository.findOneBy({
-      brands_id: models.brands_id,
-    });
-
-    if (!brands) {
-      throw new Error('Brand not found');
-    }
-
-    return {
-      id: avertisement.id,
-      user_id: avertisement.user_id,
-      name: user.name,
-      phone: user.phone,
-      brands_name: brands.brands_name,
-      models_name: models.models_name,
-      price: avertisement.price,
-      original_currency: avertisement.original_currency,
-      region: avertisement.region,
-      text_advertisement: avertisement.text_advertisement,
-      curBuyingUSD: avertisement.curBuyingUSD,
-      curSalesUSD: avertisement.curSalesUSD,
-      curBuyingEUR: avertisement.curBuyingEUR,
-      curSalesEUR: avertisement.curSalesEUR,
-      priceUSD: avertisement.priceUSD,
-      priceEUR: avertisement.priceEUR,
-      priceUAH: avertisement.priceUAH,
-      image_cars: avertisement.image_cars,
-      // isValid: IsValidEnum;
-    };
+    return avertisement;
   }
 
-  public async deleteAdvertisement(
+  public async updateAdvertisementMe(
+    userData: IAdvertisemen,
+    advertisementId: string,
+    dto: UpdateAdMeReqDto,
+  ): Promise<AdvertisementResDto> {
+    const avertisement = await this.avertisementRepository.findOneBy({
+      id: advertisementId,
+      user_id: userData.id,
+    });
+
+    const newAdvertisement = await this.avertisementRepository.save({
+      ...avertisement,
+      price: dto.price,
+      original_currency: dto.original_currency,
+      text_advertisement: dto.text_advertisement,
+    });
+
+    return newAdvertisement;
+  }
+
+  public async deleteAdvertisementMe(
     userData: IAdvertisemen,
     advertisementId: string,
   ): Promise<string> {
@@ -163,48 +148,7 @@ export class AdvertisementService {
     const avertisement = await this.avertisementRepository.findOneBy({
       id: advertisementId,
     });
-
-    const user = await this.userRepository.findOneBy({
-      id: avertisement.user_id,
-    });
-
-    const models = await this.carsModelsRepository.findOneBy({
-      models_id: avertisement.cars_brands_models_id,
-    });
-
-    if (!models) {
-      throw new Error('Model not found');
-    }
-
-    const brands = await this.carsBrandsRepository.findOneBy({
-      brands_id: models.brands_id,
-    });
-
-    if (!brands) {
-      throw new Error('Brand not found');
-    }
-
-    return {
-      id: avertisement.id,
-      user_id: avertisement.user_id,
-      name: user.name,
-      phone: user.phone,
-      brands_name: brands.brands_name,
-      models_name: models.models_name,
-      price: avertisement.price,
-      original_currency: avertisement.original_currency,
-      region: avertisement.region,
-      text_advertisement: avertisement.text_advertisement,
-      curBuyingUSD: avertisement.curBuyingUSD,
-      curSalesUSD: avertisement.curSalesUSD,
-      curBuyingEUR: avertisement.curBuyingEUR,
-      curSalesEUR: avertisement.curSalesEUR,
-      priceUSD: avertisement.priceUSD,
-      priceEUR: avertisement.priceEUR,
-      priceUAH: avertisement.priceUAH,
-      image_cars: avertisement.image_cars,
-      // isValid: IsValidEnum;
-    };
+    return avertisement;
   }
 
   public async deleteAdvertisementId(advertisementId: string): Promise<string> {
