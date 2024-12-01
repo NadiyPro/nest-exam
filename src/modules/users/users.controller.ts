@@ -60,27 +60,21 @@ export class UsersController {
   }
 
   @ApiOperation({
-    summary: 'Для видачі ролей',
+    summary: 'Для отримання інформацію про всі облікові записи користувачів',
     description:
-      'Доступно для ролей: ' +
-      '- Користувач з ролью admin може видавати всім всі ролі;' +
-      'admin, manager, seller',
+      'Користувач може отримати інформацію про всі облікові записи користувачів' +
+      ' та здійснити пошук по name користувача. ' +
+      '*відображаються всі актуальні користувачі, ' +
+      'видалені користувачі з датою видалення зберігаються в БД.' +
+      'Доступно для ролей: всім',
   })
-  @ApiBearerAuth()
-  @UseGuards(ApprovedRoleGuard)
-  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
-  @Patch('role/:user_id')
-  async giveRole(
-    @Param('user_id') user_id: string,
-    @Body() giveRoleDto: GiveRoleDto,
-    @CurrentUser() userData: IUserData,
-  ): Promise<UserResDto> {
-    const result = await this.usersService.giveRole(
-      user_id,
-      giveRoleDto.new_role,
-      userData.role,
-    );
-    return UserMapper.toResDto(result);
+  @SkipAuth()
+  @Get('all')
+  public async findAll(
+    @Query() query: ListUsersQueryReqDto, // Параметри передаються через @Query
+  ): Promise<ListResQueryDto> {
+    const [entities, total] = await this.usersService.findAll(query);
+    return UserMapper.toAllResDtoList(entities, total, query);
   }
 
   @ApiOperation({
@@ -166,21 +160,27 @@ export class UsersController {
   }
 
   @ApiOperation({
-    summary: 'Для отримання інформацію про всі облікові записи користувачів',
+    summary: 'Для видачі ролей',
     description:
-      'Користувач може отримати інформацію про всі облікові записи користувачів' +
-      ' та здійснити пошук по name користувача. ' +
-      '*відображаються всі актуальні користувачі, ' +
-      'видалені користувачі з датою видалення зберігаються в БД.' +
-      'Доступно для ролей: всім',
+      'Доступно для ролей: ' +
+      '- Користувач з ролью admin може видавати всім всі ролі;' +
+      'admin, manager, seller',
   })
-  @SkipAuth()
-  @Get('all')
-  public async findAll(
-    @Query() query: ListUsersQueryReqDto, // Параметри передаються через @Query
-  ): Promise<ListResQueryDto> {
-    const [entities, total] = await this.usersService.findAll(query);
-    return UserMapper.toAllResDtoList(entities, total, query);
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
+  @Patch('role/:user_id')
+  async giveRole(
+    @Param('user_id') user_id: string,
+    @Body() giveRoleDto: GiveRoleDto,
+    @CurrentUser() userData: IUserData,
+  ): Promise<UserResDto> {
+    const result = await this.usersService.giveRole(
+      user_id,
+      giveRoleDto.new_role,
+      userData.role,
+    );
+    return UserMapper.toResDto(result);
   }
 
   @ApiOperation({

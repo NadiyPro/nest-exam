@@ -108,6 +108,22 @@ export class CarsController {
   }
 
   @ApiOperation({
+    summary: 'Для отримання списку всіх автомобілей (бренд та модель)',
+    description:
+      'Користувач може отримати список всіх автомобілей (бренд та модель) ' +
+      'та здійснити пошук по: назві бренду та моделі.' +
+      'Доступно для ролей: всі',
+  })
+  @SkipAuth()
+  @Get('all')
+  public async findAllCars(
+    @Query() query: ListCarsQueryReqDto,
+  ): Promise<ListCarsQueryResDto> {
+    const [entities, total] = await this.carsService.findAllCars(query);
+    return CarsMapper.toAllResDtoCars(entities, total, query);
+  }
+
+  @ApiOperation({
     summary: 'Для отримання списку всіх брендів авто',
     description:
       'Користувач може отримати список всіх брендів авто' +
@@ -137,22 +153,6 @@ export class CarsController {
   ): Promise<ListModelsResQueryDto> {
     const [entities, total] = await this.carsService.findAllModel(query);
     return CarsMapper.toAllResDtoModels(entities, total, query);
-  }
-
-  @ApiOperation({
-    summary: 'Для отримання списку всіх автомобілей (бренд та модель)',
-    description:
-      'Користувач може отримати список всіх автомобілей (бренд та модель) ' +
-      'та здійснити пошук по: назві бренду та моделі.' +
-      'Доступно для ролей: всі',
-  })
-  @SkipAuth()
-  @Get('all')
-  public async findAllCars(
-    @Query() query: ListCarsQueryReqDto,
-  ): Promise<ListCarsQueryResDto> {
-    const [entities, total] = await this.carsService.findAllCars(query);
-    return CarsMapper.toAllResDtoCars(entities, total, query);
   }
 
   @ApiBearerAuth()

@@ -5,7 +5,7 @@ import {
   Get,
   Param,
   Patch,
-  Post,
+  Post, Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -34,6 +34,10 @@ import { AdvertisementResDto } from './models/dto/res/advertisement.res.dto';
 import { AdvertisementMeResDto } from './models/dto/res/advertisement_me.res.dto';
 import { IAdvertisemen } from './models/interface/user_advertisemen.interface';
 import { AdvertisementService } from './service/advertisement.service';
+import { SkipAuth } from '../auth/decorators/skip_auth.decorator';
+import { ListUsersQueryReqDto } from '../users/models/dto/req/list-users-query.req.dto';
+import { ListResQueryDto } from '../users/models/dto/res/list-users-query.res.dto';
+import { UserMapper } from '../users/service/user.mapper';
 
 @ApiTags('Advertisement')
 @Controller('advertisement')
@@ -70,6 +74,24 @@ export class AvertisementController {
       userData,
       adReqDto,
     );
+  }
+
+  @ApiOperation({
+    summary: 'Для отримання інформацію про всі облікові записи користувачів',
+    description:
+      'Користувач може отримати інформацію про всі облікові записи користувачів' +
+      ' та здійснити пошук по name користувача. ' +
+      '*відображаються всі актуальні користувачі, ' +
+      'видалені користувачі з датою видалення зберігаються в БД.' +
+      'Доступно для ролей: всім',
+  })
+  @SkipAuth()
+  @Get('all')
+  public async findAll(
+    @Query() query: ListUsersQueryReqDto, // Параметри передаються через @Query
+  ): Promise<ListResQueryDto> {
+    const [entities, total] = await this.usersService.findAll(query);
+    return UserMapper.toAllResDtoList(entities, total, query);
   }
 
   @ApiOperation({
