@@ -21,6 +21,7 @@ export class AdvertisementMeResDto extends PickType(AdvertisementResDto, [
   'priceUSD',
   'priceEUR',
   'priceUAH',
+  'isValid',
 ]) {
   @IsString()
   readonly image_cars?: string;

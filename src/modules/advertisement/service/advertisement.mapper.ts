@@ -2,6 +2,7 @@ import { AdvertisementEntity } from '../../../infrastructure/postgres/entities/a
 import { ListAdQueryReqDto } from '../models/dto/req/list-advertisement_query.req.dto';
 import { AdvertisementMeResDto } from '../models/dto/res/advertisement_me.res.dto';
 import { ListAdAllQueryResDto } from '../models/dto/res/list-advertisement_query.res.dto';
+import { IsValidEnum } from '../../../infrastructure/postgres/entities/enums/isValid.enum';
 
 export class AdvertisementMapper {
   public static toResAdDto(
@@ -26,6 +27,7 @@ export class AdvertisementMapper {
       priceEUR: advertisement.priceEUR,
       priceUAH: advertisement.priceUAH,
       image_cars: advertisement.image_cars,
+      isValid: advertisement.isValid,
     };
   }
 
