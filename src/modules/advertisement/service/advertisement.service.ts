@@ -11,6 +11,7 @@ import { ContentType } from '../../file-storage/enums/file-type.enum';
 import { FileImageCarsService } from '../../file-storage/services/file-image-cars.service';
 import { AdvertisementJSONService } from '../advertisementJSON/service/advertisementJSON.service';
 import { AdvertisementReqDto } from '../models/dto/req/advertisement.req.dto';
+import { ListAdQueryReqDto } from '../models/dto/req/list-advertisement_query.req.dto';
 import { UpdateAdMeReqDto } from '../models/dto/req/update_advertisement.req.dto';
 import { AdvertisementResDto } from '../models/dto/res/advertisement.res.dto';
 import { AdvertisementMeResDto } from '../models/dto/res/advertisement_me.res.dto';
@@ -96,6 +97,14 @@ export class AdvertisementService {
     });
 
     return newAdvertisement;
+  }
+
+  public async findAdvertisementAll(
+    query: ListAdQueryReqDto,
+  ): Promise<[AdvertisementEntity[], number]> {
+    const [entities, total] =
+      await this.avertisementRepository.findAdvertisementAll(query);
+    return [entities, total];
   }
 
   public async findfindAdvertisementMe(

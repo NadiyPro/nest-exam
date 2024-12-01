@@ -39,6 +39,14 @@ export class CarsService {
     return CarsMapper.toResCreateDto(new_model, new_brand);
   }
 
+  public async findAllCars(
+    query: ListCarsQueryReqDto,
+  ): Promise<[CarsBrandsEntity[], number]> {
+    const [entities, total] =
+      await this.carsBrandsRepository.findAllCars(query);
+    return [entities, total];
+  }
+
   public async findAllBrands(
     query: ListCarsQueryReqDto,
   ): Promise<[CarsBrandsEntity[], number]> {
@@ -49,14 +57,6 @@ export class CarsService {
     query: ListCarsQueryReqDto,
   ): Promise<[CarsModelsEntity[], number]> {
     return await this.carsModelsRepository.findAllModels(query);
-  }
-
-  public async findAllCars(
-    query: ListCarsQueryReqDto,
-  ): Promise<[CarsBrandsEntity[], number]> {
-    const [entities, total] =
-      await this.carsBrandsRepository.findAllCars(query);
-    return [entities, total];
   }
 
   public async updateCars(

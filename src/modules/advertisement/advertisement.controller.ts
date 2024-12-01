@@ -5,7 +5,8 @@ import {
   Get,
   Param,
   Patch,
-  Post, Query,
+  Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -20,6 +21,7 @@ import {
 
 import { ApiFile } from '../../common/decorators/api-file.decorator';
 import { CurrentUser } from '../auth/decorators/current_user.decorator';
+import { SkipAuth } from '../auth/decorators/skip_auth.decorator';
 import { IUserData } from '../auth/models/interfaces/user_data.interface';
 import { CarsService } from '../cars/service/cars.service';
 import { EmailService } from '../email/service/email.service';
@@ -29,15 +31,14 @@ import { RoleTypeEnum } from '../users/enums/RoleType.enum';
 import { UsersService } from '../users/service/users.service';
 import { AdvertisementJSONService } from './advertisementJSON/service/advertisementJSON.service';
 import { AdvertisementReqDto } from './models/dto/req/advertisement.req.dto';
+import { ListAdQueryReqDto } from './models/dto/req/list-advertisement_query.req.dto';
 import { UpdateAdMeReqDto } from './models/dto/req/update_advertisement.req.dto';
 import { AdvertisementResDto } from './models/dto/res/advertisement.res.dto';
 import { AdvertisementMeResDto } from './models/dto/res/advertisement_me.res.dto';
+import { ListAdAllQueryResDto } from './models/dto/res/list-advertisement_query.res.dto';
 import { IAdvertisemen } from './models/interface/user_advertisemen.interface';
+import { AdvertisementMapper } from './service/advertisement.mapper';
 import { AdvertisementService } from './service/advertisement.service';
-import { SkipAuth } from '../auth/decorators/skip_auth.decorator';
-import { ListUsersQueryReqDto } from '../users/models/dto/req/list-users-query.req.dto';
-import { ListResQueryDto } from '../users/models/dto/res/list-users-query.res.dto';
-import { UserMapper } from '../users/service/user.mapper';
 
 @ApiTags('Advertisement')
 @Controller('advertisement')
@@ -77,21 +78,20 @@ export class AvertisementController {
   }
 
   @ApiOperation({
-    summary: 'Для отримання інформацію про всі облікові записи користувачів',
+    summary: 'Для отримання інформацію про всі оголошення',
     description:
-      'Користувач може отримати інформацію про всі облікові записи користувачів' +
-      ' та здійснити пошук по name користувача. ' +
-      '*відображаються всі актуальні користувачі, ' +
-      'видалені користувачі з датою видалення зберігаються в БД.' +
+      'Користувач може отримати інформацію про всі оголошення' +
+      ' та здійснити пошук по бренду, моделі та name продавця. ' +
       'Доступно для ролей: всім',
   })
   @SkipAuth()
   @Get('all')
-  public async findAll(
-    @Query() query: ListUsersQueryReqDto, // Параметри передаються через @Query
-  ): Promise<ListResQueryDto> {
-    const [entities, total] = await this.usersService.findAll(query);
-    return UserMapper.toAllResDtoList(entities, total, query);
+  public async findAdvertisementAll(
+    @Query() query: ListAdQueryReqDto,
+  ): Promise<ListAdAllQueryResDto> {
+    const [entities, total] =
+      await this.advertisementService.findAdvertisementAll(query);
+    return AdvertisementMapper.toAllAdResDtoList(entities, total, query);
   }
 
   @ApiOperation({

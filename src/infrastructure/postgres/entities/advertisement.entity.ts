@@ -22,16 +22,16 @@ export class AdvertisementEntity extends CreateUpdateModel {
   id: string;
 
   @Column()
-  name: string; // Додано
+  name: string;
 
   @Column()
-  phone: string; // Додано
+  phone: string;
 
   @Column()
-  brands_name: string; // Додано
+  brands_name: string;
 
   @Column()
-  models_name: string; // Додано
+  models_name: string;
 
   @Column('float', { nullable: false })
   price: number;
