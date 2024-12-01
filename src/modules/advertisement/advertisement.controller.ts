@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Post,
   UploadedFile,
   UseGuards,
@@ -39,7 +40,7 @@ export class AvertisementController {
     private readonly carsService: CarsService,
     private readonly emailService: EmailService,
     private readonly usersService: UsersService,
-    private readonly advertisemenService: AdvertisementService,
+    private readonly advertisementService: AdvertisementService,
     private readonly advertisementJSONService: AdvertisementJSONService,
   ) {}
 
@@ -61,7 +62,7 @@ export class AvertisementController {
     @CurrentUser() userData: IAdvertisemen,
     @Body() adReqDto: AdvertisementReqDto,
   ): Promise<AdvertisementResDto> {
-    return await this.advertisemenService.createAdvertisement(
+    return await this.advertisementService.createAdvertisement(
       userData,
       adReqDto,
     );
@@ -78,7 +79,28 @@ export class AvertisementController {
   @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @Get('me')
   public async findAdvertisementMe(@CurrentUser() userData: IUserData) {
-    return await this.advertisemenService.findfindAdvertisementMe(userData);
+    return await this.advertisementService.findfindAdvertisementMe(userData);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(ApprovedRoleGuard)
+  @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
+  @ApiOperation({
+    summary: 'Для видалення свого оголошення по id',
+    description:
+      'Користувач може видалити своє оголошення по його id.' +
+      '*видаляється повністю в т.ч з БД' +
+      'Доступно для ролей: admin, manager, seller',
+  })
+  @Delete('me/:advertisemenId')
+  public async deleteAdvertisement(
+    @CurrentUser() userData: IAdvertisemen,
+    @Param('advertisemenId') advertisementId: string,
+  ): Promise<string> {
+    return await this.advertisementService.deleteAdvertisement(
+      userData,
+      advertisementId,
+    );
   }
 
   @ApiOperation({
@@ -95,11 +117,11 @@ export class AvertisementController {
   @ApiFile('image_cars', true, true)
   @Post('me/image_cars/:advertisemenId')
   public async uploadImageCars(
-    @Param('advertisemenId') advertisemenId: string,
+    @Param('advertisemenId') advertisementId: string,
     @UploadedFile()
     file: Express.Multer.File,
   ): Promise<void> {
-    await this.advertisemenService.uploadImageCars(advertisemenId, file);
+    await this.advertisementService.uploadImageCars(advertisementId, file);
   }
 
   @ApiOperation({
@@ -113,8 +135,8 @@ export class AvertisementController {
   @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @Delete('me/image_cars/:advertisemenId')
   public async deleteAvatar(
-    @Param('advertisemenId') advertisemenId: string,
+    @Param('advertisemenId') advertisementId: string,
   ): Promise<void> {
-    await this.advertisemenService.deleteImageCars(advertisemenId);
+    await this.advertisementService.deleteImageCars(advertisementId);
   }
 }

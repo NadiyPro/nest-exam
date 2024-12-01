@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 
 import { AdvertisementEntity } from '../../../infrastructure/postgres/entities/advertisement.entity';
 import { UserEntity } from '../../../infrastructure/postgres/entities/user.entity';
@@ -139,37 +139,52 @@ export class AdvertisementService {
     };
   }
 
+  public async deleteAdvertisement(
+    userData: IAdvertisemen,
+    advertisementId: string,
+  ): Promise<string> {
+    const advertisement = await this.avertisementRepository.findOneBy({
+      id: advertisementId,
+      user_id: userData.id,
+    });
+    if (!advertisement) {
+      throw new ConflictException('The specified brand does not exist');
+    }
+    await this.avertisementRepository.delete(advertisement);
+    return 'Advertisement deleted successfully';
+  }
+
   public async uploadImageCars(
-    advertisemenId: string,
+    advertisementId: string,
     file: Express.Multer.File,
   ): Promise<void> {
-    const advertisemen = await this.avertisementRepository.findOneBy({
-      id: advertisemenId,
+    const advertisement = await this.avertisementRepository.findOneBy({
+      id: advertisementId,
     });
     const pathToFile = await this.fileImageCarsService.uploadFile(
       file,
       ContentType.IMAGE_CARS,
-      advertisemenId,
+      advertisementId,
     );
 
-    if (advertisemen.image_cars) {
-      await this.fileImageCarsService.deleteFile(advertisemen.image_cars);
+    if (advertisement.image_cars) {
+      await this.fileImageCarsService.deleteFile(advertisement.image_cars);
     }
-    console.log(advertisemen.image_cars);
+    console.log(advertisement.image_cars);
     await this.avertisementRepository.save({
-      ...advertisemen,
+      ...advertisement,
       image_cars: pathToFile,
     });
   }
 
   public async deleteImageCars(advertisemenId: string): Promise<void> {
-    const advertisemen = await this.avertisementRepository.findOneBy({
+    const advertisement = await this.avertisementRepository.findOneBy({
       id: advertisemenId,
     });
-    if (advertisemen.image_cars) {
-      await this.fileImageCarsService.deleteFile(advertisemen.image_cars);
+    if (advertisement.image_cars) {
+      await this.fileImageCarsService.deleteFile(advertisement.image_cars);
       await this.avertisementRepository.save({
-        ...advertisemen,
+        ...advertisement,
         image_cars: null,
       });
     }
