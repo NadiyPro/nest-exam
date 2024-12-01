@@ -167,7 +167,7 @@ export class AvertisementController {
       'Після перевірки тексту менеджером, статус зміниться на active або inactive відповідно.' +
       'Доступно для ролей: admin, manager',
   })
-  @Patch('me/:carsBrandsId')
+  @Patch('me/:advertisemenId')
   public async updateAdvertisementMe(
     @CurrentUser() userData: IAdvertisemen,
     @Param('advertisemenId') advertisementId: string,
