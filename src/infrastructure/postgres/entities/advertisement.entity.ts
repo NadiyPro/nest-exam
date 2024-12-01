@@ -66,7 +66,7 @@ export class AdvertisementEntity extends CreateUpdateModel {
   @Column('text', { nullable: true })
   image_cars?: string;
 
-  @Column('text', { default: IsValidEnum.ACTIVE })
+  @Column('text', { default: IsValidEnum.PENDING })
   isValid: IsValidEnum;
 
   @Column('text')
