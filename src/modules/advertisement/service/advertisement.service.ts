@@ -34,10 +34,8 @@ export class AdvertisementService {
   ): Promise<AdvertisementResDto> {
     const avertisement = new AdvertisementEntity();
 
-    // Ініціалізація ціни з adReqDto
     const { price, original_currency } = adReqDto;
 
-    // Перевірка валюти перед використанням
     if (!['USD', 'EUR', 'UAH'].includes(original_currency)) {
       throw new ConflictException('Unsupported currency type');
     }
@@ -206,15 +204,49 @@ export class AdvertisementService {
       },
     });
 
-    avertisement.price = dto.price;
-    avertisement.original_currency = dto.original_currency;
-    avertisement.text_advertisement = dto.text_advertisement;
+    const { price, original_currency } = dto;
+
+    if (!['USD', 'EUR', 'UAH'].includes(original_currency)) {
+      throw new ConflictException('Unsupported currency type');
+    }
+
+    avertisement.original_currency = original_currency;
+    avertisement.price = price; // Присвоєння ціни
+
+    // Читання курсів валют
+    const rates = this.adJSONServiced.readJSON();
+
+    // Перевірка наявності курсів валют
+    if (
+      !rates ||
+      !rates.curBuyingUSD ||
+      !rates.curSalesUSD ||
+      !rates.curBuyingEUR ||
+      !rates.curSalesEUR
+    ) {
+      throw new ConflictException('Currency rates are not available');
+    }
+
+    // Обчислення цін за умовами валюти
+    if (original_currency === 'USD') {
+      avertisement.priceUAH = price * rates.curBuyingUSD;
+      avertisement.priceEUR = price * (rates.curSalesUSD / rates.curSalesEUR);
+      avertisement.priceUSD = price;
+    } else if (original_currency === 'EUR') {
+      avertisement.priceUAH = price * rates.curBuyingEUR;
+      avertisement.priceUSD = price * (rates.curSalesEUR / rates.curSalesUSD);
+      avertisement.priceEUR = price;
+    } else {
+      avertisement.priceUSD = price / rates.curBuyingUSD;
+      avertisement.priceEUR = price / rates.curBuyingEUR;
+      avertisement.priceUAH = price;
+    }
 
     const newAdvertisement = await this.avertisementRepository.save({
       ...avertisement,
-      price: dto.price,
-      original_currency: dto.original_currency,
-      text_advertisement: dto.text_advertisement,
+      price: avertisement.price,
+      original_currency: avertisement.original_currency,
+      text_advertisement: avertisement.text_advertisement,
     });
 
     const user = await this.userRepository.findOneBy({
