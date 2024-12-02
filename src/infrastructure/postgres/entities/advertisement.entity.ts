@@ -24,7 +24,7 @@ export class AdvertisementEntity extends CreateUpdateModel {
   @Column('float', { nullable: false })
   price: number;
 
-  @Column('text', { default: CurrencyEnum.UAH })
+  @Column({ type: 'enum', enum: CurrencyEnum, default: CurrencyEnum.UAH })
   original_currency: CurrencyEnum;
 
   @Column('float')
@@ -54,7 +54,7 @@ export class AdvertisementEntity extends CreateUpdateModel {
   @Column('text', { nullable: true })
   image_cars?: string;
 
-  @Column('text', { default: IsValidEnum.PENDING })
+  @Column({ type: 'enum', enum: IsValidEnum, default: IsValidEnum.PENDING })
   isValid: IsValidEnum;
 
   @Column('text')

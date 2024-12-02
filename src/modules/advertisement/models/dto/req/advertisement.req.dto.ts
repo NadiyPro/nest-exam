@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNumber, IsString, Length, Matches } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString, Length } from 'class-validator';
 
 import { CurrencyEnum } from '../../../enums/currency_enum';
 
@@ -19,7 +19,8 @@ export class AdvertisementReqDto {
   price: number;
 
   @ApiProperty({ example: 'UAH' })
-  @IsString()
+  @IsNotEmpty()
+  @IsEnum(CurrencyEnum)
   original_currency: CurrencyEnum;
 
   @ApiProperty({ example: 'Dnipro' })
