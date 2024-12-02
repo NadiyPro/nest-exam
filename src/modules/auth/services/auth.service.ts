@@ -12,6 +12,7 @@ import { TokenPairResDto } from '../models/dto/res/token_pair.res.dto';
 import { IUserData } from '../models/interfaces/user_data.interface';
 import { AuthCacheService } from './auth-cache.service';
 import { TokenService } from './token.service';
+import { RoleTypeEnum } from '../../users/enums/RoleType.enum';
 
 @Injectable()
 export class AuthService {
@@ -33,7 +34,7 @@ export class AuthService {
       this.userRepository.create({
         ...dto,
         password,
-        // role: RoleTypeEnum.SELLER,
+        role: RoleTypeEnum.SELLER,
       }),
     );
 
