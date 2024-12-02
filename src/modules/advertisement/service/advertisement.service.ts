@@ -1,16 +1,14 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 
 import { AdvertisementEntity } from '../../../infrastructure/postgres/entities/advertisement.entity';
-import { IsValidEnum } from '../../../infrastructure/postgres/entities/enums/isValid.enum';
 import { UserEntity } from '../../../infrastructure/postgres/entities/user.entity';
 import { AvertisementRepository } from '../../../infrastructure/repository/services/advertisement.repository';
 import { CarsBrandsRepository } from '../../../infrastructure/repository/services/cars_brands.repository';
 import { CarsModelsRepository } from '../../../infrastructure/repository/services/cars_models.repository';
 import { UserRepository } from '../../../infrastructure/repository/services/user.repository';
-import { IUserData } from '../../auth/models/interfaces/user_data.interface';
 import { ContentType } from '../../file-storage/enums/file-type.enum';
 import { FileImageCarsService } from '../../file-storage/services/file-image-cars.service';
-import { AdvertisementJSONService } from '../advertisementJSON/service/advertisementJSON.service';
+import { AdvertisementJSONService } from '../advertisementJSON_Cron/service/adJSON_Cron.service';
 import { CurrencyEnum } from '../enums/currency_enum';
 import { AdvertisementReqDto } from '../models/dto/req/advertisement.req.dto';
 import { ListAdQueryReqDto } from '../models/dto/req/list-advertisement_query.req.dto';
@@ -18,7 +16,6 @@ import { UpdateAdMeReqDto } from '../models/dto/req/update_advertisement.req.dto
 import { AdvertisementResDto } from '../models/dto/res/advertisement.res.dto';
 import { AdvertisementMeResDto } from '../models/dto/res/advertisement_me.res.dto';
 import { IAdvertisemen } from '../models/interface/user_advertisemen.interface';
-import { AdvertisementMapper } from './advertisement.mapper';
 
 @Injectable()
 export class AdvertisementService {
@@ -29,7 +26,6 @@ export class AdvertisementService {
     private readonly carsModelsRepository: CarsModelsRepository,
     private readonly avertisementRepository: AvertisementRepository,
     private readonly adJSONServiced: AdvertisementJSONService,
-    // private readonly advertisementMapper: AdvertisementMapper,
   ) {}
 
   public async createAdvertisement(
@@ -42,39 +38,39 @@ export class AdvertisementService {
     avertisement.original_currency = adReqDto.original_currency;
     const rates = this.adJSONServiced.readJSON();
 
-    // if (original_currency === 'USD') {
-    //   avertisement.priceUAH = avertisement.price * rates.curSalesUSD;
-    //   avertisement.priceEUR =
-    //     avertisement.price * (rates.curSalesUSD / rates.curSalesEUR);
-    //   avertisement.priceUSD = avertisement.price;
-    // } else if (original_currency === 'EUR') {
-    //   avertisement.priceUAH = avertisement.price * rates.curSalesEUR;
-    //   avertisement.priceUSD =
-    //     avertisement.price * (rates.curSalesEUR / rates.curSalesUSD);
-    //   avertisement.priceEUR = avertisement.price;
-    // } else {
-    //   avertisement.priceUSD = avertisement.price / rates.curBuyingUSD;
-    //   avertisement.priceEUR = avertisement.price / rates.curBuyingEUR;
-    //   avertisement.priceUAH = avertisement.price;
-    // }
-
-    if (original_currency === CurrencyEnum.USD) {
+    if (original_currency === 'USD') {
       avertisement.priceUAH = avertisement.price * rates.curBuyingUSD;
       avertisement.priceEUR =
-        avertisement.price * (rates.curBuyingUSD / rates.curSalesEUR);
+        avertisement.price * (rates.curSalesUSD / rates.curSalesEUR);
       avertisement.priceUSD = avertisement.price;
-    } else if (original_currency === CurrencyEnum.EUR) {
+    } else if (original_currency === 'EUR') {
       avertisement.priceUAH = avertisement.price * rates.curBuyingEUR;
       avertisement.priceUSD =
-        avertisement.price * (rates.curBuyingEUR / rates.curSalesUSD);
+        avertisement.price * (rates.curSalesEUR / rates.curSalesUSD);
       avertisement.priceEUR = avertisement.price;
-    } else if (original_currency === CurrencyEnum.UAH) {
-      avertisement.priceUSD = avertisement.price / rates.curSalesUSD;
-      avertisement.priceEUR = avertisement.price / rates.curSalesEUR;
-      avertisement.priceUAH = avertisement.price;
     } else {
-      throw new Error('Unsupported currency type');
+      avertisement.priceUSD = avertisement.price / rates.curBuyingUSD;
+      avertisement.priceEUR = avertisement.price / rates.curBuyingEUR;
+      avertisement.priceUAH = avertisement.price;
     }
+
+    // if (original_currency === CurrencyEnum.USD) {
+    //   avertisement.priceUAH = avertisement.price * rates.curBuyingUSD;
+    //   avertisement.priceEUR =
+    //     avertisement.price * (rates.curBuyingUSD / rates.curSalesEUR);
+    //   avertisement.priceUSD = avertisement.price;
+    // } else if (original_currency === CurrencyEnum.EUR) {
+    //   avertisement.priceUAH = avertisement.price * rates.curBuyingEUR;
+    //   avertisement.priceUSD =
+    //     avertisement.price * (rates.curBuyingEUR / rates.curSalesUSD);
+    //   avertisement.priceEUR = avertisement.price;
+    // } else if (original_currency === CurrencyEnum.UAH) {
+    //   avertisement.priceUSD = avertisement.price / rates.curSalesUSD;
+    //   avertisement.priceEUR = avertisement.price / rates.curSalesEUR;
+    //   avertisement.priceUAH = avertisement.price;
+    // } else {
+    //   throw new Error('Unsupported currency type');
+    // }
 
     const user = await this.userRepository.findOneBy({ id: userData.id });
 
@@ -98,6 +94,7 @@ export class AdvertisementService {
     }
 
     const newAdvertisement = await this.avertisementRepository.save({
+      ...avertisement,
       user_id: user.id,
       price: avertisement.price,
       original_currency: avertisement.original_currency,
@@ -145,87 +142,157 @@ export class AdvertisementService {
   }
 
   public async findfindAdvertisementMe(
-    userData: IUserData,
-  ): Promise<AdvertisementMeResDto | AdvertisementMeResDto[]> {
-    const avertisement = await this.avertisementRepository.findOneBy({
-      user_id: userData.userId,
+    userData: IAdvertisemen,
+  ): Promise<AdvertisementMeResDto[]> {
+    const advertisements = await this.avertisementRepository.find({
+      where: { user_id: userData.id },
     });
 
-    if (!avertisement) {
-      throw new Error('Advertisement not found for the given user ID');
+    if (advertisements.length === 0) {
+      throw new Error('No advertisements found for the given user ID');
     }
 
-    const user = await this.userRepository.findOneBy({
-      id: avertisement.user_id,
-    });
+    return await Promise.all(
+      advertisements.map(async (advertisement) => {
+        const user = await this.userRepository.findOneBy({
+          id: advertisement.user_id,
+        });
+        if (!user) throw new Error('User not found');
 
-    if (!user) {
-      throw new Error('User not found');
-    }
+        const model = await this.carsModelsRepository.findOneBy({
+          models_id: advertisement.cars_brands_models_id,
+        });
+        if (!model) throw new Error('Model not found');
 
-    const model = await this.carsModelsRepository.findOneBy({
-      models_id: avertisement.cars_brands_models_id,
-    });
+        const brand = await this.carsBrandsRepository.findOneBy({
+          brands_id: model.brands_id,
+        });
+        if (!brand) throw new Error('Brand not found');
 
-    if (!model) {
-      throw new Error('Model not found');
-    }
-
-    const brand = await this.carsBrandsRepository.findOneBy({
-      brands_id: model.brands_id,
-    });
-
-    if (!brand) {
-      throw new Error('Brand not found');
-    }
-
-    return {
-      id: avertisement.id,
-      user_id: user.id,
-      name: user.name,
-      phone: user.phone,
-      brands_name: brand.brands_name,
-      models_name: model.models_name,
-      price: avertisement.price,
-      original_currency: avertisement.original_currency,
-      curBuyingUSD: avertisement.curBuyingUSD,
-      curSalesUSD: avertisement.curSalesUSD,
-      curBuyingEUR: avertisement.curBuyingEUR,
-      curSalesEUR: avertisement.curSalesEUR,
-      priceUAH: avertisement.priceUAH,
-      priceUSD: avertisement.priceUSD,
-      priceEUR: avertisement.priceEUR,
-      region: avertisement.region,
-      text_advertisement: avertisement.text_advertisement,
-      image_cars: avertisement.image_cars,
-      isValid: avertisement.isValid,
-    };
+        return {
+          id: advertisement.id,
+          user_id: user.id,
+          name: user.name,
+          phone: user.phone,
+          brands_name: brand.brands_name,
+          models_name: model.models_name,
+          price: advertisement.price,
+          original_currency: advertisement.original_currency,
+          curBuyingUSD: advertisement.curBuyingUSD,
+          curSalesUSD: advertisement.curSalesUSD,
+          curBuyingEUR: advertisement.curBuyingEUR,
+          curSalesEUR: advertisement.curSalesEUR,
+          priceUAH: advertisement.priceUAH,
+          priceUSD: advertisement.priceUSD,
+          priceEUR: advertisement.priceEUR,
+          region: advertisement.region,
+          text_advertisement: advertisement.text_advertisement,
+          image_cars: advertisement.image_cars,
+          isValid: advertisement.isValid,
+        };
+      }),
+    );
   }
+
+  // public async updateAdvertisementMe(
+  //   userData: IAdvertisemen,
+  //   advertisementId: string,
+  //   dto: UpdateAdMeReqDto,
+  // ): Promise<AdvertisementResDto> {
+  //   const avertisement = await this.avertisementRepository.findOneBy({
+  //     id: advertisementId,
+  //     user_id: userData.id,
+  //   });
+  //
+  //   avertisement.price = dto.price;
+  //   avertisement.original_currency = dto.original_currency;
+  //   avertisement.text_advertisement = dto.text_advertisement;
+  //
+  //   const newAdvertisement = await this.avertisementRepository.save({
+  //     ...avertisement,
+  //     price: dto.price,
+  //     original_currency: dto.original_currency,
+  //     text_advertisement: dto.text_advertisement,
+  //   });
+  //
+  //   const user = await this.userRepository.findOneBy({
+  //     id: newAdvertisement.user_id,
+  //   });
+  //
+  //   const model = await this.carsModelsRepository.findOneBy({
+  //     models_id: newAdvertisement.cars_brands_models_id,
+  //   });
+  //
+  //   if (!model) {
+  //     throw new Error('Model not found');
+  //   }
+  //
+  //   const brand = await this.carsBrandsRepository.findOneBy({
+  //     brands_id: model.brands_id,
+  //   });
+  //
+  //   if (!brand) {
+  //     throw new Error('Brand not found');
+  //   }
+  //
+  //   return {
+  //     id: newAdvertisement.id,
+  //     user_id: user.id,
+  //     name: user.name,
+  //     phone: user.phone,
+  //     brands_name: brand.brands_name,
+  //     models_name: model.models_name,
+  //     price: newAdvertisement.price,
+  //     original_currency: newAdvertisement.original_currency,
+  //     curBuyingUSD: newAdvertisement.curBuyingUSD,
+  //     curSalesUSD: newAdvertisement.curSalesUSD,
+  //     curBuyingEUR: newAdvertisement.curBuyingEUR,
+  //     curSalesEUR: newAdvertisement.curSalesEUR,
+  //     priceUAH: newAdvertisement.priceUAH,
+  //     priceUSD: newAdvertisement.priceUSD,
+  //     priceEUR: newAdvertisement.priceEUR,
+  //     region: newAdvertisement.region,
+  //     text_advertisement: newAdvertisement.text_advertisement,
+  //     isValid: newAdvertisement.isValid,
+  //   };
+  // }
 
   public async updateAdvertisementMe(
     userData: IAdvertisemen,
     advertisementId: string,
     dto: UpdateAdMeReqDto,
   ): Promise<AdvertisementResDto> {
-    const avertisement = await this.avertisementRepository.findOneBy({
+    // Перевірка існування оголошення
+    const advertisement = await this.avertisementRepository.findOneBy({
       id: advertisementId,
       user_id: userData.id,
     });
 
-    const newAdvertisement = await this.avertisementRepository.save({
-      ...avertisement,
+    if (!advertisement) {
+      throw new Error('Advertisement not found');
+    }
+
+    // Оновлення оголошення
+    Object.assign(advertisement, {
       price: dto.price,
       original_currency: dto.original_currency,
       text_advertisement: dto.text_advertisement,
     });
 
-    const user = await this.userRepository.findOneBy({
-      id: newAdvertisement.user_id,
-    });
+    const updatedAdvertisement =
+      await this.avertisementRepository.save(advertisement);
 
-    const model = await this.carsModelsRepository.findOneBy({
-      models_id: newAdvertisement.cars_brands_models_id,
-    });
+    // Отримання пов'язаних даних
+    const [user, model] = await Promise.all([
+      this.userRepository.findOneBy({ id: updatedAdvertisement.user_id }),
+      this.carsModelsRepository.findOneBy({
+        models_id: updatedAdvertisement.cars_brands_models_id,
+      }),
+    ]);
+
+    if (!user) {
+      throw new Error('User not found');
+    }
 
     if (!model) {
       throw new Error('Model not found');
@@ -239,25 +306,26 @@ export class AdvertisementService {
       throw new Error('Brand not found');
     }
 
+    // Формування відповіді
     return {
-      id: newAdvertisement.id,
+      id: updatedAdvertisement.id,
       user_id: user.id,
       name: user.name,
       phone: user.phone,
       brands_name: brand.brands_name,
       models_name: model.models_name,
-      price: newAdvertisement.price,
-      original_currency: newAdvertisement.original_currency,
-      curBuyingUSD: newAdvertisement.curBuyingUSD,
-      curSalesUSD: newAdvertisement.curSalesUSD,
-      curBuyingEUR: newAdvertisement.curBuyingEUR,
-      curSalesEUR: newAdvertisement.curSalesEUR,
-      priceUAH: newAdvertisement.priceUAH,
-      priceUSD: newAdvertisement.priceUSD,
-      priceEUR: newAdvertisement.priceEUR,
-      region: newAdvertisement.region,
-      text_advertisement: newAdvertisement.text_advertisement,
-      isValid: newAdvertisement.isValid,
+      price: updatedAdvertisement.price,
+      original_currency: updatedAdvertisement.original_currency,
+      curBuyingUSD: updatedAdvertisement.curBuyingUSD,
+      curSalesUSD: updatedAdvertisement.curSalesUSD,
+      curBuyingEUR: updatedAdvertisement.curBuyingEUR,
+      curSalesEUR: updatedAdvertisement.curSalesEUR,
+      priceUAH: updatedAdvertisement.priceUAH,
+      priceUSD: updatedAdvertisement.priceUSD,
+      priceEUR: updatedAdvertisement.priceEUR,
+      region: updatedAdvertisement.region,
+      text_advertisement: updatedAdvertisement.text_advertisement,
+      isValid: updatedAdvertisement.isValid,
     };
   }
 
@@ -279,51 +347,50 @@ export class AdvertisementService {
   public async findfindAdvertisementId(
     advertisementId: string,
   ): Promise<AdvertisementMeResDto> {
-    const avertisement = await this.avertisementRepository.findOneBy({
+    const advertisement = await this.avertisementRepository.findOneBy({
       id: advertisementId,
     });
+
+    if (!advertisement) {
+      throw new Error('Advertisement not found');
+    }
+
     const user = await this.userRepository.findOneBy({
-      id: avertisement.user_id,
+      id: advertisement.user_id,
     });
+    if (!user) throw new Error('User not found');
 
     const model = await this.carsModelsRepository.findOneBy({
-      models_id: avertisement.cars_brands_models_id,
+      models_id: advertisement.cars_brands_models_id,
     });
-
-    if (!model) {
-      throw new Error('Model not found');
-    }
+    if (!model) throw new Error('Model not found');
 
     const brand = await this.carsBrandsRepository.findOneBy({
       brands_id: model.brands_id,
     });
-
-    if (!brand) {
-      throw new Error('Brand not found');
-    }
+    if (!brand) throw new Error('Brand not found');
 
     return {
-      id: avertisement.id,
+      id: advertisement.id,
       user_id: user.id,
       name: user.name,
       phone: user.phone,
       brands_name: brand.brands_name,
       models_name: model.models_name,
-      price: avertisement.price,
-      original_currency: avertisement.original_currency,
-      curBuyingUSD: avertisement.curBuyingUSD,
-      curSalesUSD: avertisement.curSalesUSD,
-      curBuyingEUR: avertisement.curBuyingEUR,
-      curSalesEUR: avertisement.curSalesEUR,
-      priceUAH: avertisement.priceUAH,
-      priceUSD: avertisement.priceUSD,
-      priceEUR: avertisement.priceEUR,
-      region: avertisement.region,
-      text_advertisement: avertisement.text_advertisement,
-      image_cars: avertisement.image_cars,
-      isValid: avertisement.isValid,
+      price: advertisement.price,
+      original_currency: advertisement.original_currency,
+      curBuyingUSD: advertisement.curBuyingUSD,
+      curSalesUSD: advertisement.curSalesUSD,
+      curBuyingEUR: advertisement.curBuyingEUR,
+      curSalesEUR: advertisement.curSalesEUR,
+      priceUAH: advertisement.priceUAH,
+      priceUSD: advertisement.priceUSD,
+      priceEUR: advertisement.priceEUR,
+      region: advertisement.region,
+      text_advertisement: advertisement.text_advertisement,
+      image_cars: advertisement.image_cars,
+      isValid: advertisement.isValid,
     };
-    // return avertisement;
   }
 
   public async deleteAdvertisementId(advertisementId: string): Promise<string> {

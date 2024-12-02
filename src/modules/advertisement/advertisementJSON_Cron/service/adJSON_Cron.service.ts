@@ -19,7 +19,7 @@ export class AdvertisementJSONService implements OnModuleInit {
     curSalesEUR: number;
   } {
     const filePath =
-      'C:/Users/User/nest-exam/src/modules/advertisement/advertisementJSON/advertisement.json';
+      'C:/Users/User/nest-exam/src/modules/advertisement/advertisementJSON_Cron/advertisement.json';
     if (!fs.existsSync(filePath)) {
       throw new Error('JSON файл не знайдено.');
     }

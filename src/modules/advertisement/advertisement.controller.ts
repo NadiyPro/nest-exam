@@ -31,7 +31,7 @@ import { EmailService } from '../email/service/email.service';
 import { ApprovedRoleGuard } from '../guards/approved_role.guard';
 import { Role } from '../guards/decorator/role.decorator';
 import { RoleTypeEnum } from '../users/enums/RoleType.enum';
-import { AdvertisementJSONService } from './advertisementJSON/service/advertisementJSON.service';
+import { AdvertisementJSONService } from './advertisementJSON_Cron/service/adJSON_Cron.service';
 import { RoleCount } from './guards/decorator/role_seller.decorator';
 import { AdvertisementReqDto } from './models/dto/req/advertisement.req.dto';
 import { ListAdQueryReqDto } from './models/dto/req/list-advertisement_query.req.dto';
@@ -127,7 +127,7 @@ export class AvertisementController {
   @UseGuards(ApprovedRoleGuard)
   @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER, RoleTypeEnum.SELLER])
   @Get('me')
-  public async findAdvertisementMe(@CurrentUser() userData: IUserData) {
+  public async findAdvertisementMe(@CurrentUser() userData: IAdvertisemen) {
     return await this.advertisementService.findfindAdvertisementMe(userData);
   }
 
@@ -206,7 +206,7 @@ export class AvertisementController {
   @ApiBearerAuth()
   @UseGuards(ApprovedRoleGuard)
   @Role([RoleTypeEnum.ADMIN, RoleTypeEnum.MANAGER])
-  @Get(':advertisementId')
+  @Delete(':advertisementId')
   public async deleteAdvertisementId(
     @Param('advertisemenId') advertisementId: string,
   ) {

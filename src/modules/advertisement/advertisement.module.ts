@@ -6,7 +6,7 @@ import { EmailModule } from '../email/email.module';
 import { FileStorageModule } from '../file-storage/file-storage.module';
 import { UsersModule } from '../users/users.module';
 import { AvertisementController } from './advertisement.controller';
-import { AdvertisementJSONService } from './advertisementJSON/service/advertisementJSON.service';
+import { AdvertisementJSONService } from './advertisementJSON_Cron/service/adJSON_Cron.service';
 import { AdvertisementMapper } from './service/advertisement.mapper';
 import { AdvertisementService } from './service/advertisement.service';
 
