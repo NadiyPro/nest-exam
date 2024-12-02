@@ -25,9 +25,8 @@ export class AdvertisementReqDto {
   price: number;
 
   @ApiProperty({ example: 'UAH' })
-  @IsNotEmpty()
-  @IsEnum(CurrencyEnum)
-  original_currency: CurrencyEnum;
+  @IsString()
+  original_currency: 'USD' | 'EUR' | 'UAH';
 
   @ApiProperty({ example: 'Dnipro' })
   @IsString()

@@ -9,7 +9,7 @@ export class AdvertisementResDto {
   brands_name: string;
   models_name: string;
   price: number;
-  original_currency: CurrencyEnum;
+  original_currency: 'USD' | 'EUR' | 'UAH';
   region: string;
   text_advertisement: string;
   curBuyingUSD: number;

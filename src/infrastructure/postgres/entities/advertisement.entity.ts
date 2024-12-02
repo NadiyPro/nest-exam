@@ -25,7 +25,7 @@ export class AdvertisementEntity extends CreateUpdateModel {
   price: number;
 
   @Column({ type: 'enum', enum: CurrencyEnum, default: CurrencyEnum.UAH })
-  original_currency: CurrencyEnum;
+  original_currency: 'USD' | 'EUR' | 'UAH';
 
   @Column('float')
   curBuyingUSD: number;
